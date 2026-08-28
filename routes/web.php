@@ -10,6 +10,10 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Account\AddressController;
+use App\Http\Controllers\Account\WishlistController;
+use App\Http\Controllers\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -47,6 +51,22 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Customer account — requires login, no admin flag needed
+Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::resource('addresses', AddressController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    Route::get('wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('wishlist/{product}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+
+    Route::get('orders', [AccountOrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
+});
 
 //Admin routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

@@ -1,23 +1,9 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
-interface NotificationItem {
-    id: string;
-    data: { message: string };
-    read_at: string | null;
-    created_at: string;
-}
-
-interface NotificationsShared {
-    unread_count: number;
-    recent: NotificationItem[];
-}
-
 export default function NotificationBell() {
     const [open, setOpen] = useState(false);
-    const { notifications } = usePage().props as {
-        notifications?: NotificationsShared;
-    };
+    const { notifications } = usePage().props;
 
     if (!notifications) return null;
 

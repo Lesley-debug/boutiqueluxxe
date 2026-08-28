@@ -41,4 +41,19 @@ class User extends Authenticatable
 
         return in_array('*', $granted, true) || in_array($permission, $granted, true);
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function wishlistItems()
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

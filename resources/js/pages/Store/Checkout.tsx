@@ -8,9 +8,7 @@ interface CheckoutProps {
 }
 
 export default function Checkout({ cart, user }: CheckoutProps) {
-    const pageErrors =
-        (usePage().props as { errors?: Record<string, string> }).errors ?? {};
-
+    const pageErrors = usePage().props.errors;
     const { data, setData, post, processing, errors } = useForm({
         customer_name: user?.name ?? "",
         customer_email: user?.email ?? "",

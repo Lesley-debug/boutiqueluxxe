@@ -72,6 +72,24 @@ export default function ProductDetail({
         );
     }
 
+    function toggleWishlist() {
+        if (wishlisted) {
+            router.delete(`/account/wishlist/${product.id}`, {
+                preserveScroll: true,
+                onSuccess: () => setWishlisted(false),
+            });
+        } else {
+            router.post(
+                "/account/wishlist",
+                { product_id: product.id },
+                {
+                    preserveScroll: true,
+                    onSuccess: () => setWishlisted(true),
+                },
+            );
+        }
+    }
+
     return (
         <>
             <Head title={product.name} />
@@ -237,7 +255,7 @@ export default function ProductDetail({
                             </button>
 
                             <button
-                                onClick={() => setWishlisted((w) => !w)}
+                                onClick={toggleWishlist}
                                 className={`rounded-sm border px-4 py-3 text-sm ${
                                     wishlisted
                                         ? "border-stone-900 bg-stone-100"

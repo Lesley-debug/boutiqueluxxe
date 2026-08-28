@@ -16,7 +16,8 @@ const ROLES = [
 ];
 
 export default function Index({ users }: { users: AdminUserRow[] }) {
-    const { auth } = usePage().props as { auth: { user: { id: number } } };
+    const { auth } = usePage().props;
+    const currentUserId = auth.user?.id;
 
     function updateRole(userId: number, role: string) {
         router.patch(
@@ -49,7 +50,7 @@ export default function Index({ users }: { users: AdminUserRow[] }) {
                                 <td className="py-2">{u.name}</td>
                                 <td>{u.email}</td>
                                 <td>
-                                    {u.id === auth.user.id ? (
+                                    {u.id === currentUserId ? (
                                         <span className="text-xs text-stone-400">
                                             Cannot edit your own role
                                         </span>
