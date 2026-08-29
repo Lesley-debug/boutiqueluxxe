@@ -12,6 +12,7 @@ export interface Order {
     id: number;
     order_number: string;
     status: string;
+    payment_status: string;
     customer_name: string;
     customer_email: string;
     customer_phone: string | null;

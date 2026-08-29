@@ -1,6 +1,7 @@
 import { Head, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
 import ProductCard from "@/components/ProductCard";
+import StoreLayout from "@/components/Store/StoreLayout";
 import type { Category, PaginatedProducts, ShopFilters } from "@/types/catalog";
 
 interface ShopProps {
@@ -26,7 +27,7 @@ export default function Shop({ products, categories, filters }: ShopProps) {
     }
 
     return (
-        <>
+        <StoreLayout categories={categories}>
             <Head title="Shop" />
             <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -176,6 +177,6 @@ export default function Shop({ products, categories, filters }: ShopProps) {
                     </div>
                 </div>
             </div>
-        </>
+        </StoreLayout>
     );
 }

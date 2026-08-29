@@ -27,3 +27,19 @@ declare module "@inertiajs/core" {
         notifications?: SharedNotifications;
     }
 }
+
+export interface SharedCart {
+    item_count: number;
+}
+
+declare module "@inertiajs/core" {
+    interface PageProps {
+        auth: {
+            user: SharedAuthUser | null;
+        };
+        errors: Record<string, string>;
+        notifications?: SharedNotifications;
+        cart: SharedCart;
+        paymentFailed?: boolean;
+    }
+}

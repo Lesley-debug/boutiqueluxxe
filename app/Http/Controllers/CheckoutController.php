@@ -32,6 +32,12 @@ class CheckoutController extends Controller
         return Inertia::render('Store/Checkout', [
             'cart' => $cart,
             'user' => Auth::user(),
+            'addresses' => Auth::check() ? Auth::user()->addresses()->orderByDesc('is_default')->get() : [],
+            'pickupLocation' => [
+                'name' => 'Designer Bags Boutique',
+                'address' => 'Commercial Avenue, Bamenda, North-West Region',
+                'hours' => 'Mon–Sat, 9am–6pm',
+            ],
         ]);
     }
 
@@ -40,9 +46,10 @@ class CheckoutController extends Controller
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_email' => ['required', 'email'],
-            'customer_phone' => ['nullable', 'string', 'max:30'],
-            'shipping_address' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:100'],
+            'customer_phone' => ['required', 'string', 'max:30'],
+            'fulfillment_method' => ['required', 'in:delivery,pickup'],
+            'shipping_address' => ['required_if:fulfillment_method,delivery', 'nullable', 'string', 'max:255'],
+            'city' => ['required_if:fulfillment_method,delivery', 'nullable', 'string', 'max:100'],
             'region' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
         ]);
@@ -110,18 +117,21 @@ class CheckoutController extends Controller
                     }
                 }
 
+                $isPickup = $data['fulfillment_method'] === 'pickup';
                 $shippingCost = 0;
                 $total = max(0, $subtotal + $shippingCost - $discountAmount);
 
                 $order = Order::create([
                     'user_id' => Auth::id(),
                     'status' => 'pending',
+                    'fulfillment_method' => $data['fulfillment_method'],
+                    'payment_status' => 'pending',
                     'customer_name' => $data['customer_name'],
                     'customer_email' => $data['customer_email'],
-                    'customer_phone' => $data['customer_phone'] ?? null,
-                    'shipping_address' => $data['shipping_address'],
-                    'city' => $data['city'],
-                    'region' => $data['region'] ?? null,
+                    'customer_phone' => $data['customer_phone'],
+                    'shipping_address' => $isPickup ? null : $data['shipping_address'],
+                    'city' => $isPickup ? null : $data['city'],
+                    'region' => $isPickup ? null : ($data['region'] ?? null),
                     'notes' => $data['notes'] ?? null,
                     'subtotal' => $subtotal,
                     'shipping_cost' => $shippingCost,
@@ -145,8 +155,6 @@ class CheckoutController extends Controller
 
         $order = $result['order'];
 
-        // Everything below runs only after the transaction has committed successfully —
-        // a mail/notification failure here must never look like a rolled-back order.
         Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
 
         $admins = User::where('is_admin', true)->get();

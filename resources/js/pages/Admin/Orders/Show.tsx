@@ -1,14 +1,30 @@
+import { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import type { Order } from "@/types/order";
 
 const STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
 export default function Show({ order }: { order: Order }) {
+    const [isPaymentStatusUpdating, setIsPaymentStatusUpdating] =
+        useState(false);
+
     function updateStatus(status: string) {
         router.patch(
             `/admin/orders/${order.id}/status`,
             { status },
             { preserveScroll: true },
+        );
+    }
+
+    function updatePaymentStatus(payment_status: string) {
+        setIsPaymentStatusUpdating(true);
+        router.patch(
+            `/admin/orders/${order.id}/payment`,
+            { payment_status },
+            {
+                preserveScroll: true,
+                onFinish: () => setIsPaymentStatusUpdating(false),
+            },
         );
     }
 
@@ -23,21 +39,38 @@ export default function Show({ order }: { order: Order }) {
                     ← Back to Orders
                 </Link>
 
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex items-center justify-between gap-3">
                     <h1 className="text-xl font-semibold">
                         {order.order_number}
                     </h1>
-                    <select
-                        value={order.status}
-                        onChange={(e) => updateStatus(e.target.value)}
-                        className="rounded-sm border border-stone-300 px-3 py-2 text-sm capitalize"
-                    >
-                        {STATUSES.map((s) => (
-                            <option key={s} value={s}>
-                                {s}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                        <select
+                            value={order.status}
+                            onChange={(e) => updateStatus(e.target.value)}
+                            className="rounded-sm border border-stone-300 px-3 py-2 text-sm capitalize"
+                        >
+                            {STATUSES.map((s) => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            value={order.payment_status}
+                            disabled={isPaymentStatusUpdating}
+                            onChange={(e) =>
+                                updatePaymentStatus(e.target.value)
+                            }
+                            className={`rounded-sm border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70 ${
+                                order.payment_status === "paid"
+                                    ? "border-green-300 bg-green-50"
+                                    : "border-amber-300 bg-amber-50"
+                            }`}
+                        >
+                            <option value="pending">Payment: Pending</option>
+                            <option value="paid">Payment: Received</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-6 text-sm">

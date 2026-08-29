@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Cart;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -43,6 +44,13 @@ class HandleInertiaRequests extends Middleware
             'errors' => fn() => $request->session()->get('errors')
                 ? $request->session()->get('errors')->getBag('default')->getMessages()
                 : (object) [],
+            'cart' => fn() => [
+                'item_count' => (
+                    $request->user()
+                    ? Cart::where('user_id', $request->user()->id)->first()
+                    : Cart::where('session_id', $request->session()->getId())->first()
+                )?->item_count ?? 0,
+            ],
         ];
 
         if ($request->user()?->is_admin) {

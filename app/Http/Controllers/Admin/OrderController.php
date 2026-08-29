@@ -55,4 +55,15 @@ class OrderController extends Controller
 
         return back()->with('success', 'Order status updated.');
     }
+
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'payment_status' => ['required', 'in:pending,paid'],
+        ]);
+
+        $order->update(['payment_status' => $data['payment_status']]);
+
+        return back()->with('success', 'Payment status updated.');
+    }
 }

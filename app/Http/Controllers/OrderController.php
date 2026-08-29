@@ -13,6 +13,18 @@ class OrderController extends Controller
 
         return Inertia::render('Store/OrderConfirmation', [
             'order' => $order,
+            'paymentInstructions' => config('payment_instructions'),
         ]);
+    }
+
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $data = $request->validate([
+            'payment_status' => ['required', 'in:pending,paid'],
+        ]);
+
+        $order->update(['payment_status' => $data['payment_status']]);
+
+        return back()->with('success', 'Payment status updated.');
     }
 }

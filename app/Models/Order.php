@@ -16,6 +16,9 @@ class Order extends Model
         'order_number',
         'user_id',
         'status',
+        'fulfillment_method',
+        'payment_status',
+        'payment_reference',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -25,9 +28,9 @@ class Order extends Model
         'notes',
         'subtotal',
         'shipping_cost',
-        'total',
         'discount_code',
         'discount_amount',
+        'total',
     ];
 
     protected $casts = [

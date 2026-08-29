@@ -1,5 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import StoreLayout from '@/components/Store/StoreLayout';
 import type { Cart } from '@/types/cart';
 
 export default function CartPage({ cart }: { cart: Cart }) {
@@ -24,7 +25,7 @@ export default function CartPage({ cart }: { cart: Cart }) {
   }
 
   return (
-    <>
+    <StoreLayout categories={[]}>
       <Head title="Your Cart" />
       <div className="mx-auto max-w-4xl px-4 py-10">
         <h1 className="mb-6 text-2xl font-semibold text-stone-900">Your Cart</h1>
@@ -144,6 +145,6 @@ export default function CartPage({ cart }: { cart: Cart }) {
           </>
         )}
       </div>
-    </>
+    </StoreLayout>
   );
 }

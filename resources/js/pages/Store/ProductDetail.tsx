@@ -1,6 +1,7 @@
 import { Head, router } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 import ProductCard from "@/components/ProductCard";
+import StoreLayout from "@/components/Store/StoreLayout";
 import type { Product, ProductVariant } from "@/types/catalog";
 
 interface ProductDetailProps {
@@ -91,7 +92,7 @@ export default function ProductDetail({
     }
 
     return (
-        <>
+        <StoreLayout categories={[]}>
             <Head title={product.name} />
             <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
@@ -287,6 +288,6 @@ export default function ProductDetail({
                     </div>
                 )}
             </div>
-        </>
+        </StoreLayout>
     );
 }

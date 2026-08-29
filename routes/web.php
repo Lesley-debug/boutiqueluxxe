@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -23,10 +24,9 @@ use App\Http\Controllers\Admin\NotificationController as AdminNotificationContro
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductImageController;
 
+
 // Public homepage
-Route::get('/', function () {
-    return Inertia::render('Store/Home');
-});
+Route::get('/', [HomeController::class, 'index']);
 
 // Public shop + product pages
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
@@ -37,6 +37,8 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
 Route::patch('/cart/items/{item}', [CartController::class, 'update'])->name('cart.items.update');
 Route::delete('/cart/items/{item}', [CartController::class, 'destroy'])->name('cart.items.destroy');
+Route::post('/cart/discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
+Route::delete('/cart/discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
 
 // Checkout — also open to guests (guest checkout), user_id is nullable on orders
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
@@ -92,6 +94,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+        Route::patch('orders/{order}/payment', [AdminOrderController::class, 'updatePaymentStatus'])->name('orders.payment');
     });
 
     Route::middleware('permission:customers.view')->group(function () {
@@ -114,7 +117,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     });
 });
-
-//cart
-Route::post('/cart/discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
-Route::delete('/cart/discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
