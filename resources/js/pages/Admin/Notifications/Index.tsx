@@ -1,4 +1,5 @@
-import { Head, router } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { router } from "@inertiajs/react";
 
 interface NotificationItem {
     id: string;
@@ -21,10 +22,7 @@ export default function Index({ notifications }: { notifications: Paginated }) {
     }
 
     return (
-        <>
-            <Head title="Notifications" />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">Notifications</h1>
+        <AdminLayout title="Notifications">
                 <div className="divide-y divide-stone-100 border-y border-stone-200">
                     {notifications.data.map((n) => (
                         <div
@@ -55,7 +53,6 @@ export default function Index({ notifications }: { notifications: Paginated }) {
                         No notifications.
                     </p>
                 )}
-            </div>
-        </>
+        </AdminLayout>
     );
 }

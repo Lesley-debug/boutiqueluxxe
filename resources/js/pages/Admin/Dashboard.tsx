@@ -1,13 +1,18 @@
-import NotificationBell from "@/components/admin/NotificationBell";
-import { Head, Link } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
+import { TrendingUp, ShoppingBag, Users, AlertTriangle } from "lucide-react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Card, Table, Badge, EmptyState } from "@/components/admin/ui";
 import type { DashboardData } from "@/types/dashboard";
 
-const STATUS_COLORS: Record<string, string> = {
-    pending: "bg-amber-100 text-amber-800",
-    processing: "bg-blue-100 text-blue-800",
-    shipped: "bg-indigo-100 text-indigo-800",
-    delivered: "bg-green-100 text-green-800",
-    cancelled: "bg-red-100 text-red-800",
+const STATUS_TONE: Record<
+    string,
+    "neutral" | "success" | "warning" | "danger" | "info"
+> = {
+    pending: "warning",
+    processing: "info",
+    shipped: "info",
+    delivered: "success",
+    cancelled: "danger",
 };
 
 function fcfa(n: number | string) {
@@ -24,198 +29,206 @@ export default function Dashboard({
     newCustomersThisMonth,
 }: DashboardData) {
     return (
-        <>
-            <Head title="Admin Dashboard" />
-            <div className="mx-auto max-w-6xl px-4 py-10">
-                <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Dashboard</h1>
-                    <NotificationBell />
-                </div>
+        <AdminLayout title="Dashboard">
+            {/* Stat cards */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard
+                    icon={TrendingUp}
+                    label="Revenue Today"
+                    value={fcfa(revenue.today)}
+                    sub={`${orders.today} orders`}
+                />
+                <StatCard
+                    icon={TrendingUp}
+                    label="This Week"
+                    value={fcfa(revenue.week)}
+                    sub={`${orders.week} orders`}
+                />
+                <StatCard
+                    icon={ShoppingBag}
+                    label="This Month"
+                    value={fcfa(revenue.month)}
+                    sub={`${orders.month} orders`}
+                />
+                <StatCard
+                    icon={Users}
+                    label="New Customers"
+                    value={String(newCustomersThisMonth)}
+                    sub="this month"
+                />
+            </div>
 
-                {/* Revenue + orders summary */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    {(["today", "week", "month"] as const).map((period) => (
-                        <div
-                            key={period}
-                            className="rounded-sm border border-stone-200 p-4"
-                        >
-                            <p className="text-xs uppercase tracking-wider text-stone-500">
-                                {period === "today"
-                                    ? "Today"
-                                    : period === "week"
-                                      ? "This Week"
-                                      : "This Month"}
-                            </p>
-                            <p className="mt-1 text-2xl font-semibold">
-                                {fcfa(revenue[period])}
-                            </p>
-                            <p className="text-sm text-stone-500">
-                                {orders[period]} orders
-                            </p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    {/* Order status breakdown */}
-                    <div className="rounded-sm border border-stone-200 p-4">
-                        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-500">
-                            Orders by Status
-                        </h2>
-                        <div className="space-y-2">
-                            {Object.entries(statusBreakdown).length === 0 && (
-                                <p className="text-sm text-stone-400">
-                                    No orders yet.
-                                </p>
-                            )}
+            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <Card>
+                    <h2 className="mb-4 text-sm font-semibold text-[#171310]">
+                        Orders by Status
+                    </h2>
+                    {Object.entries(statusBreakdown).length === 0 ? (
+                        <p className="text-sm text-stone-400">No orders yet.</p>
+                    ) : (
+                        <div className="space-y-2.5">
                             {Object.entries(statusBreakdown).map(
                                 ([status, count]) => (
                                     <div
                                         key={status}
                                         className="flex items-center justify-between"
                                     >
-                                        <span
-                                            className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_COLORS[status] ?? ""}`}
+                                        <Badge
+                                            tone={
+                                                STATUS_TONE[status] ?? "neutral"
+                                            }
                                         >
                                             {status}
-                                        </span>
-                                        <span className="text-sm font-medium">
+                                        </Badge>
+                                        <span className="text-sm font-semibold text-[#171310]">
                                             {count}
                                         </span>
                                     </div>
                                 ),
                             )}
                         </div>
-                        <p className="mt-4 text-sm text-stone-500">
-                            {newCustomersThisMonth} new customer
-                            {newCustomersThisMonth === 1 ? "" : "s"} this month
-                        </p>
-                    </div>
+                    )}
+                </Card>
 
-                    {/* Low stock alert */}
-                    <div className="rounded-sm border border-stone-200 p-4">
-                        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-500">
+                <Card>
+                    <div className="mb-4 flex items-center gap-2">
+                        <AlertTriangle size={15} className="text-amber-500" />
+                        <h2 className="text-sm font-semibold text-[#171310]">
                             Low Stock
                         </h2>
-                        {lowStock.length === 0 ? (
-                            <p className="text-sm text-stone-400">
-                                Nothing low on stock.
-                            </p>
-                        ) : (
-                            <div className="space-y-2">
-                                {lowStock.map((v) => (
-                                    <div
-                                        key={v.id}
-                                        className="flex items-center justify-between text-sm"
-                                    >
-                                        <div>
-                                            <p>{v.product.name}</p>
-                                            <p className="text-xs text-stone-500">
-                                                {[v.color, v.size]
-                                                    .filter(Boolean)
-                                                    .join(" / ") || v.sku}
-                                            </p>
-                                        </div>
-                                        <span
-                                            className={`font-semibold ${
-                                                v.stock_quantity === 0
-                                                    ? "text-red-600"
-                                                    : "text-amber-600"
-                                            }`}
-                                        >
-                                            {v.stock_quantity}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
-
-                    {/* Top products */}
-                    <div className="rounded-sm border border-stone-200 p-4">
-                        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-stone-500">
-                            Top Products
-                        </h2>
-                        {topProducts.length === 0 ? (
-                            <p className="text-sm text-stone-400">
-                                No sales yet.
-                            </p>
-                        ) : (
-                            <div className="space-y-2">
-                                {topProducts.map((p) => (
-                                    <div
-                                        key={p.sku}
-                                        className="flex items-center justify-between text-sm"
-                                    >
-                                        <span>{p.product_name}</span>
-                                        <span className="text-stone-500">
-                                            {p.total_sold} sold
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Recent orders */}
-                <div className="mt-6 rounded-sm border border-stone-200 p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                        <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-500">
-                            Recent Orders
-                        </h2>
-                        <Link
-                            href="/admin/orders"
-                            className="text-sm underline"
-                        >
-                            View all
-                        </Link>
-                    </div>
-                    <table className="w-full text-left text-sm">
-                        <thead>
-                            <tr className="border-b border-stone-200 text-stone-500">
-                                <th className="py-2">Order #</th>
-                                <th>Customer</th>
-                                <th>Status</th>
-                                <th className="text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentOrders.map((order) => (
-                                <tr
-                                    key={order.id}
-                                    className="border-b border-stone-100"
-                                >
-                                    <td className="py-2">
-                                        <Link
-                                            href={`/admin/orders/${order.id}`}
-                                            className="underline"
-                                        >
-                                            {order.order_number}
-                                        </Link>
-                                    </td>
-                                    <td>{order.customer_name}</td>
-                                    <td>
-                                        <span
-                                            className={`rounded-full px-2 py-0.5 text-xs capitalize ${STATUS_COLORS[order.status] ?? ""}`}
-                                        >
-                                            {order.status}
-                                        </span>
-                                    </td>
-                                    <td className="text-right">
-                                        {fcfa(order.total)}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {recentOrders.length === 0 && (
-                        <p className="py-6 text-center text-sm text-stone-400">
-                            No orders yet.
+                    {lowStock.length === 0 ? (
+                        <p className="text-sm text-stone-400">
+                            Nothing low on stock.
                         </p>
+                    ) : (
+                        <div className="space-y-2.5">
+                            {lowStock.map((v) => (
+                                <div
+                                    key={v.id}
+                                    className="flex items-center justify-between text-sm"
+                                >
+                                    <div className="min-w-0">
+                                        <p className="truncate text-[#171310]">
+                                            {v.product.name}
+                                        </p>
+                                        <p className="truncate text-xs text-stone-400">
+                                            {[v.color, v.size]
+                                                .filter(Boolean)
+                                                .join(" / ") || v.sku}
+                                        </p>
+                                    </div>
+                                    <span
+                                        className={`ml-2 font-semibold ${v.stock_quantity === 0 ? "text-red-600" : "text-amber-600"}`}
+                                    >
+                                        {v.stock_quantity}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     )}
-                </div>
+                </Card>
+
+                <Card>
+                    <h2 className="mb-4 text-sm font-semibold text-[#171310]">
+                        Top Products
+                    </h2>
+                    {topProducts.length === 0 ? (
+                        <p className="text-sm text-stone-400">No sales yet.</p>
+                    ) : (
+                        <div className="space-y-2.5">
+                            {topProducts.map((p) => (
+                                <div
+                                    key={p.sku}
+                                    className="flex items-center justify-between text-sm"
+                                >
+                                    <span className="truncate text-[#171310]">
+                                        {p.product_name}
+                                    </span>
+                                    <span className="ml-2 whitespace-nowrap text-stone-500">
+                                        {p.total_sold} sold
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Card>
             </div>
-        </>
+
+            <div className="mt-6">
+                <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-[#171310]">
+                        Recent Orders
+                    </h2>
+                    <Link
+                        href="/admin/orders"
+                        className="text-sm text-stone-500 underline hover:text-[#171310]"
+                    >
+                        View all
+                    </Link>
+                </div>
+                {recentOrders.length === 0 ? (
+                    <Card>
+                        <EmptyState message="No orders yet." />
+                    </Card>
+                ) : (
+                    <Table head={["Order #", "Customer", "Status", "Total"]}>
+                        {recentOrders.map((order) => (
+                            <tr key={order.id} className="hover:bg-stone-50">
+                                <td className="px-4 py-3">
+                                    <Link
+                                        href={`/admin/orders/${order.id}`}
+                                        className="font-medium underline"
+                                    >
+                                        {order.order_number}
+                                    </Link>
+                                </td>
+                                <td className="px-4 py-3">
+                                    {order.customer_name}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <Badge
+                                        tone={
+                                            STATUS_TONE[order.status] ??
+                                            "neutral"
+                                        }
+                                    >
+                                        {order.status}
+                                    </Badge>
+                                </td>
+                                <td className="px-4 py-3 font-medium">
+                                    {fcfa(order.total)}
+                                </td>
+                            </tr>
+                        ))}
+                    </Table>
+                )}
+            </div>
+        </AdminLayout>
+    );
+}
+
+function StatCard({
+    icon: Icon,
+    label,
+    value,
+    sub,
+}: {
+    icon: typeof TrendingUp;
+    label: string;
+    value: string;
+    sub: string;
+}) {
+    return (
+        <div className="rounded-xl border border-stone-200 bg-white p-5">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#F8F5EF] text-[#B89B6A]">
+                <Icon size={17} />
+            </div>
+            <p className="text-xs uppercase tracking-wide text-stone-400">
+                {label}
+            </p>
+            <p className="mt-1 text-xl font-semibold text-[#171310]">{value}</p>
+            <p className="text-xs text-stone-400">{sub}</p>
+        </div>
     );
 }

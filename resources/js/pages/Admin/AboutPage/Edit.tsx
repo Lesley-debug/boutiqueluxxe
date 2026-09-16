@@ -1,4 +1,5 @@
-import { Head, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface AboutPageData {
@@ -35,10 +36,7 @@ export default function Edit({ aboutPage }: { aboutPage: AboutPageData }) {
     }
 
     return (
-        <>
-            <Head title="Admin — About Page" />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <h1 className="mb-2 text-xl font-semibold">Edit About Page</h1>
+        <AdminLayout title="About Page">
                 <p className="mb-6 text-sm text-gray-500">
                     Changes here update the live <code>/about</code> page
                     immediately.
@@ -194,7 +192,6 @@ export default function Edit({ aboutPage }: { aboutPage: AboutPageData }) {
                         Save About Page
                     </button>
                 </form>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

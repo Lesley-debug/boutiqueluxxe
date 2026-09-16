@@ -1,4 +1,5 @@
-import { Head, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface CategoryOption {
@@ -39,12 +40,7 @@ export default function Form({ category, categories }: FormProps) {
     }
 
     return (
-        <>
-            <Head title={isEdit ? "Edit Category" : "New Category"} />
-            <div className="mx-auto max-w-lg px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">
-                    {isEdit ? "Edit" : "New"} Category
-                </h1>
+        <AdminLayout title={isEdit ? "Edit Category" : "New Category"}>
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="mb-1 block text-sm font-medium">
@@ -134,7 +130,6 @@ export default function Form({ category, categories }: FormProps) {
                         {isEdit ? "Save Changes" : "Create Category"}
                     </button>
                 </form>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

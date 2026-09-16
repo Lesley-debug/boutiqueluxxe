@@ -1,4 +1,5 @@
-import { Head, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 import ImageManager from "@/components/admin/ImageManager";
 import VariantManager from "@/components/admin/VariantManager";
@@ -12,6 +13,7 @@ interface CategoryOption {
 interface StyleOption {
     id: number;
     name: string;
+    slug: string;
 }
 
 interface FormProps {
@@ -61,12 +63,7 @@ export default function Form({ product, categories, styles }: FormProps) {
     }
 
     return (
-        <>
-            <Head title={isEdit ? "Edit Product" : "New Product"} />
-            <div className="mx-auto max-w-lg px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">
-                    {isEdit ? "Edit" : "New"} Product
-                </h1>
+        <AdminLayout title={isEdit ? "Edit Product" : "New Product"}>
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="mb-1 block text-sm font-medium">
@@ -99,9 +96,24 @@ export default function Form({ product, categories, styles }: FormProps) {
                         </label>
                         <select
                             value={data.style_id}
-                            onChange={(e) =>
-                                setData("style_id", e.target.value)
-                            }
+                            onChange={(e) => {
+                                const selectedStyleId = e.target.value;
+                                setData("style_id", selectedStyleId);
+
+                                // Auto-fill slug when style is selected (only once if slug is empty)
+                                if (selectedStyleId && !data.slug) {
+                                    const selectedStyle = styles.find(
+                                        (s) => s.id.toString() === selectedStyleId
+                                    );
+                                    if (selectedStyle) {
+                                        setData((prev) => ({
+                                            ...prev,
+                                            style_id: selectedStyleId,
+                                            slug: selectedStyle.slug,
+                                        }));
+                                    }
+                                }
+                            }}
                             className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
                         >
                             <option value="">No style</option>
@@ -273,7 +285,6 @@ export default function Form({ product, categories, styles }: FormProps) {
                         />
                     </>
                 )}
-            </div>
-        </>
+        </AdminLayout>
     );
 }

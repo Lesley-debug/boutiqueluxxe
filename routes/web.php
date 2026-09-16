@@ -30,6 +30,10 @@ use App\Http\Controllers\Admin\JournalPostController as AdminJournalPostControll
 use App\Http\Controllers\Admin\StyleController as AdminStyleController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductImageController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\Admin\HomepageContentController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\Admin\NewsletterController as AdminNewsletterController;
 
 
 // Public homepage
@@ -45,6 +49,8 @@ Route::get('/collections', [CollectionController::class, 'index'])->name('collec
 Route::get('/collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');
 Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');
 Route::get('/journal/{slug}', [JournalController::class, 'show'])->name('journal.show');
+
+Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
 // Cart — open to guests and logged-in users alike
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
@@ -109,6 +115,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
         Route::get('about-page', [AboutPageController::class, 'edit'])->name('about-page.edit');
         Route::put('about-page', [AboutPageController::class, 'update'])->name('about-page.update');
+
+        Route::get('homepage', [HomepageContentController::class, 'edit'])->name('homepage.edit');
+        Route::put('homepage', [HomepageContentController::class, 'update'])->name('homepage.update');
+        Route::resource('testimonials', AdminTestimonialController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::get('newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
+        Route::put('styles/{style}', [AdminStyleController::class, 'update'])->name('styles.update');
     });
 
     Route::middleware('permission:orders.manage')->group(function () {

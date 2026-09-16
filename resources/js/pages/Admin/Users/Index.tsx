@@ -1,4 +1,5 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { router, usePage } from "@inertiajs/react";
 
 interface AdminUserRow {
     id: number;
@@ -28,10 +29,7 @@ export default function Index({ users }: { users: AdminUserRow[] }) {
     }
 
     return (
-        <>
-            <Head title="Admin — Users & Roles" />
-            <div className="mx-auto max-w-3xl px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">Admin Users</h1>
+        <AdminLayout title="Admin Users">
 
                 <table className="w-full text-left text-sm">
                     <thead>
@@ -77,7 +75,6 @@ export default function Index({ users }: { users: AdminUserRow[] }) {
                         ))}
                     </tbody>
                 </table>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

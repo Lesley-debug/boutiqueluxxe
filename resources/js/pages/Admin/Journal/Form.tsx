@@ -1,4 +1,5 @@
-import { Head, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 
@@ -38,12 +39,7 @@ export default function Form({ post }: { post?: PostData }) {
     }
 
     return (
-        <>
-            <Head title={isEdit ? "Edit Post" : "New Post"} />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">
-                    {isEdit ? "Edit" : "New"} Journal Post
-                </h1>
+        <AdminLayout title={isEdit ? "Edit Post" : "New Post"}>
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="mb-1 block text-sm font-medium">
@@ -137,7 +133,6 @@ export default function Form({ post }: { post?: PostData }) {
                         {isEdit ? "Save Changes" : "Create Post"}
                     </button>
                 </form>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

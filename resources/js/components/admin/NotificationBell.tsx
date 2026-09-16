@@ -1,3 +1,4 @@
+import { Bell } from "lucide-react";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
@@ -27,18 +28,18 @@ export default function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setOpen((o) => !o)}
-                className="relative rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                className="relative rounded-lg p-2 text-stone-600 transition hover:bg-stone-100"
             >
-                🔔
+                <Bell size={18} />
                 {notifications.unread_count > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] text-white">
+                    <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B89B6A] text-[10px] font-bold text-white">
                         {notifications.unread_count}
                     </span>
                 )}
             </button>
 
             {open && (
-                <div className="absolute right-0 z-10 mt-2 w-80 rounded-sm border border-stone-200 bg-white shadow-lg">
+                <div className="absolute right-0 z-10 mt-2 w-80 rounded-xl border border-stone-200 bg-white shadow-lg">
                     <div className="flex items-center justify-between border-b border-stone-100 px-4 py-2">
                         <span className="text-sm font-semibold">
                             Notifications

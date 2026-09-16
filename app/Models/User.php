@@ -42,6 +42,15 @@ class User extends Authenticatable
         return in_array('*', $granted, true) || in_array($permission, $granted, true);
     }
 
+    public function grantedPermissions(): array
+    {
+        if (! $this->role) {
+            return [];
+        }
+
+        return Permissions::MAP[$this->role] ?? [];
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);

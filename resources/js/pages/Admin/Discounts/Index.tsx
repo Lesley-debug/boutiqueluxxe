@@ -1,4 +1,5 @@
-import { Head, Link, router } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Link, router } from "@inertiajs/react";
 
 interface DiscountRow {
     id: number;
@@ -19,11 +20,8 @@ export default function Index({ discounts }: { discounts: DiscountRow[] }) {
     }
 
     return (
-        <>
-            <Head title="Admin — Discounts" />
-            <div className="mx-auto max-w-4xl px-4 py-10">
+        <AdminLayout title="Discounts">
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Discounts</h1>
                     <Link
                         href="/admin/discounts/create"
                         className="rounded-sm bg-stone-900 px-4 py-2 text-sm text-white"
@@ -101,7 +99,6 @@ export default function Index({ discounts }: { discounts: DiscountRow[] }) {
                         No discount codes yet.
                     </p>
                 )}
-            </div>
-        </>
+        </AdminLayout>
     );
 }

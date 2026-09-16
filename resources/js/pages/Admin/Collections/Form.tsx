@@ -1,4 +1,5 @@
-import { Head, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface ProductOption {
@@ -55,12 +56,7 @@ export default function Form({
     }
 
     return (
-        <>
-            <Head title={isEdit ? "Edit Collection" : "New Collection"} />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">
-                    {isEdit ? "Edit" : "New"} Collection
-                </h1>
+        <AdminLayout title={isEdit ? "Edit Collection" : "New Collection"}>
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="mb-1 block text-sm font-medium">
@@ -168,7 +164,6 @@ export default function Form({
                         {isEdit ? "Save Changes" : "Create Collection"}
                     </button>
                 </form>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

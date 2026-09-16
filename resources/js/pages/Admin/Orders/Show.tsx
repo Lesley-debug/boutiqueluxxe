@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Head, Link, router } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Link, router } from "@inertiajs/react";
 import type { Order } from "@/types/order";
 
 const STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
@@ -29,9 +30,7 @@ export default function Show({ order }: { order: Order }) {
     }
 
     return (
-        <>
-            <Head title={`Order ${order.order_number}`} />
-            <div className="mx-auto max-w-3xl px-4 py-10">
+        <AdminLayout title={`Order ${order.order_number}`}>
                 <Link
                     href="/admin/orders"
                     className="text-sm text-stone-500 underline"
@@ -178,7 +177,6 @@ export default function Show({ order }: { order: Order }) {
                         </p>
                     </div>
                 </div>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

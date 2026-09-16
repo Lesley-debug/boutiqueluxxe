@@ -1,4 +1,5 @@
-import { Head, Link, router } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Link, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
 
 interface OrderRow {
@@ -48,11 +49,8 @@ export default function Index({
     }
 
     return (
-        <>
-            <Head title="Admin — Orders" />
-            <div className="mx-auto max-w-6xl px-4 py-10">
+        <AdminLayout title="Orders">
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <h1 className="text-xl font-semibold">Orders</h1>
                     <div className="flex gap-2">
                         <form onSubmit={onSearchSubmit} className="flex gap-2">
                             <input
@@ -169,7 +167,6 @@ export default function Index({
                         ))}
                     </div>
                 )}
-            </div>
-        </>
+        </AdminLayout>
     );
 }

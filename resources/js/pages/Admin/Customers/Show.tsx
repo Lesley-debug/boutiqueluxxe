@@ -1,4 +1,5 @@
-import { Head, Link } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Link } from "@inertiajs/react";
 import type { Order } from "@/types/order";
 
 interface Summary {
@@ -20,9 +21,7 @@ export default function Show({
     orders: Order[];
 }) {
     return (
-        <>
-            <Head title={summary.name} />
-            <div className="mx-auto max-w-4xl px-4 py-10">
+        <AdminLayout title={summary.name}>
                 <Link
                     href="/admin/customers"
                     className="text-sm text-stone-500 underline"
@@ -124,7 +123,6 @@ export default function Show({
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

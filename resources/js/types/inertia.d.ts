@@ -18,30 +18,8 @@ export interface SharedNotifications {
     recent: NotificationItem[];
 }
 
-declare module "@inertiajs/core" {
-    interface PageProps {
-        auth: {
-            user: SharedAuthUser | null;
-        };
-        errors: Record<string, string>;
-        notifications?: SharedNotifications;
-    }
-}
-
 export interface SharedCart {
     item_count: number;
-}
-
-declare module "@inertiajs/core" {
-    interface PageProps {
-        auth: {
-            user: SharedAuthUser | null;
-        };
-        errors: Record<string, string>;
-        notifications?: SharedNotifications;
-        cart: SharedCart;
-        paymentFailed?: boolean;
-    }
 }
 
 export interface MegaMenuCategory {
@@ -59,7 +37,10 @@ export interface ShopByStyleItem {
 
 declare module "@inertiajs/core" {
     interface PageProps {
-        auth: { user: SharedAuthUser | null };
+        auth: {
+            user: SharedAuthUser | null;
+            permissions: string[];
+        };
         errors: Record<string, string>;
         notifications?: SharedNotifications;
         cart: SharedCart;

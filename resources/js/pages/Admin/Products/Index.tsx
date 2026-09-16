@@ -1,4 +1,5 @@
-import { Head, Link, router } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { Link, router } from "@inertiajs/react";
 
 interface Product {
     id: number;
@@ -20,11 +21,8 @@ export default function Index({ products }: { products: Paginated }) {
     }
 
     return (
-        <>
-            <Head title="Admin — Products" />
-            <div className="mx-auto max-w-5xl px-4 py-10">
+        <AdminLayout title="Products">
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">Products</h1>
                     <Link
                         href="/admin/products/create"
                         className="rounded-sm bg-stone-900 px-4 py-2 text-sm text-white"
@@ -73,7 +71,6 @@ export default function Index({ products }: { products: Paginated }) {
                         ))}
                     </tbody>
                 </table>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

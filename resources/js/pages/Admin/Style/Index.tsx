@@ -1,4 +1,5 @@
-import { Head, router, useForm } from "@inertiajs/react";
+import AdminLayout from "@/components/admin/AdminLayout";
+import { router, useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 
 interface StyleRow {
@@ -30,10 +31,7 @@ export default function Index({ styles }: { styles: StyleRow[] }) {
     }
 
     return (
-        <>
-            <Head title="Admin — Styles" />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">Styles</h1>
+        <AdminLayout title="Styles">
 
                 <form onSubmit={submit} className="mb-8 flex gap-2">
                     <input
@@ -88,7 +86,6 @@ export default function Index({ styles }: { styles: StyleRow[] }) {
                         ))}
                     </tbody>
                 </table>
-            </div>
-        </>
+        </AdminLayout>
     );
 }

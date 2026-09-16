@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Admin/Products/Form', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'styles' => Style::orderBy('name')->get(['id', 'name']),
+            'styles' => Style::orderBy('name')->get(['id', 'name', 'slug']),
         ]);
     }
 
@@ -52,7 +52,7 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products/Form', [
             'product' => $product->load(['variants', 'images' => fn($q) => $q->orderBy('sort_order')]),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'styles' => Style::orderBy('name')->get(['id', 'name']),
+            'styles' => Style::orderBy('name')->get(['id', 'name', 'slug']),
         ]);
     }
 
