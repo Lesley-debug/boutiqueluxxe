@@ -1,22 +1,15 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-}
+import { Search, Heart, User, ShoppingBag } from "lucide-react";
 
 const ANNOUNCEMENT =
-    "Free shipping on selected orders · Shop the new collection";
+    "Complimentary shipping on selected orders · Discover the latest collection";
 
-export default function StoreHeader({
-    categories,
-}: {
-    categories: Category[];
-}) {
-    const { auth, cart } = usePage().props;
-    const [menuOpen, setMenuOpen] = useState(false);
+export default function StoreHeader() {
+    const { auth, cart, megaMenu, shopByStyle } = usePage().props;
+    const [categoriesOpen, setCategoriesOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -27,80 +20,196 @@ export default function StoreHeader({
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    function submitSearch(e: React.FormEvent) {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            router.get(
+                "/shop",
+                { search: searchTerm },
+                { preserveState: false },
+            );
+        }
+    }
+
     return (
         <header
-            className={`sticky top-0 z-40 bg-white transition-shadow ${scrolled ? "shadow-md" : ""}`}
+            className={`sticky top-0 z-40 bg-[#F8F5EF] transition-shadow ${scrolled ? "shadow-sm" : ""}`}
         >
-            <div className="bg-gradient-to-r from-[#6D28D9] to-[#9333EA] px-4 py-2.5 text-center text-xs font-medium text-white">
+            <div className="bg-[#171310] px-4 py-2.5 text-center text-[11px] font-medium tracking-[0.05em] text-[#F8F5EF]/90">
                 {ANNOUNCEMENT}
             </div>
 
-            <div className="border-b border-gray-100 px-4 sm:px-6">
-                <div className="mx-auto flex max-w-7xl items-center justify-between py-4">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#A855F7] text-sm font-bold text-white">
-                            D
-                        </span>
-                        <span className="text-base font-bold text-gray-900">
-                            Designer Bags
-                        </span>
+            <div
+                className={`border-b transition-colors ${scrolled ? "border-[#171310]/10" : "border-transparent"} px-4 sm:px-6`}
+            >
+                <div className="mx-auto flex max-w-7xl items-center justify-between py-5">
+                    <Link
+                        href="/"
+                        className="font-serif text-lg tracking-tight text-[#171310]"
+                    >
+                        Designer Bags Boutique
                     </Link>
 
-                    <nav className="hidden items-center gap-8 text-sm font-medium text-gray-700 md:flex">
+                    <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.15em] text-[#171310] lg:flex">
+                        <Link
+                            href="/shop"
+                            className="transition hover:text-[#B89B6A]"
+                        >
+                            Shop
+                        </Link>
+
                         <div
                             className="relative"
-                            onMouseEnter={() => setMenuOpen(true)}
-                            onMouseLeave={() => setMenuOpen(false)}
+                            onMouseEnter={() => setCategoriesOpen(true)}
+                            onMouseLeave={() => setCategoriesOpen(false)}
                         >
-                            <button className="transition hover:text-[#7C3AED]">
-                                Shop
+                            <button className="transition hover:text-[#B89B6A]">
+                                Categories
                             </button>
-                            {menuOpen && categories.length > 0 && (
-                                <div className="absolute left-1/2 top-full w-64 -translate-x-1/2 rounded-2xl border border-gray-100 bg-white p-3 shadow-xl">
-                                    {categories.map((c) => (
-                                        <Link
-                                            key={c.id}
-                                            href={`/shop?category=${c.slug}`}
-                                            className="block rounded-xl px-3 py-2.5 text-sm hover:bg-[#F5F3FF] hover:text-[#7C3AED]"
-                                        >
-                                            {c.name}
-                                        </Link>
+                            {categoriesOpen && megaMenu.length > 0 && (
+                                <div className="absolute left-1/2 top-full flex w-[36rem] -translate-x-1/2 gap-6 rounded-sm border border-[#171310]/10 bg-[#F8F5EF] p-6 shadow-lg">
+                                    {megaMenu.map((top) => (
+                                        <div key={top.id} className="flex-1">
+                                            <Link
+                                                href={`/shop?category=${top.slug}`}
+                                                className="mb-3 block text-xs font-semibold uppercase tracking-wider text-[#B89B6A]"
+                                            >
+                                                {top.name}
+                                            </Link>
+
+                                            {top.audience.length > 0 && (
+                                                <div className="mb-4">
+                                                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[#171310]/40">
+                                                        Shop by Audience
+                                                    </p>
+                                                    {top.audience.map((a) => (
+                                                        <Link
+                                                            key={a.id}
+                                                            href={`/shop?category=${a.slug}`}
+                                                            className="block rounded-sm px-2 py-1.5 text-xs normal-case tracking-normal hover:bg-[#171310]/5"
+                                                        >
+                                                            {a.name}
+                                                        </Link>
+                                                    ))}
+                                                    <Link
+                                                        href={`/shop?category=${top.slug}`}
+                                                        className="block rounded-sm px-2 py-1.5 text-xs normal-case tracking-normal font-medium hover:bg-[#171310]/5"
+                                                    >
+                                                        All {top.name}
+                                                    </Link>
+                                                </div>
+                                            )}
+                                        </div>
                                     ))}
+
+                                    {shopByStyle.length > 0 && (
+                                        <div className="flex-1 border-l border-[#171310]/10 pl-6">
+                                            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[#171310]/40">
+                                                Shop by Style
+                                            </p>
+                                            {shopByStyle.map((s) => (
+                                                <Link
+                                                    key={s.id}
+                                                    href={`/shop?style=${s.slug}`}
+                                                    className="block rounded-sm px-2 py-1.5 text-xs normal-case tracking-normal hover:bg-[#171310]/5"
+                                                >
+                                                    {s.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
+
                         <Link
                             href="/shop?sort=newest"
-                            className="transition hover:text-[#7C3AED]"
+                            className="transition hover:text-[#B89B6A]"
                         >
                             New Arrivals
                         </Link>
+                        <Link
+                            href="/collections"
+                            className="transition hover:text-[#B89B6A]"
+                        >
+                            Collections
+                        </Link>
+                        <Link
+                            href="/about"
+                            className="transition hover:text-[#B89B6A]"
+                        >
+                            About
+                        </Link>
+                        <Link
+                            href="/journal"
+                            className="transition hover:text-[#B89B6A]"
+                        >
+                            Journal
+                        </Link>
                     </nav>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                        {searchOpen ? (
+                            <form onSubmit={submitSearch}>
+                                <input
+                                    autoFocus
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    onBlur={() =>
+                                        !searchTerm && setSearchOpen(false)
+                                    }
+                                    placeholder="Search..."
+                                    className="w-40 rounded-full border border-[#171310]/15 bg-transparent px-3 py-1.5 text-sm focus:outline-none sm:w-56"
+                                />
+                            </form>
+                        ) : (
+                            <button
+                                onClick={() => setSearchOpen(true)}
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
+                                title="Search"
+                            >
+                                <Search size={18} />
+                            </button>
+                        )}
+
                         {auth.user ? (
                             <Link
                                 href="/account/wishlist"
-                                className="rounded-full p-2 text-gray-600 transition hover:bg-[#F5F3FF] hover:text-[#7C3AED]"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
                                 title="Wishlist"
                             >
-                                ♡
+                                <Heart size={18} />
                             </Link>
                         ) : (
                             <Link
                                 href="/login"
-                                className="rounded-full px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-[#F5F3FF] hover:text-[#7C3AED]"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
+                                title="Account"
                             >
-                                Account
+                                <User size={18} />
                             </Link>
                         )}
+
+                        {auth.user && (
+                            <Link
+                                href="/account/profile"
+                                className="hidden rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A] sm:block"
+                                title="Account"
+                            >
+                                <User size={18} />
+                            </Link>
+                        )}
+
                         <Link
                             href="/cart"
-                            className="relative rounded-full bg-gradient-to-r from-[#7C3AED] to-[#A855F7] px-5 py-2 text-sm font-semibold text-white shadow-md shadow-purple-200 transition hover:shadow-lg"
+                            className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#B89B6A]"
+                            title="Bag"
                         >
-                            Bag
+                            <ShoppingBag size={18} />
                             {cart.item_count > 0 && (
-                                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white ring-2 ring-white">
+                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B89B6A] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">
                                     {cart.item_count}
                                 </span>
                             )}

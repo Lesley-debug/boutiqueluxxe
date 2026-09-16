@@ -43,3 +43,28 @@ declare module "@inertiajs/core" {
         paymentFailed?: boolean;
     }
 }
+
+export interface MegaMenuCategory {
+    id: number;
+    name: string;
+    slug: string;
+    audience: { id: number; name: string; slug: string }[];
+}
+
+export interface ShopByStyleItem {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+declare module "@inertiajs/core" {
+    interface PageProps {
+        auth: { user: SharedAuthUser | null };
+        errors: Record<string, string>;
+        notifications?: SharedNotifications;
+        cart: SharedCart;
+        megaMenu: MegaMenuCategory[];
+        shopByStyle: ShopByStyleItem[];
+        paymentFailed?: boolean;
+    }
+}

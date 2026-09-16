@@ -69,7 +69,7 @@ export default function Checkout({
     }
 
     return (
-        <StoreLayout categories={[]}>
+        <StoreLayout>
             <Head title="Checkout" />
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-10 px-4 py-10 lg:grid-cols-3">
                 <form onSubmit={submit} className="space-y-4 lg:col-span-2">

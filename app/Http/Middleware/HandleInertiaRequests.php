@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\Cart;
+use App\Models\Category;
+use App\Models\Style;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -51,6 +53,20 @@ class HandleInertiaRequests extends Middleware
                     : Cart::where('session_id', $request->session()->getId())->first()
                 )?->item_count ?? 0,
             ],
+
+            'megaMenu' => fn() => Category::topLevel()->active()->with([
+                'children' => fn($q) => $q->active()->orderBy('sort_order'),
+            ])->orderBy('sort_order')->get()->map(fn($top) => [
+                'id' => $top->id,
+                'name' => $top->name,
+                'slug' => $top->slug,
+                'audience' => $top->children->map(fn($child) => [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'slug' => $child->slug,
+                ]),
+            ]),
+            'shopByStyle' => fn() => Style::whereHas('products', fn($q) => $q->active())->orderBy('name')->get(['id', 'name', 'slug']),
         ];
 
         if ($request->user()?->is_admin) {

@@ -92,7 +92,7 @@ export default function ProductDetail({
     }
 
     return (
-        <StoreLayout categories={[]}>
+        <StoreLayout>
             <Head title={product.name} />
             <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">

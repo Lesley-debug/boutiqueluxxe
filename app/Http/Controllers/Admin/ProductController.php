@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Style;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -21,6 +22,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Admin/Products/Form', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'styles' => Style::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -28,6 +30,7 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
+            'style_id' => ['nullable', 'exists:styles,id'],
             'brand' => ['nullable', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:products,slug'],
@@ -49,6 +52,7 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products/Form', [
             'product' => $product->load(['variants', 'images' => fn($q) => $q->orderBy('sort_order')]),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'styles' => Style::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -56,6 +60,7 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
+            'style_id' => ['nullable', 'exists:styles,id'],
             'brand' => ['nullable', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:products,slug,' . $product->id],

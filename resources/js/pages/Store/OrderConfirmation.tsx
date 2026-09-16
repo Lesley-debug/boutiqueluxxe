@@ -25,7 +25,7 @@ export default function OrderConfirmation({
     paymentInstructions,
 }: ConfirmationProps) {
     return (
-        <StoreLayout categories={[]}>
+        <StoreLayout>
             <Head title="Order Confirmed" />
             <div className="mx-auto max-w-2xl px-4 py-16">
                 <div className="text-center">

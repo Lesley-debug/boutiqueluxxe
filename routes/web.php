@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\JournalController;
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\AddressController;
+use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\Account\WishlistController;
 use App\Http\Controllers\Account\OrderController as AccountOrderController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
@@ -21,6 +25,9 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
+use App\Http\Controllers\Admin\JournalPostController as AdminJournalPostController;
+use App\Http\Controllers\Admin\StyleController as AdminStyleController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductImageController;
 
@@ -31,6 +38,13 @@ Route::get('/', [HomeController::class, 'index']);
 // Public shop + product pages
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
+
+// Public info pages
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
+Route::get('/collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');
+Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');
+Route::get('/journal/{slug}', [JournalController::class, 'show'])->name('journal.show');
 
 // Cart — open to guests and logged-in users alike
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
@@ -88,6 +102,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('products/{product}/images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('products.images.primary');
         Route::post('products/{product}/images/reorder', [ProductImageController::class, 'reorder'])->name('products.images.reorder');
         Route::delete('products/{product}/images/{image}', [ProductImageController::class, 'destroy'])->name('products.images.destroy');
+
+        Route::resource('styles', AdminStyleController::class)->only(['index', 'store', 'destroy']);
+        Route::resource('collections', AdminCollectionController::class);
+        Route::resource('journal', AdminJournalPostController::class);
+
+        Route::get('about-page', [AboutPageController::class, 'edit'])->name('about-page.edit');
+        Route::put('about-page', [AboutPageController::class, 'update'])->name('about-page.update');
     });
 
     Route::middleware('permission:orders.manage')->group(function () {

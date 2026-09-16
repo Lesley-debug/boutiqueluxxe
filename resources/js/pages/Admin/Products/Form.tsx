@@ -9,10 +9,16 @@ interface CategoryOption {
     name: string;
 }
 
+interface StyleOption {
+    id: number;
+    name: string;
+}
+
 interface FormProps {
     product?: {
         id: number;
         category_id: number;
+        style_id: number | null;
         brand: string | null;
         name: string;
         slug: string;
@@ -26,12 +32,14 @@ interface FormProps {
         images: ProductImage[];
     };
     categories: CategoryOption[];
+    styles: StyleOption[];
 }
 
-export default function Form({ product, categories }: FormProps) {
+export default function Form({ product, categories, styles }: FormProps) {
     const isEdit = !!product;
     const { data, setData, post, put, processing, errors } = useForm({
         category_id: product?.category_id?.toString() ?? "",
+        style_id: product?.style_id?.toString() ?? "",
         brand: product?.brand ?? "",
         name: product?.name ?? "",
         slug: product?.slug ?? "",
@@ -81,6 +89,31 @@ export default function Form({ product, categories }: FormProps) {
                         {errors.category_id && (
                             <p className="mt-1 text-xs text-red-600">
                                 {errors.category_id}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Style (optional)
+                        </label>
+                        <select
+                            value={data.style_id}
+                            onChange={(e) =>
+                                setData("style_id", e.target.value)
+                            }
+                            className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                        >
+                            <option value="">No style</option>
+                            {styles.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                    {s.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.style_id && (
+                            <p className="mt-1 text-xs text-red-600">
+                                {errors.style_id}
                             </p>
                         )}
                     </div>

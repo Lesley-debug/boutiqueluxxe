@@ -21,6 +21,13 @@ class ShopController extends Controller
             }
         }
 
+        if ($request->filled('style')) {
+            $style = \App\Models\Style::where('slug', $request->string('style'))->first();
+            if ($style) {
+                $query->where('style_id', $style->id);
+            }
+        }
+
         if ($request->filled('search')) {
             $term = $request->string('search');
             $query->where(function ($q) use ($term) {
@@ -48,7 +55,7 @@ class ShopController extends Controller
         return Inertia::render('Store/Shop', [
             'products' => $products,
             'categories' => Category::topLevel()->active()->with('children')->orderBy('sort_order')->get(),
-            'filters' => $request->only(['category', 'search', 'min_price', 'max_price', 'sort']),
+            'filters' => $request->only(['category', 'style', 'search', 'min_price', 'max_price', 'sort']),
         ]);
     }
 }

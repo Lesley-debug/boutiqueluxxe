@@ -1,24 +1,11 @@
 import { ReactNode } from "react";
-import { usePage } from "@inertiajs/react";
 import StoreHeader from "./StoreHeader";
 import StoreFooter from "./StoreFooter";
 
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-}
-
-export default function StoreLayout({
-    children,
-    categories = [],
-}: {
-    children: ReactNode;
-    categories?: Category[];
-}) {
+export default function StoreLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="min-h-screen bg-white">
-            <StoreHeader categories={categories} />
+        <div className="min-h-screen bg-[#F8F5EF]">
+            <StoreHeader />
             {children}
             <StoreFooter />
         </div>
