@@ -1,6 +1,6 @@
 import { Head, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/Store/ProductCard";
 import StoreLayout from "@/components/Store/StoreLayout";
 import type { Category, PaginatedProducts, ShopFilters } from "@/types/catalog";
 

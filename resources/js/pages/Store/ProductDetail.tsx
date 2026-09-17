@@ -1,6 +1,6 @@
 import { Head, router } from "@inertiajs/react";
 import { useMemo, useState } from "react";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/Store/ProductCard";
 import StoreLayout from "@/components/Store/StoreLayout";
 import type { Product, ProductVariant } from "@/types/catalog";
 

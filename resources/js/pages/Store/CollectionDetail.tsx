@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react";
 import StoreLayout from "@/components/Store/StoreLayout";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/Store/ProductCard";
 import type { Product } from "@/types/catalog";
 
 interface CollectionDetailProps {
