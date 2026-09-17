@@ -23,3 +23,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Increase PHP limits for video uploads
+php_value upload_max_filesize 60M
+php_value post_max_size 60M

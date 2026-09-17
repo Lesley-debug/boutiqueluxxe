@@ -8,11 +8,13 @@ interface ContentData {
     editorial_cta_text: string | null;
     editorial_cta_url: string | null;
     editorial_image_url: string | null;
+    editorial_video_url: string | null;
     watches_title: string | null;
     watches_subtitle: string | null;
     watches_cta_text: string | null;
     watches_cta_url: string | null;
     watches_image_url: string | null;
+    watches_video_url: string | null;
     story_title: string | null;
     story_text: string | null;
     story_cta_text: string | null;
@@ -27,11 +29,13 @@ export default function Edit({ content }: { content: ContentData }) {
         editorial_cta_text: content.editorial_cta_text ?? "",
         editorial_cta_url: content.editorial_cta_url ?? "",
         editorial_image: null as File | null,
+        editorial_video: null as File | null,
         watches_title: content.watches_title ?? "",
         watches_subtitle: content.watches_subtitle ?? "",
         watches_cta_text: content.watches_cta_text ?? "",
         watches_cta_url: content.watches_cta_url ?? "",
         watches_image: null as File | null,
+        watches_video: null as File | null,
         story_title: content.story_title ?? "",
         story_text: content.story_text ?? "",
         story_cta_text: content.story_cta_text ?? "",
@@ -59,6 +63,9 @@ export default function Edit({ content }: { content: ContentData }) {
                         title="Editorial Campaign"
                         imageUrl={content.editorial_image_url}
                     >
+                        <p className="text-xs text-stone-500">
+                            If a video is uploaded, it plays instead of the image.
+                        </p>
                         <Field
                             label="Title"
                             value={data.editorial_title}
@@ -81,14 +88,36 @@ export default function Edit({ content }: { content: ContentData }) {
                             onChange={(v) => setData("editorial_cta_url", v)}
                         />
                         <FileField
+                            label="Fallback Image"
                             onChange={(f) => setData("editorial_image", f)}
                         />
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Video (MP4 or WebM, max 50MB)
+                            </label>
+                            <input
+                                type="file"
+                                accept="video/mp4,video/webm"
+                                onChange={(e) =>
+                                    setData("editorial_video", e.target.files?.[0] ?? null)
+                                }
+                                className="block text-sm"
+                            />
+                            {content.editorial_video_url && (
+                                <p className="mt-1 text-xs text-green-700">
+                                    A video is currently active for this section.
+                                </p>
+                            )}
+                        </div>
                     </Block>
 
                     <Block
                         title="Watches Campaign"
                         imageUrl={content.watches_image_url}
                     >
+                        <p className="text-xs text-stone-500">
+                            If a video is uploaded, it plays instead of the image.
+                        </p>
                         <Field
                             label="Title"
                             value={data.watches_title}
@@ -111,8 +140,27 @@ export default function Edit({ content }: { content: ContentData }) {
                             onChange={(v) => setData("watches_cta_url", v)}
                         />
                         <FileField
+                            label="Fallback Image"
                             onChange={(f) => setData("watches_image", f)}
                         />
+                        <div>
+                            <label className="mb-1 block text-sm font-medium">
+                                Video (MP4 or WebM, max 50MB)
+                            </label>
+                            <input
+                                type="file"
+                                accept="video/mp4,video/webm"
+                                onChange={(e) =>
+                                    setData("watches_video", e.target.files?.[0] ?? null)
+                                }
+                                className="block text-sm"
+                            />
+                            {content.watches_video_url && (
+                                <p className="mt-1 text-xs text-green-700">
+                                    A video is currently active for this section.
+                                </p>
+                            )}
+                        </div>
                     </Block>
 
                     <Block
@@ -136,6 +184,7 @@ export default function Edit({ content }: { content: ContentData }) {
                             onChange={(v) => setData("story_cta_text", v)}
                         />
                         <FileField
+                            label="Image"
                             onChange={(f) => setData("story_image", f)}
                         />
                     </Block>
@@ -184,7 +233,7 @@ function Block({
     return (
         <div className="rounded-2xl border border-gray-200 p-5">
             <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#B89B6A]">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[#9C7A3C]">
                     {title}
                 </h2>
                 {!imageUrl && (
@@ -237,10 +286,16 @@ function Field({
     );
 }
 
-function FileField({ onChange }: { onChange: (f: File | null) => void }) {
+function FileField({
+    label,
+    onChange,
+}: {
+    label: string;
+    onChange: (f: File | null) => void;
+}) {
     return (
         <div>
-            <label className="mb-1 block text-sm font-medium">Image</label>
+            <label className="mb-1 block text-sm font-medium">{label}</label>
             <input
                 type="file"
                 accept="image/*"

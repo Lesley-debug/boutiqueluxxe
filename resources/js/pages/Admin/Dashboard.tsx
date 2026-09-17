@@ -221,7 +221,7 @@ function StatCard({
 }) {
     return (
         <div className="rounded-xl border border-stone-200 bg-white p-5">
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#F8F5EF] text-[#B89B6A]">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#F8F5EF] text-[#9C7A3C]">
                 <Icon size={17} />
             </div>
             <p className="text-xs uppercase tracking-wide text-stone-400">

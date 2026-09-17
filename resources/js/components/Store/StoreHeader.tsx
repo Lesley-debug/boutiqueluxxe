@@ -7,6 +7,7 @@ const ANNOUNCEMENT =
 
 export default function StoreHeader() {
     const { auth, cart, megaMenu, shopByStyle } = usePage().props;
+    const currentPath = usePage().url;
     const [categoriesOpen, setCategoriesOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -31,6 +32,13 @@ export default function StoreHeader() {
         }
     }
 
+    function navLinkClass(path: string) {
+        const active =
+            currentPath === path ||
+            (path !== "/" && currentPath.startsWith(path));
+        return `transition ${active ? "font-semibold text-[#9C7A3C]" : "hover:text-[#9C7A3C]"}`;
+    }
+
     return (
         <header
             className={`sticky top-0 z-40 bg-[#F8F5EF] transition-shadow ${scrolled ? "shadow-sm" : ""}`}
@@ -51,10 +59,7 @@ export default function StoreHeader() {
                     </Link>
 
                     <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.15em] text-[#171310] lg:flex">
-                        <Link
-                            href="/shop"
-                            className="transition hover:text-[#B89B6A]"
-                        >
+                        <Link href="/shop" className={navLinkClass("/shop")}>
                             Shop
                         </Link>
 
@@ -63,7 +68,7 @@ export default function StoreHeader() {
                             onMouseEnter={() => setCategoriesOpen(true)}
                             onMouseLeave={() => setCategoriesOpen(false)}
                         >
-                            <button className="transition hover:text-[#B89B6A]">
+                            <button className="transition hover:text-[#9C7A3C]">
                                 Categories
                             </button>
                             {categoriesOpen && megaMenu.length > 0 && (
@@ -72,7 +77,7 @@ export default function StoreHeader() {
                                         <div key={top.id} className="flex-1">
                                             <Link
                                                 href={`/shop?category=${top.slug}`}
-                                                className="mb-3 block text-xs font-semibold uppercase tracking-wider text-[#B89B6A]"
+                                                className="mb-3 block text-xs font-semibold uppercase tracking-wider text-[#9C7A3C]"
                                             >
                                                 {top.name}
                                             </Link>
@@ -124,25 +129,25 @@ export default function StoreHeader() {
 
                         <Link
                             href="/shop?sort=newest"
-                            className="transition hover:text-[#B89B6A]"
+                            className={navLinkClass("/shop")}
                         >
                             New Arrivals
                         </Link>
                         <Link
                             href="/collections"
-                            className="transition hover:text-[#B89B6A]"
+                            className={navLinkClass("/collections")}
                         >
                             Collections
                         </Link>
                         <Link
                             href="/about"
-                            className="transition hover:text-[#B89B6A]"
+                            className={navLinkClass("/about")}
                         >
                             About
                         </Link>
                         <Link
                             href="/journal"
-                            className="transition hover:text-[#B89B6A]"
+                            className={navLinkClass("/journal")}
                         >
                             Journal
                         </Link>
@@ -167,7 +172,7 @@ export default function StoreHeader() {
                         ) : (
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
                                 title="Search"
                             >
                                 <Search size={18} />
@@ -177,7 +182,7 @@ export default function StoreHeader() {
                         {auth.user ? (
                             <Link
                                 href="/account/wishlist"
-                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
                                 title="Wishlist"
                             >
                                 <Heart size={18} />
@@ -185,7 +190,7 @@ export default function StoreHeader() {
                         ) : (
                             <Link
                                 href="/login"
-                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A]"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
                                 title="Account"
                             >
                                 <User size={18} />
@@ -195,7 +200,7 @@ export default function StoreHeader() {
                         {auth.user && (
                             <Link
                                 href="/account/profile"
-                                className="hidden rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#B89B6A] sm:block"
+                                className="hidden rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C] sm:block"
                                 title="Account"
                             >
                                 <User size={18} />
@@ -204,12 +209,12 @@ export default function StoreHeader() {
 
                         <Link
                             href="/cart"
-                            className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#B89B6A]"
+                            className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#9C7A3C]"
                             title="Bag"
                         >
                             <ShoppingBag size={18} />
                             {cart.item_count > 0 && (
-                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#B89B6A] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">
+                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">
                                     {cart.item_count}
                                 </span>
                             )}

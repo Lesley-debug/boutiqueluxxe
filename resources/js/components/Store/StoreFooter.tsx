@@ -13,7 +13,7 @@ export default function StoreFooter() {
                     </p>
                 </div>
                 <div>
-                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#B89B6A]">
+                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Shop
                     </p>
                     <div className="space-y-3 text-sm text-[#252525]/70">
@@ -32,7 +32,7 @@ export default function StoreFooter() {
                     </div>
                 </div>
                 <div>
-                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#B89B6A]">
+                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Account
                     </p>
                     <div className="space-y-3 text-sm text-[#252525]/70">
@@ -57,7 +57,7 @@ export default function StoreFooter() {
                     </div>
                 </div>
                 <div>
-                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#B89B6A]">
+                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Explore
                     </p>
                     <div className="space-y-3 text-sm text-[#252525]/70">
@@ -82,7 +82,7 @@ export default function StoreFooter() {
                     </div>
                 </div>
                 <div>
-                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#B89B6A]">
+                    <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Help
                     </p>
                     <div className="space-y-3 text-sm text-[#252525]/70">

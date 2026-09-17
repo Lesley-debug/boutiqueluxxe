@@ -9,11 +9,13 @@ interface HomepageContent {
     editorial_cta_text: string | null;
     editorial_cta_url: string | null;
     editorial_image_url: string | null;
+    editorial_video_url: string | null;
     watches_title: string | null;
     watches_subtitle: string | null;
     watches_cta_text: string | null;
     watches_cta_url: string | null;
     watches_image_url: string | null;
+    watches_video_url: string | null;
     story_title: string | null;
     story_text: string | null;
     story_cta_text: string | null;
@@ -74,7 +76,7 @@ function SectionHeading({
     return (
         <div className="mx-auto mb-16 max-w-xl text-center">
             {eyebrow && (
-                <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#B89B6A]">
+                <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#9C7A3C]">
                     {eyebrow}
                 </p>
             )}
@@ -152,7 +154,7 @@ export default function Home({
             <main className="text-[#171310]">
                 <section className="flex min-h-screen items-center justify-center px-6">
                     <div className="text-center">
-                        <p className="mb-6 text-xs font-medium uppercase tracking-[0.4em] text-[#B89B6A]">
+                        <p className="mb-6 text-xs font-medium uppercase tracking-[0.4em] text-[#9C7A3C]">
                             Designer Bags Boutique
                         </p>
                         <h1 className="font-serif text-6xl font-medium leading-[0.95] tracking-tight md:text-8xl">
@@ -165,13 +167,13 @@ export default function Home({
                         <div className="mt-12 flex flex-col justify-center gap-4 sm:flex-row">
                             <Link
                                 href="/shop"
-                                className="rounded-full bg-[#171310] px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] text-white transition hover:bg-[#B89B6A]"
+                                className="rounded-full bg-[#171310] px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] text-white transition hover:bg-[#9C7A3C]"
                             >
                                 Shop Collection
                             </Link>
                             <Link
                                 href="/shop?sort=newest"
-                                className="rounded-full border border-[#171310]/15 px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] transition hover:border-[#B89B6A] hover:text-[#B89B6A]"
+                                className="rounded-full border border-[#171310]/15 px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] transition hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
                             >
                                 New Arrivals
                             </Link>
@@ -205,7 +207,7 @@ export default function Home({
                                         <p className="font-serif text-2xl tracking-tight">
                                             {category.name}
                                         </p>
-                                        <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-white/80 transition group-hover:text-[#B89B6A]">
+                                        <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-white/80 transition group-hover:text-[#9C7A3C]">
                                             Explore →
                                         </p>
                                     </div>
@@ -233,13 +235,26 @@ export default function Home({
                     </section>
                 )}
 
-                {content.editorial_image_url && (
+                {(content.editorial_video_url || content.editorial_image_url) && (
                     <section className="relative h-[70vh] w-full overflow-hidden">
-                        <img
-                            src={content.editorial_image_url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                        />
+                        {content.editorial_video_url ? (
+                            <video
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                poster={content.editorial_image_url ?? undefined}
+                                className="h-full w-full object-cover"
+                            >
+                                <source src={content.editorial_video_url} />
+                            </video>
+                        ) : (
+                            <img
+                                src={content.editorial_image_url!}
+                                alt=""
+                                className="h-full w-full object-cover"
+                            />
+                        )}
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#171310]/30 px-6 text-center">
                             {content.editorial_title && (
                                 <h2 className="font-serif text-4xl font-medium text-white md:text-6xl">
@@ -267,7 +282,7 @@ export default function Home({
                     <section className="mx-auto max-w-7xl px-6 py-28">
                         <div className="mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
-                                <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#B89B6A]">
+                                <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#9C7A3C]">
                                     Just In
                                 </p>
                                 <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
@@ -338,13 +353,26 @@ export default function Home({
                     </section>
                 )}
 
-                {content.watches_image_url && (
+                {(content.watches_video_url || content.watches_image_url) && (
                     <section className="relative h-[60vh] w-full overflow-hidden">
-                        <img
-                            src={content.watches_image_url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                        />
+                        {content.watches_video_url ? (
+                            <video
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                poster={content.watches_image_url ?? undefined}
+                                className="h-full w-full object-cover"
+                            >
+                                <source src={content.watches_video_url} />
+                            </video>
+                        ) : (
+                            <img
+                                src={content.watches_image_url!}
+                                alt=""
+                                className="h-full w-full object-cover"
+                            />
+                        )}
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#171310]/40 px-6 text-center">
                             {content.watches_title && (
                                 <h2 className="font-serif text-4xl font-medium text-white md:text-5xl">
@@ -359,7 +387,7 @@ export default function Home({
                             {content.watches_cta_text && (
                                 <Link
                                     href={content.watches_cta_url || "/shop"}
-                                    className="mt-9 rounded-full bg-white px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] text-[#171310] transition hover:bg-[#B89B6A] hover:text-white"
+                                    className="mt-9 rounded-full bg-white px-9 py-4 text-xs font-medium uppercase tracking-[0.15em] text-[#171310] transition hover:bg-[#9C7A3C] hover:text-white"
                                 >
                                     {content.watches_cta_text}
                                 </Link>
@@ -404,7 +432,7 @@ export default function Home({
 
                 <section className="border-t border-[#171310]/10 px-6 py-28">
                     <div className="mx-auto max-w-4xl">
-                        <p className="mb-16 text-center text-xs font-medium uppercase tracking-[0.3em] text-[#B89B6A]">
+                        <p className="mb-16 text-center text-xs font-medium uppercase tracking-[0.3em] text-[#9C7A3C]">
                             The Boutique Experience
                         </p>
                         <div className="grid grid-cols-1 gap-16 text-center sm:grid-cols-3">
@@ -445,7 +473,7 @@ export default function Home({
                         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-12 sm:grid-cols-3">
                             {testimonials.map((t) => (
                                 <div key={t.id} className="text-center">
-                                    <p className="text-sm tracking-widest text-[#B89B6A]">
+                                    <p className="text-sm tracking-widest text-[#9C7A3C]">
                                         {"★".repeat(t.rating)}
                                     </p>
                                     <p className="mt-4 text-sm italic leading-relaxed text-[#252525]/70">
@@ -461,7 +489,7 @@ export default function Home({
                 )}
 
                 <section className="border-t border-[#171310]/10 px-6 py-28 text-center">
-                    <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#B89B6A]">
+                    <p className="mb-3 text-xs font-medium uppercase tracking-[0.3em] text-[#9C7A3C]">
                         Newsletter
                     </p>
                     <h2 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
@@ -483,12 +511,12 @@ export default function Home({
                                 newsletter.setData("email", e.target.value)
                             }
                             placeholder="Your email address"
-                            className="flex-1 rounded-full border border-[#171310]/15 bg-transparent px-5 py-3.5 text-sm focus:border-[#B89B6A] focus:outline-none"
+                            className="flex-1 rounded-full border border-[#171310]/15 bg-transparent px-5 py-3.5 text-sm focus:border-[#9C7A3C] focus:outline-none"
                         />
                         <button
                             type="submit"
                             disabled={newsletter.processing}
-                            className="rounded-full bg-[#171310] px-9 py-3.5 text-xs font-medium uppercase tracking-[0.15em] text-white transition hover:bg-[#B89B6A] disabled:opacity-50"
+                            className="rounded-full bg-[#171310] px-9 py-3.5 text-xs font-medium uppercase tracking-[0.15em] text-white transition hover:bg-[#9C7A3C] disabled:opacity-50"
                         >
                             Join
                         </button>

@@ -33,7 +33,7 @@ export function Button({
     variant?: "primary" | "secondary" | "danger";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
     const styles = {
-        primary: "bg-[#171310] text-white hover:bg-[#B89B6A]",
+        primary: "bg-[#171310] text-white hover:bg-[#9C7A3C]",
         secondary: "border border-stone-300 text-stone-700 hover:bg-stone-50",
         danger: "text-red-600 hover:bg-red-50",
     };
@@ -64,7 +64,7 @@ export function Input({
             )}
             <input
                 {...props}
-                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#B89B6A] focus:outline-none focus:ring-1 focus:ring-[#B89B6A] ${props.className ?? ""}`}
+                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#9C7A3C] focus:outline-none focus:ring-1 focus:ring-[#9C7A3C] ${props.className ?? ""}`}
             />
             {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
@@ -90,7 +90,7 @@ export function Select({
             )}
             <select
                 {...props}
-                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#B89B6A] focus:outline-none ${props.className ?? ""}`}
+                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#9C7A3C] focus:outline-none ${props.className ?? ""}`}
             >
                 {children}
             </select>
@@ -116,7 +116,7 @@ export function Textarea({
             )}
             <textarea
                 {...props}
-                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#B89B6A] focus:outline-none ${props.className ?? ""}`}
+                className={`w-full rounded-lg border border-stone-300 px-3 py-2 text-sm transition focus:border-[#9C7A3C] focus:outline-none ${props.className ?? ""}`}
             />
             {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
         </div>

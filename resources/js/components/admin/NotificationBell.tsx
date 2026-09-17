@@ -32,7 +32,7 @@ export default function NotificationBell() {
             >
                 <Bell size={18} />
                 {notifications.unread_count > 0 && (
-                    <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B89B6A] text-[10px] font-bold text-white">
+                    <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white">
                         {notifications.unread_count}
                     </span>
                 )}

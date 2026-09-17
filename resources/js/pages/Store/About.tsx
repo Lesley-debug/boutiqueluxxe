@@ -26,7 +26,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                         className="h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/60 via-black/20 to-black/10 px-6 text-center">
-                        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#B89B6A]">
+                        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#9C7A3C]">
                             Our Story
                         </p>
                         <h1 className="max-w-2xl text-3xl font-bold text-white sm:text-5xl">
@@ -36,7 +36,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                 </div>
             ) : (
                 <div className="bg-[#171310] px-6 py-24 text-center">
-                    <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#B89B6A]">
+                    <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Our Story
                     </p>
                     <h1 className="mx-auto max-w-2xl text-3xl font-bold text-white sm:text-5xl">
@@ -80,7 +80,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                         {aboutPage.contact_title}
                     </h2>
                     {aboutPage.contact_text && (
-                        <p className="mt-2 text-sm text-[#B89B6A]">
+                        <p className="mt-2 text-sm text-[#9C7A3C]">
                             {aboutPage.contact_text}
                         </p>
                     )}
