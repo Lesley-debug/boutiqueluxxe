@@ -1,17 +1,25 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { Search, Heart, User, ShoppingBag } from "lucide-react";
+import SlideoverCart from "./SlideoverCart";
+import NotificationDropdown from "./NotificationDropdown";
+import UserProfileDropdown from "./UserProfileDropdown";
+import type { Cart } from "@/types/cart";
 
 const ANNOUNCEMENT =
     "Complimentary shipping on selected orders · Discover the latest collection";
 
 export default function StoreHeader() {
-    const { auth, cart, megaMenu, shopByStyle } = usePage().props;
+    const page = usePage();
+    const { auth, cart, megaMenu, shopByStyle } = page.props;
+    const notifications = (page.props as any).notifications || [];
+    const unreadNotificationsCount = (page.props as any).unreadNotificationsCount || 0;
     const currentPath = usePage().url;
     const [categoriesOpen, setCategoriesOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [scrolled, setScrolled] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
 
     useEffect(() => {
         function onScroll() {
@@ -180,13 +188,24 @@ export default function StoreHeader() {
                         )}
 
                         {auth.user ? (
-                            <Link
-                                href="/account/wishlist"
-                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
-                                title="Wishlist"
-                            >
-                                <Heart size={18} />
-                            </Link>
+                            <>
+                                <Link
+                                    href="/account/wishlist"
+                                    className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
+                                    title="Wishlist"
+                                >
+                                    <Heart size={18} />
+                                </Link>
+
+                                {/* Notifications Dropdown */}
+                                <NotificationDropdown
+                                    notifications={notifications || []}
+                                    unreadCount={unreadNotificationsCount || 0}
+                                />
+
+                                {/* User Profile Dropdown */}
+                                <UserProfileDropdown user={auth.user} />
+                            </>
                         ) : (
                             <Link
                                 href="/login"
@@ -197,18 +216,8 @@ export default function StoreHeader() {
                             </Link>
                         )}
 
-                        {auth.user && (
-                            <Link
-                                href="/account/profile"
-                                className="hidden rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C] sm:block"
-                                title="Account"
-                            >
-                                <User size={18} />
-                            </Link>
-                        )}
-
-                        <Link
-                            href="/cart"
+                        <button
+                            onClick={() => setCartOpen(true)}
                             className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#9C7A3C]"
                             title="Bag"
                         >
@@ -218,10 +227,17 @@ export default function StoreHeader() {
                                     {cart.item_count}
                                 </span>
                             )}
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* Slideover Cart */}
+            <SlideoverCart
+                cart={cart as any}
+                isOpen={cartOpen}
+                onClose={() => setCartOpen(false)}
+            />
         </header>
     );
 }
