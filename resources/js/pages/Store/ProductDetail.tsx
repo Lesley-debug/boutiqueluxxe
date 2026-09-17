@@ -94,11 +94,11 @@ export default function ProductDetail({
     return (
         <StoreLayout>
             <Head title={product.name} />
-            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+            <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8">
+                <div className="grid grid-cols-1 gap-14 lg:grid-cols-2">
                     {/* Gallery */}
                     <div>
-                        <div className="aspect-square overflow-hidden rounded-sm bg-stone-100">
+                        <div className="aspect-square overflow-hidden rounded-[2px] border border-[#171310]/[0.06] bg-[#F8F5EF]">
                             {product.images[activeImage] && (
                                 <img
                                     src={product.images[activeImage].url}
@@ -111,15 +111,15 @@ export default function ProductDetail({
                             )}
                         </div>
                         {product.images.length > 1 && (
-                            <div className="mt-3 flex gap-2">
+                            <div className="mt-4 flex gap-3">
                                 {product.images.map((img, i) => (
                                     <button
                                         key={img.id}
                                         onClick={() => setActiveImage(i)}
-                                        className={`h-16 w-16 overflow-hidden rounded-sm border-2 ${
+                                        className={`h-20 w-20 overflow-hidden rounded-[2px] border-2 transition duration-300 ${
                                             i === activeImage
-                                                ? "border-stone-900"
-                                                : "border-transparent"
+                                                ? "border-[#9C7A3C]"
+                                                : "border-transparent hover:border-[#171310]/20"
                                         }`}
                                     >
                                         <img
@@ -136,20 +136,20 @@ export default function ProductDetail({
                     {/* Details */}
                     <div>
                         {product.brand && (
-                            <p className="text-xs uppercase tracking-wider text-stone-500">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#171310]/40">
                                 {product.brand}
                             </p>
                         )}
-                        <h1 className="mt-1 text-2xl font-semibold text-stone-900">
+                        <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-[#171310] md:text-4xl">
                             {product.name}
                         </h1>
 
-                        <div className="mt-3 flex items-center gap-3">
-                            <span className="text-xl font-semibold text-stone-900">
+                        <div className="mt-4 flex items-baseline gap-3">
+                            <span className="text-2xl font-semibold text-[#171310]">
                                 {Number(price).toLocaleString()} FCFA
                             </span>
                             {product.sale_price && (
-                                <span className="text-sm text-stone-400 line-through">
+                                <span className="text-sm text-[#252525]/35 line-through">
                                     {Number(
                                         product.base_price,
                                     ).toLocaleString()}{" "}
@@ -159,14 +159,14 @@ export default function ProductDetail({
                         </div>
 
                         {product.description && (
-                            <p className="mt-4 text-sm leading-relaxed text-stone-600">
+                            <p className="mt-6 text-base leading-relaxed text-[#252525]/70">
                                 {product.description}
                             </p>
                         )}
 
                         {colors.length > 0 && (
-                            <div className="mt-6">
-                                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">
+                            <div className="mt-8">
+                                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#171310]">
                                     Color
                                 </p>
                                 <div className="flex gap-2">
@@ -179,10 +179,10 @@ export default function ProductDetail({
                                                     selectedVariant?.size,
                                                 )
                                             }
-                                            className={`rounded-sm border px-3 py-1.5 text-sm ${
+                                            className={`rounded-full border px-5 py-2.5 text-sm transition duration-300 ${
                                                 selectedVariant?.color === color
-                                                    ? "border-stone-900 bg-stone-900 text-white"
-                                                    : "border-stone-300 text-stone-700"
+                                                    ? "border-[#171310] bg-[#171310] text-white"
+                                                    : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
                                             }`}
                                         >
                                             {color}
@@ -193,8 +193,8 @@ export default function ProductDetail({
                         )}
 
                         {sizes.length > 0 && (
-                            <div className="mt-4">
-                                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">
+                            <div className="mt-6">
+                                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#171310]">
                                     Size
                                 </p>
                                 <div className="flex gap-2">
@@ -207,10 +207,10 @@ export default function ProductDetail({
                                                     size,
                                                 )
                                             }
-                                            className={`rounded-sm border px-3 py-1.5 text-sm ${
+                                            className={`rounded-full border px-5 py-2.5 text-sm transition duration-300 ${
                                                 selectedVariant?.size === size
-                                                    ? "border-stone-900 bg-stone-900 text-white"
-                                                    : "border-stone-300 text-stone-700"
+                                                    ? "border-[#171310] bg-[#171310] text-white"
+                                                    : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
                                             }`}
                                         >
                                             {size}
@@ -221,27 +221,27 @@ export default function ProductDetail({
                         )}
 
                         <p
-                            className={`mt-4 text-sm ${inStock ? "text-green-700" : "text-red-600"}`}
+                            className={`mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] ${inStock ? "text-green-700" : "text-red-600"}`}
                         >
                             {inStock ? "In stock" : "Out of stock"}
                         </p>
 
-                        <div className="mt-6 flex items-center gap-3">
-                            <div className="flex items-center rounded-sm border border-stone-300">
+                        <div className="mt-8 flex items-center gap-3">
+                            <div className="flex items-center rounded-full border border-[#171310]/15">
                                 <button
                                     onClick={() =>
                                         setQuantity((q) => Math.max(1, q - 1))
                                     }
-                                    className="px-3 py-2 text-stone-600"
+                                    className="px-4 py-3 text-[#171310] transition hover:text-[#9C7A3C]"
                                 >
                                     −
                                 </button>
-                                <span className="w-8 text-center text-sm">
+                                <span className="w-10 text-center text-sm font-medium text-[#171310]">
                                     {quantity}
                                 </span>
                                 <button
                                     onClick={() => setQuantity((q) => q + 1)}
-                                    className="px-3 py-2 text-stone-600"
+                                    className="px-4 py-3 text-[#171310] transition hover:text-[#9C7A3C]"
                                 >
                                     +
                                 </button>
@@ -250,25 +250,26 @@ export default function ProductDetail({
                             <button
                                 onClick={handleAddToCart}
                                 disabled={!inStock}
-                                className="flex-1 rounded-sm bg-stone-900 px-6 py-3 text-sm font-medium text-white disabled:opacity-40"
+                                className="flex-1 rounded-full bg-[#171310] px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C] disabled:opacity-40"
                             >
                                 Add to Cart
                             </button>
 
                             <button
                                 onClick={toggleWishlist}
-                                className={`rounded-sm border px-4 py-3 text-sm ${
+                                className={`rounded-full border px-5 py-4 text-lg transition duration-300 ${
                                     wishlisted
-                                        ? "border-stone-900 bg-stone-100"
-                                        : "border-stone-300"
+                                        ? "border-[#9C7A3C] bg-[#9C7A3C]/5 text-[#9C7A3C]"
+                                        : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
                                 }`}
+                                title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             >
                                 {wishlisted ? "♥" : "♡"}
                             </button>
                         </div>
 
                         {addedMessage && (
-                            <p className="mt-3 text-sm text-green-700">
+                            <p className="mt-4 text-sm text-green-700">
                                 {addedMessage}
                             </p>
                         )}
@@ -276,11 +277,11 @@ export default function ProductDetail({
                 </div>
 
                 {related.length > 0 && (
-                    <div className="mt-16">
-                        <h2 className="mb-6 text-lg font-semibold text-stone-900">
+                    <div className="mt-24 border-t border-[#171310]/10 pt-20">
+                        <h2 className="mb-10 font-serif text-3xl font-medium tracking-tight text-[#171310]">
                             You may also like
                         </h2>
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-14 sm:grid-cols-4">
                             {related.map((p) => (
                                 <ProductCard key={p.id} product={p} />
                             ))}

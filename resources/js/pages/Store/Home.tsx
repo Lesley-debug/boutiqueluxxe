@@ -67,10 +67,6 @@ interface HomeProps {
     testimonials: TestimonialItem[];
 }
 
-function NewsletterForm() {
-    return null; // replaced below via inline form for brevity of this diff — see Section K
-}
-
 export default function Home({
     categories,
     featuredProducts,
