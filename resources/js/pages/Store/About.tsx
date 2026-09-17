@@ -52,35 +52,35 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                     </p>
                 )}
 
-                <div className="mt-16 grid grid-cols-1 gap-10 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-[#F8F5EF] p-8">
-                        <h2 className="text-lg font-bold text-[#171310]">
+                <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2">
+                    <div className="rounded-[2px] border border-[#171310]/10 bg-[#F8F5EF] p-8 transition-all duration-500 hover:shadow-[0_16px_32px_-16px_rgba(23,19,16,0.15)]">
+                        <h2 className="font-serif text-xl font-medium text-[#171310]">
                             {aboutPage.philosophy_title}
                         </h2>
                         {aboutPage.philosophy_text && (
-                            <p className="mt-3 text-sm leading-relaxed text-[#252525]/70">
+                            <p className="mt-4 text-sm leading-relaxed text-[#252525]/70">
                                 {aboutPage.philosophy_text}
                             </p>
                         )}
                     </div>
-                    <div className="rounded-3xl bg-[#F8F5EF] p-8">
-                        <h2 className="text-lg font-bold text-[#171310]">
+                    <div className="rounded-[2px] border border-[#171310]/10 bg-[#F8F5EF] p-8 transition-all duration-500 hover:shadow-[0_16px_32px_-16px_rgba(23,19,16,0.15)]">
+                        <h2 className="font-serif text-xl font-medium text-[#171310]">
                             {aboutPage.approach_title}
                         </h2>
                         {aboutPage.approach_text && (
-                            <p className="mt-3 text-sm leading-relaxed text-[#252525]/70">
+                            <p className="mt-4 text-sm leading-relaxed text-[#252525]/70">
                                 {aboutPage.approach_text}
                             </p>
                         )}
                     </div>
                 </div>
 
-                <div className="mt-16 rounded-3xl bg-[#171310] p-10 text-center text-white">
-                    <h2 className="text-xl font-bold">
+                <div className="mt-16 rounded-[2px] border border-[#171310]/10 bg-[#171310] p-12 text-center text-white">
+                    <h2 className="font-serif text-2xl font-medium">
                         {aboutPage.contact_title}
                     </h2>
                     {aboutPage.contact_text && (
-                        <p className="mt-2 text-sm text-[#9C7A3C]">
+                        <p className="mt-4 text-[#9C7A3C]">
                             {aboutPage.contact_text}
                         </p>
                     )}

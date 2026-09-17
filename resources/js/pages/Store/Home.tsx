@@ -80,9 +80,40 @@ export default function Home({
             <Head title="Home" />
 
             <main>
-                {/* Hero */}
-                <section className="flex min-h-screen items-center justify-center bg-[#F8F5EF] px-6">
-                    <div className="text-center">
+                {/* Hero with Dynamic Background */}
+                <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+                    {/* Dynamic Background with Parallax */}
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#F8F5EF] via-[#F8F5EF]/95 to-[#9C7A3C]/10" />
+                        <div 
+                            className="absolute -left-20 -top-20 h-96 w-96 animate-pulse rounded-full bg-gradient-to-br from-[#9C7A3C]/20 to-transparent blur-3xl"
+                            style={{
+                                animationDelay: '0s',
+                                animationDuration: '8s',
+                            }}
+                        />
+                        <div 
+                            className="absolute -right-32 top-1/3 h-80 w-80 animate-pulse rounded-full bg-gradient-to-bl from-[#171310]/10 to-transparent blur-2xl"
+                            style={{
+                                animationDelay: '2s',
+                                animationDuration: '12s',
+                            }}
+                        />
+                        <div 
+                            className="absolute -bottom-16 left-1/2 h-72 w-72 -translate-x-1/2 animate-pulse rounded-full bg-gradient-to-t from-[#9C7A3C]/15 to-transparent blur-3xl"
+                            style={{
+                                animationDelay: '4s',
+                                animationDuration: '10s',
+                            }}
+                        />
+                        {/* Floating Elements */}
+                        <div className="absolute left-1/4 top-1/4 h-2 w-2 rounded-full bg-[#9C7A3C]/30 animate-bounce" style={{ animationDelay: '1s', animationDuration: '6s' }} />
+                        <div className="absolute right-1/3 top-2/3 h-1 w-1 rounded-full bg-[#171310]/20 animate-bounce" style={{ animationDelay: '3s', animationDuration: '8s' }} />
+                        <div className="absolute left-2/3 bottom-1/3 h-1.5 w-1.5 rounded-full bg-[#9C7A3C]/25 animate-bounce" style={{ animationDelay: '5s', animationDuration: '7s' }} />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="relative z-10 px-6 text-center">
                         <Reveal>
                             <Eyebrow>Designer Bags Boutique</Eyebrow>
                         </Reveal>

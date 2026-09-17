@@ -1,6 +1,7 @@
 import { Head } from "@inertiajs/react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import ProductCard from "@/components/Store/ProductCard";
+import Reveal from "@/components/Store/Reveal";
 import type { Product } from "@/types/catalog";
 
 interface CollectionDetailProps {
@@ -20,42 +21,73 @@ export default function CollectionDetail({
             <Head title={collection.name} />
 
             {collection.hero_image_url && (
-                <div className="relative h-64 w-full overflow-hidden sm:h-96">
+                <div className="relative h-[70vh] w-full overflow-hidden">
                     <img
                         src={collection.hero_image_url}
                         alt={collection.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-1000 ease-out"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <h1 className="text-4xl font-bold text-white">
-                            {collection.name}
-                        </h1>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#171310]/60 via-[#171310]/20 to-transparent" />
+                    <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                        <Reveal>
+                            <h1 className="font-serif text-5xl font-medium text-white md:text-7xl">
+                                {collection.name}
+                            </h1>
+                            {collection.description && (
+                                <p className="mx-auto mt-6 max-w-2xl text-lg text-white/85">
+                                    {collection.description}
+                                </p>
+                            )}
+                        </Reveal>
                     </div>
                 </div>
             )}
 
-            <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+            <div className="mx-auto max-w-7xl px-6 py-20 sm:py-28">
                 {!collection.hero_image_url && (
-                    <h1 className="mb-2 text-3xl font-bold text-[#171310]">
-                        {collection.name}
-                    </h1>
-                )}
-                {collection.description && (
-                    <p className="mb-10 max-w-2xl text-[#252525]/60">
-                        {collection.description}
-                    </p>
+                    <Reveal>
+                        <div className="mb-16 text-center">
+                            <h1 className="font-serif text-5xl font-medium tracking-tight text-[#171310] md:text-6xl">
+                                {collection.name}
+                            </h1>
+                            {collection.description && (
+                                <p className="mx-auto mt-6 max-w-2xl text-lg text-[#252525]/70">
+                                    {collection.description}
+                                </p>
+                            )}
+                        </div>
+                    </Reveal>
                 )}
 
                 {collection.products.length === 0 ? (
-                    <p className="text-[#252525]/60">
-                        No products in this collection yet.
-                    </p>
-                ) : (
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
-                        {collection.products.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
+                    <div className="rounded-2xl border border-[#171310]/10 bg-[#F8F5EF] p-12 text-center">
+                        <p className="text-lg text-[#252525]/60">
+                            No products in this collection yet.
+                        </p>
+                        <p className="mt-2 text-sm text-[#252525]/40">
+                            Check back soon for new additions
+                        </p>
                     </div>
+                ) : (
+                    <>
+                        <Reveal>
+                            <div className="mb-12 text-center">
+                                <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
+                                    Collection
+                                </p>
+                                <h2 className="mt-2 font-serif text-2xl font-medium text-[#171310]">
+                                    {collection.products.length} Piece{collection.products.length !== 1 ? 's' : ''}
+                                </h2>
+                            </div>
+                        </Reveal>
+                        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+                            {collection.products.map((product, index) => (
+                                <Reveal key={product.id} delay={index * 80}>
+                                    <ProductCard product={product} />
+                                </Reveal>
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
         </StoreLayout>

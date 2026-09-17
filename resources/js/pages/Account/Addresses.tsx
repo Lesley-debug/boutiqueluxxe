@@ -1,5 +1,6 @@
 import { Head, router, useForm } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
+import StoreLayout from "@/components/Store/StoreLayout";
 import type { Address } from "@/types/account";
 
 export default function Addresses({ addresses }: { addresses: Address[] }) {
@@ -50,60 +51,67 @@ export default function Addresses({ addresses }: { addresses: Address[] }) {
     }
 
     return (
-        <>
+        <StoreLayout>
             <Head title="My Addresses" />
-            <div className="mx-auto max-w-2xl px-4 py-10">
-                <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold">My Addresses</h1>
+            <div className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
+                <div className="mb-12 flex items-center justify-between">
+                    <div>
+                        <h1 className="font-serif text-4xl font-medium tracking-tight text-[#171310]">
+                            My Addresses
+                        </h1>
+                        <p className="mt-2 text-sm text-[#252525]/60">
+                            Manage your delivery and billing addresses
+                        </p>
+                    </div>
                     {editingId === null && (
                         <button
                             onClick={startAdd}
-                            className="rounded-sm bg-stone-900 px-4 py-2 text-sm text-white"
+                            className="rounded-full bg-[#171310] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C]"
                         >
                             + Add Address
                         </button>
                     )}
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-6">
                     {addresses.map((a) => (
                         <div
                             key={a.id}
-                            className="rounded-sm border border-stone-200 p-4"
+                            className="rounded-2xl border border-[#171310]/10 bg-white p-6"
                         >
                             <div className="flex items-start justify-between">
                                 <div>
                                     {a.label && (
-                                        <p className="text-xs uppercase text-stone-500">
+                                        <p className="text-xs font-medium uppercase tracking-[0.1em] text-[#9C7A3C]">
                                             {a.label}
                                         </p>
                                     )}
-                                    <p className="text-sm font-medium">
+                                    <p className="mt-1 text-lg font-medium text-[#171310]">
                                         {a.recipient_name}
                                     </p>
-                                    <p className="text-sm text-stone-600">
+                                    <p className="mt-1 text-sm text-[#252525]/70">
                                         {a.phone}
                                     </p>
-                                    <p className="text-sm text-stone-600">
+                                    <p className="mt-1 text-sm text-[#252525]/70">
                                         {a.address_line}, {a.city}
                                         {a.region && `, ${a.region}`}
                                     </p>
                                     {a.is_default && (
-                                        <span className="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">
-                                            Default
+                                        <span className="mt-3 inline-block rounded-full bg-[#9C7A3C]/10 px-3 py-1 text-xs font-medium text-[#9C7A3C]">
+                                            Default Address
                                         </span>
                                     )}
                                 </div>
-                                <div className="space-x-3 text-sm">
+                                <div className="flex gap-3">
                                     <button
                                         onClick={() => startEdit(a)}
-                                        className="text-stone-600 underline"
+                                        className="text-sm text-[#9C7A3C] underline decoration-1 underline-offset-2 transition hover:text-[#171310]"
                                     >
                                         Edit
                                     </button>
                                     <button
                                         onClick={() => destroy(a.id)}
-                                        className="text-red-600 underline"
+                                        className="text-sm text-red-600 underline decoration-1 underline-offset-2 transition hover:text-red-700"
                                     >
                                         Delete
                                     </button>
@@ -112,19 +120,30 @@ export default function Addresses({ addresses }: { addresses: Address[] }) {
                         </div>
                     ))}
                     {addresses.length === 0 && editingId === null && (
-                        <p className="text-stone-500">
-                            No saved addresses yet.
-                        </p>
+                        <div className="rounded-2xl border border-[#171310]/10 bg-[#F8F5EF] p-12 text-center">
+                            <p className="text-lg text-[#252525]/60">
+                                No saved addresses yet.
+                            </p>
+                            <p className="mt-2 text-sm text-[#252525]/40">
+                                Add an address to make checkout faster
+                            </p>
+                        </div>
                     )}
                 </div>
 
                 {editingId !== null && (
                     <form
                         onSubmit={submit}
-                        className="mt-6 space-y-4 rounded-sm border border-stone-200 p-4"
+                        className="mt-8 space-y-6 rounded-2xl border border-[#171310]/10 bg-white p-8"
                     >
+                        <div className="mb-6">
+                            <h3 className="font-serif text-2xl font-medium tracking-tight text-[#171310]">
+                                {editingId === -1 ? "Add New Address" : "Edit Address"}
+                            </h3>
+                        </div>
+
                         <div>
-                            <label className="mb-1 block text-sm font-medium">
+                            <label className="mb-2 block text-sm font-medium text-[#171310]">
                                 Label (optional)
                             </label>
                             <input
@@ -132,64 +151,69 @@ export default function Addresses({ addresses }: { addresses: Address[] }) {
                                 onChange={(e) =>
                                     setData("label", e.target.value)
                                 }
-                                placeholder="Home, Office..."
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                placeholder="Home, Office, etc."
+                                className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
                         </div>
-                        <div>
-                            <label className="mb-1 block text-sm font-medium">
-                                Recipient Name
-                            </label>
-                            <input
-                                value={data.recipient_name}
-                                onChange={(e) =>
-                                    setData("recipient_name", e.target.value)
-                                }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
-                            />
-                            {errors.recipient_name && (
-                                <p className="mt-1 text-xs text-red-600">
-                                    {errors.recipient_name}
-                                </p>
-                            )}
+
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-[#171310]">
+                                    Recipient Name
+                                </label>
+                                <input
+                                    value={data.recipient_name}
+                                    onChange={(e) =>
+                                        setData("recipient_name", e.target.value)
+                                    }
+                                    className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
+                                />
+                                {errors.recipient_name && (
+                                    <p className="mt-2 text-xs text-red-600">
+                                        {errors.recipient_name}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-[#171310]">
+                                    Phone Number
+                                </label>
+                                <input
+                                    value={data.phone}
+                                    onChange={(e) =>
+                                        setData("phone", e.target.value)
+                                    }
+                                    className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
+                                />
+                                {errors.phone && (
+                                    <p className="mt-2 text-xs text-red-600">
+                                        {errors.phone}
+                                    </p>
+                                )}
+                            </div>
                         </div>
+
                         <div>
-                            <label className="mb-1 block text-sm font-medium">
-                                Phone
-                            </label>
-                            <input
-                                value={data.phone}
-                                onChange={(e) =>
-                                    setData("phone", e.target.value)
-                                }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
-                            />
-                            {errors.phone && (
-                                <p className="mt-1 text-xs text-red-600">
-                                    {errors.phone}
-                                </p>
-                            )}
-                        </div>
-                        <div>
-                            <label className="mb-1 block text-sm font-medium">
-                                Address
+                            <label className="mb-2 block text-sm font-medium text-[#171310]">
+                                Street Address
                             </label>
                             <input
                                 value={data.address_line}
                                 onChange={(e) =>
                                     setData("address_line", e.target.value)
                                 }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
                             {errors.address_line && (
-                                <p className="mt-1 text-xs text-red-600">
+                                <p className="mt-2 text-xs text-red-600">
                                     {errors.address_line}
                                 </p>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+
+                        <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className="mb-1 block text-sm font-medium">
+                                <label className="mb-2 block text-sm font-medium text-[#171310]">
                                     City
                                 </label>
                                 <input
@@ -197,49 +221,52 @@ export default function Addresses({ addresses }: { addresses: Address[] }) {
                                     onChange={(e) =>
                                         setData("city", e.target.value)
                                     }
-                                    className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                    className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                                 />
                                 {errors.city && (
-                                    <p className="mt-1 text-xs text-red-600">
+                                    <p className="mt-2 text-xs text-red-600">
                                         {errors.city}
                                     </p>
                                 )}
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium">
-                                    Region
+                                <label className="mb-2 block text-sm font-medium text-[#171310]">
+                                    Region (optional)
                                 </label>
                                 <input
                                     value={data.region}
                                     onChange={(e) =>
                                         setData("region", e.target.value)
                                     }
-                                    className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                    className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                                 />
                             </div>
                         </div>
-                        <label className="flex items-center gap-2 text-sm">
+
+                        <label className="flex items-center gap-3 text-sm text-[#171310]">
                             <input
                                 type="checkbox"
                                 checked={data.is_default}
                                 onChange={(e) =>
                                     setData("is_default", e.target.checked)
                                 }
+                                className="h-4 w-4 rounded border-[#171310]/20 text-[#9C7A3C] focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
-                            Set as default address
+                            <span>Set as default address</span>
                         </label>
-                        <div className="flex gap-2">
+
+                        <div className="flex gap-4 pt-4">
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="rounded-sm bg-stone-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+                                className="rounded-full bg-[#171310] px-8 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C] disabled:opacity-40"
                             >
-                                Save Address
+                                {processing ? "Saving..." : "Save Address"}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setEditingId(null)}
-                                className="rounded-sm border border-stone-300 px-4 py-2 text-sm"
+                                className="rounded-full border border-[#171310]/15 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#171310] transition duration-300 hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
                             >
                                 Cancel
                             </button>
@@ -247,6 +274,6 @@ export default function Addresses({ addresses }: { addresses: Address[] }) {
                     </form>
                 )}
             </div>
-        </>
+        </StoreLayout>
     );
 }

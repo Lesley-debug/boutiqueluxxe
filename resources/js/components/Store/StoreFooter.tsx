@@ -16,7 +16,7 @@ export default function StoreFooter() {
                     <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Shop
                     </p>
-                    <div className="space-y-3 text-sm text-[#252525]/70">
+                    <div className="space-y-3 text-sm text-[#252525]/80">
                         <Link
                             href="/shop"
                             className="block transition hover:text-[#171310]"
@@ -35,7 +35,7 @@ export default function StoreFooter() {
                     <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Account
                     </p>
-                    <div className="space-y-3 text-sm text-[#252525]/70">
+                    <div className="space-y-3 text-sm text-[#252525]/80">
                         <Link
                             href="/account/orders"
                             className="block transition hover:text-[#171310]"
@@ -60,7 +60,7 @@ export default function StoreFooter() {
                     <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Explore
                     </p>
-                    <div className="space-y-3 text-sm text-[#252525]/70">
+                    <div className="space-y-3 text-sm text-[#252525]/80">
                         <Link
                             href="/collections"
                             className="block transition hover:text-[#171310]"
@@ -85,7 +85,7 @@ export default function StoreFooter() {
                     <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#9C7A3C]">
                         Help
                     </p>
-                    <div className="space-y-3 text-sm text-[#252525]/70">
+                    <div className="space-y-3 text-sm text-[#252525]/80">
                         <p>Contact us for support</p>
                     </div>
                 </div>

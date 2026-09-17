@@ -2,54 +2,41 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 import AuthLayout from "@/components/Auth/AuthLayout";
 
-export default function Register() {
+interface ResetPasswordProps {
+    token: string;
+    email: string;
+}
+
+export default function ResetPassword({ token, email }: ResetPasswordProps) {
     const { data, setData, post, processing, errors } = useForm({
-        name: "",
-        email: "",
+        token,
+        email,
         password: "",
         password_confirmation: "",
     });
 
     function submit(e: FormEvent) {
         e.preventDefault();
-        post("/register");
+        post("/reset-password");
     }
 
     return (
         <AuthLayout
-            heroTitle="Join Designer Bags Boutique"
-            heroSubtitle="Create your account and discover a world of timeless elegance curated just for you."
+            heroTitle="Create New Password"
+            heroSubtitle="Choose a strong password to secure your account."
         >
-            <Head title="Register" />
+            <Head title="Reset Password" />
 
             <div className="mb-10">
                 <h1 className="font-serif text-3xl font-medium tracking-tight text-[#171310]">
-                    Create Account
+                    Reset Password
                 </h1>
                 <p className="mt-2 text-sm text-[#252525]/60">
-                    Start your journey with Designer Bags Boutique
+                    Enter your new password below
                 </p>
             </div>
 
             <form onSubmit={submit} className="space-y-5">
-                <div>
-                    <label className="mb-2 block text-sm font-medium text-[#171310]">
-                        Full Name
-                    </label>
-                    <input
-                        value={data.name}
-                        onChange={(e) => setData("name", e.target.value)}
-                        className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
-                        placeholder="John Doe"
-                        autoFocus
-                    />
-                    {errors.name && (
-                        <p className="mt-2 text-xs text-red-600">
-                            {errors.name}
-                        </p>
-                    )}
-                </div>
-
                 <div>
                     <label className="mb-2 block text-sm font-medium text-[#171310]">
                         Email Address
@@ -59,7 +46,7 @@ export default function Register() {
                         value={data.email}
                         onChange={(e) => setData("email", e.target.value)}
                         className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
-                        placeholder="you@example.com"
+                        autoFocus
                     />
                     {errors.email && (
                         <p className="mt-2 text-xs text-red-600">
@@ -70,7 +57,7 @@ export default function Register() {
 
                 <div>
                     <label className="mb-2 block text-sm font-medium text-[#171310]">
-                        Password
+                        New Password
                     </label>
                     <input
                         type="password"
@@ -88,7 +75,7 @@ export default function Register() {
 
                 <div>
                     <label className="mb-2 block text-sm font-medium text-[#171310]">
-                        Confirm Password
+                        Confirm New Password
                     </label>
                     <input
                         type="password"
@@ -106,38 +93,17 @@ export default function Register() {
                     disabled={processing}
                     className="w-full rounded-full bg-[#171310] px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C] disabled:opacity-40"
                 >
-                    {processing ? "Creating Account..." : "Create Account"}
+                    {processing ? "Resetting..." : "Reset Password"}
                 </button>
-
-                <p className="text-xs leading-relaxed text-[#252525]/60">
-                    By creating an account, you agree to our{" "}
-                    <Link
-                        href="/terms"
-                        className="text-[#9C7A3C] underline decoration-1 underline-offset-2"
-                    >
-                        Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                        href="/privacy"
-                        className="text-[#9C7A3C] underline decoration-1 underline-offset-2"
-                    >
-                        Privacy Policy
-                    </Link>
-                    .
-                </p>
             </form>
 
             <div className="mt-8 text-center">
-                <p className="text-sm text-[#252525]/60">
-                    Already have an account?{" "}
-                    <Link
-                        href="/login"
-                        className="font-medium text-[#9C7A3C] transition hover:text-[#171310]"
-                    >
-                        Sign in
-                    </Link>
-                </p>
+                <Link
+                    href="/login"
+                    className="text-sm font-medium text-[#9C7A3C] transition hover:text-[#171310]"
+                >
+                    ← Back to login
+                </Link>
             </div>
 
             <div className="mt-10 text-center">

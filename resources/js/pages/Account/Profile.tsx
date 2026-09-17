@@ -1,5 +1,6 @@
 import { Head, useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
+import StoreLayout from "@/components/Store/StoreLayout";
 
 interface ProfileProps {
     user: { name: string; email: string };
@@ -26,32 +27,39 @@ export default function Profile({ user }: ProfileProps) {
     }
 
     return (
-        <>
+        <StoreLayout>
             <Head title="My Profile" />
-            <div className="mx-auto max-w-lg px-4 py-10">
-                <h1 className="mb-6 text-xl font-semibold">My Profile</h1>
+            <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+                <div className="mb-12">
+                    <h1 className="font-serif text-4xl font-medium tracking-tight text-[#171310]">
+                        My Profile
+                    </h1>
+                    <p className="mt-2 text-sm text-[#252525]/60">
+                        Manage your personal information and account settings
+                    </p>
+                </div>
 
-                <form onSubmit={submitProfile} className="space-y-4">
+                <form onSubmit={submitProfile} className="space-y-6">
                     <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Name
+                        <label className="mb-2 block text-sm font-medium text-[#171310]">
+                            Full Name
                         </label>
                         <input
                             value={profileForm.data.name}
                             onChange={(e) =>
                                 profileForm.setData("name", e.target.value)
                             }
-                            className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                            className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                         />
                         {profileForm.errors.name && (
-                            <p className="mt-1 text-xs text-red-600">
+                            <p className="mt-2 text-xs text-red-600">
                                 {profileForm.errors.name}
                             </p>
                         )}
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium">
-                            Email
+                        <label className="mb-2 block text-sm font-medium text-[#171310]">
+                            Email Address
                         </label>
                         <input
                             type="email"
@@ -59,10 +67,10 @@ export default function Profile({ user }: ProfileProps) {
                             onChange={(e) =>
                                 profileForm.setData("email", e.target.value)
                             }
-                            className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                            className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                         />
                         {profileForm.errors.email && (
-                            <p className="mt-1 text-xs text-red-600">
+                            <p className="mt-2 text-xs text-red-600">
                                 {profileForm.errors.email}
                             </p>
                         )}
@@ -70,19 +78,29 @@ export default function Profile({ user }: ProfileProps) {
                     <button
                         type="submit"
                         disabled={profileForm.processing}
-                        className="rounded-sm bg-stone-900 px-6 py-2 text-sm text-white disabled:opacity-50"
+                        className="rounded-full bg-[#171310] px-8 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C] disabled:opacity-40"
                     >
-                        Save Profile
+                        {profileForm.processing ? "Saving..." : "Save Profile"}
                     </button>
+                    {profileForm.recentlySuccessful && (
+                        <p className="text-sm text-green-700">
+                            ✓ Profile updated successfully
+                        </p>
+                    )}
                 </form>
 
-                <div className="mt-10 border-t border-stone-200 pt-8">
-                    <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-stone-500">
-                        Change Password
-                    </h2>
-                    <form onSubmit={submitPassword} className="space-y-4">
+                <div className="mt-16 border-t border-[#171310]/10 pt-12">
+                    <div className="mb-8">
+                        <h2 className="font-serif text-2xl font-medium tracking-tight text-[#171310]">
+                            Change Password
+                        </h2>
+                        <p className="mt-2 text-sm text-[#252525]/60">
+                            Update your password to keep your account secure
+                        </p>
+                    </div>
+                    <form onSubmit={submitPassword} className="space-y-6">
                         <div>
-                            <label className="mb-1 block text-sm font-medium">
+                            <label className="mb-2 block text-sm font-medium text-[#171310]">
                                 Current Password
                             </label>
                             <input
@@ -94,16 +112,16 @@ export default function Profile({ user }: ProfileProps) {
                                         e.target.value,
                                     )
                                 }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
                             {passwordForm.errors.current_password && (
-                                <p className="mt-1 text-xs text-red-600">
+                                <p className="mt-2 text-xs text-red-600">
                                     {passwordForm.errors.current_password}
                                 </p>
                             )}
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium">
+                            <label className="mb-2 block text-sm font-medium text-[#171310]">
                                 New Password
                             </label>
                             <input
@@ -115,16 +133,16 @@ export default function Profile({ user }: ProfileProps) {
                                         e.target.value,
                                     )
                                 }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
                             {passwordForm.errors.password && (
-                                <p className="mt-1 text-xs text-red-600">
+                                <p className="mt-2 text-xs text-red-600">
                                     {passwordForm.errors.password}
                                 </p>
                             )}
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium">
+                            <label className="mb-2 block text-sm font-medium text-[#171310]">
                                 Confirm New Password
                             </label>
                             <input
@@ -136,19 +154,26 @@ export default function Profile({ user }: ProfileProps) {
                                         e.target.value,
                                     )
                                 }
-                                className="w-full rounded-sm border border-stone-300 px-3 py-2 text-sm"
+                                className="w-full rounded-full border border-[#171310]/15 bg-white px-5 py-3.5 text-sm text-[#171310] transition focus:border-[#9C7A3C] focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/20"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={passwordForm.processing}
-                            className="rounded-sm bg-stone-900 px-6 py-2 text-sm text-white disabled:opacity-50"
+                            className="rounded-full bg-[#171310] px-8 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 hover:bg-[#9C7A3C] disabled:opacity-40"
                         >
-                            Update Password
+                            {passwordForm.processing
+                                ? "Updating..."
+                                : "Update Password"}
                         </button>
+                        {passwordForm.recentlySuccessful && (
+                            <p className="text-sm text-green-700">
+                                ✓ Password changed successfully
+                            </p>
+                        )}
                     </form>
                 </div>
             </div>
-        </>
+        </StoreLayout>
     );
 }
