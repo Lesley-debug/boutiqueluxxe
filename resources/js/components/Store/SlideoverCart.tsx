@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Link, router } from '@inertiajs/react';
 import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
+import { formatPrice } from '@/lib/format';
 import type { Cart } from '@/types/cart';
 
 interface SlideoverCartProps {
@@ -178,8 +179,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                                         {/* Price & Remove */}
                                                         <div className="flex items-center gap-3">
                                                             <p className="text-sm font-medium text-[#171310]">
-                                                                {Number(item.line_total).toLocaleString()}{' '}
-                                                                FCFA
+                                                                {formatPrice(item.line_total)}
                                                             </p>
                                                             <button
                                                                 onClick={() => removeItem(item.id)}
@@ -211,7 +211,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                             </span>
                                         </div>
                                         <span className="text-sm font-medium text-[#9C7A3C]">
-                                            −{Number(cart.discount_amount).toLocaleString()} FCFA
+                                            −{formatPrice(cart.discount_amount)}
                                         </span>
                                     </div>
                                 )}
@@ -220,7 +220,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                 <div className="mb-3 flex items-center justify-between text-sm">
                                     <span className="text-[#252525]/70">Subtotal</span>
                                     <span className="font-medium text-[#171310]">
-                                        {Number(cart.subtotal).toLocaleString()} FCFA
+                                        {formatPrice(cart.subtotal)}
                                     </span>
                                 </div>
 
@@ -230,7 +230,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                         Total
                                     </span>
                                     <span className="font-serif text-xl font-medium text-[#171310]">
-                                        {Number(cart.total).toLocaleString()} FCFA
+                                        {formatPrice(cart.total)}
                                     </span>
                                 </div>
 

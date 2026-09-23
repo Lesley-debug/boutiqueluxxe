@@ -17,8 +17,10 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Admin\AboutPageController;
+use App\Http\Controllers\CategoryBrowseController;
 use App\Http\Controllers\Account\WishlistController;
 use App\Http\Controllers\Account\OrderController as AccountOrderController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -28,12 +30,15 @@ use App\Http\Controllers\Admin\NotificationController as AdminNotificationContro
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
 use App\Http\Controllers\Admin\JournalPostController as AdminJournalPostController;
 use App\Http\Controllers\Admin\StyleController as AdminStyleController;
+use App\Http\Controllers\Account\DashboardController as AccountDashboardController;
+use App\Http\Controllers\Admin\BulkPricingController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\ProductImageController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\Admin\HomepageContentController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Admin\NewsletterController as AdminNewsletterController;
+use App\Http\Controllers\Admin\HeroSlideController;
 
 
 // Public homepage
@@ -41,6 +46,7 @@ Route::get('/', [HomeController::class, 'index']);
 
 // Public shop + product pages
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/categories', [CategoryBrowseController::class, 'index'])->name('categories.browse');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Public info pages
@@ -71,11 +77,25 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Password Reset Routes
+    Route::get('/forgot-password', function () {
+        return Inertia::render('Auth/ForgotPassword');
+    })->name('password.request');
+    
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    
+    Route::get('/reset-password/{token}', function (string $token) {
+        return Inertia::render('Auth/ResetPassword', ['token' => $token]);
+    })->name('password.reset');
+    
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Customer account — requires login, no admin flag needed
 Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+    Route::get('/', [AccountDashboardController::class, 'index'])->name('dashboard');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -88,6 +108,17 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
 
     Route::get('orders', [AccountOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
+    
+    // User notifications
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    
+    // User activity
+    Route::get('activity', function () {
+        return Inertia::render('Account/Activity');
+    })->name('activity.index');
+
 });
 
 //Admin routes
@@ -121,6 +152,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::resource('testimonials', AdminTestimonialController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::get('newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
         Route::put('styles/{style}', [AdminStyleController::class, 'update'])->name('styles.update');
+
+        Route::get('bulk-pricing', [BulkPricingController::class, 'edit'])->name('bulk-pricing.edit');
+        Route::put('bulk-pricing', [BulkPricingController::class, 'update'])->name('bulk-pricing.update');
+        Route::resource('hero-slides', HeroSlideController::class);
     });
 
     Route::middleware('permission:orders.manage')->group(function () {
@@ -149,4 +184,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
         Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     });
+
 });

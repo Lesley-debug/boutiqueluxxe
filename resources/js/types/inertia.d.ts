@@ -47,5 +47,8 @@ declare module "@inertiajs/core" {
         megaMenu: MegaMenuCategory[];
         shopByStyle: ShopByStyleItem[];
         paymentFailed?: boolean;
+        welcomeBack?: boolean;
+        registered?: boolean;
+        wishlist_count?: number;
     }
 }

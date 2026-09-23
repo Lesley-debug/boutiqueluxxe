@@ -38,6 +38,7 @@ export interface Product {
     new_arrival: boolean;
     images: ProductImage[];
     variants: ProductVariant[];
+    is_wishlisted?: boolean;
 }
 
 export interface PaginatedProducts {
@@ -45,6 +46,7 @@ export interface PaginatedProducts {
     links: { url: string | null; label: string; active: boolean }[];
     current_page: number;
     last_page: number;
+    total: number;
 }
 
 export interface ShopFilters {

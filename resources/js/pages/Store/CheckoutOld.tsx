@@ -1,6 +1,7 @@
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
 import StoreLayout from "@/components/Store/StoreLayout";
+import { formatPrice } from "@/lib/format";
 import type { Address } from "@/types/account";
 import type { Cart } from "@/types/cart";
 
@@ -307,8 +308,7 @@ export default function Checkout({
                                     {item.quantity}
                                 </span>
                                 <span>
-                                    {Number(item.line_total).toLocaleString()}{" "}
-                                    FCFA
+                                    {formatPrice(item.line_total)}
                                 </span>
                             </div>
                         ))}
@@ -317,7 +317,7 @@ export default function Checkout({
                         <div className="flex justify-between">
                             <span>Subtotal</span>
                             <span>
-                                {Number(cart.subtotal).toLocaleString()} FCFA
+                                {formatPrice(cart.subtotal)}
                             </span>
                         </div>
                         {cart.discount_amount > 0 && (
@@ -329,18 +329,14 @@ export default function Checkout({
                                         : ""}
                                 </span>
                                 <span>
-                                    −
-                                    {Number(
-                                        cart.discount_amount,
-                                    ).toLocaleString()}{" "}
-                                    FCFA
+                                    −{formatPrice(cart.discount_amount)}
                                 </span>
                             </div>
                         )}
                         <div className="flex justify-between font-semibold">
                             <span>Total</span>
                             <span>
-                                {Number(cart.total).toLocaleString()} FCFA
+                                {formatPrice(cart.total)}
                             </span>
                         </div>
                     </div>

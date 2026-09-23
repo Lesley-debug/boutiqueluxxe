@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
+import { formatPrice } from "@/lib/format";
 
 interface DiscountRow {
     id: number;
@@ -51,7 +52,7 @@ export default function Index({ discounts }: { discounts: DiscountRow[] }) {
                                 <td>
                                     {d.type === "percentage"
                                         ? `${Number(d.value)}%`
-                                        : `${Number(d.value).toLocaleString()} FCFA`}
+                                        : formatPrice(d.value)}
                                 </td>
                                 <td>
                                     {d.uses_count}

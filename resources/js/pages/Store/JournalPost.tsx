@@ -18,7 +18,7 @@ export default function JournalPostPage({ post }: PostProps) {
                 <p className="text-xs text-[#252525]/40">
                     {new Date(post.published_at).toLocaleDateString()}
                 </p>
-                <h1 className="mt-2 text-3xl font-bold text-[#171310]">
+                <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-[#171310]">
                     {post.title}
                 </h1>
                 {post.cover_image_url && (
@@ -29,7 +29,7 @@ export default function JournalPostPage({ post }: PostProps) {
                     />
                 )}
                 <div
-                    className="prose prose-sm mt-8 max-w-none text-gray-700"
+                    className="prose prose-sm mt-8 max-w-none text-[#252525]/70"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                 />
             </article>

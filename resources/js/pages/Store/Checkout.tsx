@@ -3,6 +3,7 @@ import { FormEvent, useState } from "react";
 import { Check, ChevronRight, Package, CreditCard, Eye } from "lucide-react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import Reveal from "@/components/Store/Reveal";
+import { formatPrice } from "@/lib/format";
 import type { Address } from "@/types/account";
 import type { Cart } from "@/types/cart";
 
@@ -470,7 +471,7 @@ export default function Checkout({
                                                             {item.variant.product.name} × {item.quantity}
                                                         </span>
                                                         <span className="font-medium text-[#171310]">
-                                                            {Number(item.line_total).toLocaleString()} FCFA
+                                                            {formatPrice(item.line_total)}
                                                         </span>
                                                     </div>
                                                 ))}
@@ -530,7 +531,7 @@ export default function Checkout({
                                                     {item.variant.product.name} × {item.quantity}
                                                 </span>
                                                 <span className="font-medium text-[#171310]">
-                                                    {Number(item.line_total).toLocaleString()} FCFA
+                                                    {formatPrice(item.line_total)}
                                                 </span>
                                             </div>
                                         ))}
@@ -539,7 +540,7 @@ export default function Checkout({
                                         <div className="flex justify-between">
                                             <span className="text-[#252525]/70">Subtotal</span>
                                             <span className="font-medium text-[#171310]">
-                                                {Number(cart.subtotal).toLocaleString()} FCFA
+                                                {formatPrice(cart.subtotal)}
                                             </span>
                                         </div>
                                         {cart.discount_amount > 0 && (
@@ -549,7 +550,7 @@ export default function Checkout({
                                                     {cart.discount ? `(${cart.discount.code})` : ""}
                                                 </span>
                                                 <span className="font-medium">
-                                                    −{Number(cart.discount_amount).toLocaleString()} FCFA
+                                                    −{formatPrice(cart.discount_amount)}
                                                 </span>
                                             </div>
                                         )}
@@ -558,7 +559,7 @@ export default function Checkout({
                                                 Total
                                             </span>
                                             <span className="font-serif text-lg font-medium text-[#171310]">
-                                                {Number(cart.total).toLocaleString()} FCFA
+                                                {formatPrice(cart.total)}
                                             </span>
                                         </div>
                                     </div>

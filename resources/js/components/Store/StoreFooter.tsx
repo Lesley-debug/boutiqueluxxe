@@ -5,9 +5,11 @@ export default function StoreFooter() {
         <footer className="border-t border-[#171310]/10 bg-[#F8F5EF] px-6 py-20 text-[#171310]">
             <div className="mx-auto grid max-w-7xl grid-cols-2 gap-10 sm:grid-cols-5">
                 <div className="col-span-2 sm:col-span-1">
-                    <p className="font-serif text-lg tracking-tight">
-                        Designer Bags Boutique
-                    </p>
+                    <img
+                        src="/images/logo.png"
+                        alt="Boutique Luxxe"
+                        className="h-9 w-auto"
+                    />
                     <p className="mt-4 text-sm leading-relaxed text-[#252525]/60">
                         Discover pieces that define your style.
                     </p>

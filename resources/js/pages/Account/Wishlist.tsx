@@ -1,5 +1,6 @@
 import { Head, Link, router } from "@inertiajs/react";
 import StoreLayout from "@/components/Store/StoreLayout";
+import { formatPrice } from "@/lib/format";
 import type { WishlistItem } from "@/types/account";
 
 export default function Wishlist({ items }: { items: WishlistItem[] }) {
@@ -66,14 +67,11 @@ export default function Wishlist({ items }: { items: WishlistItem[] }) {
                                         </p>
                                         <div className="flex items-baseline gap-2">
                                             <span className="text-sm font-semibold text-[#171310]">
-                                                {Number(price).toLocaleString()} FCFA
+                                                {formatPrice(price)}
                                             </span>
                                             {item.product.sale_price && (
                                                 <span className="text-xs text-[#252525]/35 line-through">
-                                                    {Number(
-                                                        item.product.base_price,
-                                                    ).toLocaleString()}{" "}
-                                                    FCFA
+                                                    {formatPrice(item.product.base_price)}
                                                 </span>
                                             )}
                                         </div>

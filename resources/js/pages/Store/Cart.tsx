@@ -3,6 +3,7 @@ import { FormEvent } from 'react';
 import { ShoppingBag, Minus, Plus, Trash2, Tag, ArrowRight } from 'lucide-react';
 import StoreLayout from '@/components/Store/StoreLayout';
 import Reveal from '@/components/Store/Reveal';
+import { formatPrice } from '@/lib/format';
 import type { Cart } from '@/types/cart';
 
 export default function CartPage({ cart }: { cart: Cart }) {
@@ -143,7 +144,7 @@ export default function CartPage({ cart }: { cart: Cart }) {
 
                               <div className="text-right">
                                 <p className="font-serif text-lg font-medium text-[#171310]">
-                                  {Number(item.line_total).toLocaleString()} FCFA
+                                  {formatPrice(item.line_total)}
                                 </p>
                               </div>
                             </div>
@@ -235,7 +236,7 @@ export default function CartPage({ cart }: { cart: Cart }) {
                     <div className="flex justify-between text-sm">
                       <span className="text-[#252525]/70">Subtotal</span>
                       <span className="font-medium text-[#171310]">
-                        {Number(cart.subtotal).toLocaleString()} FCFA
+                        {formatPrice(cart.subtotal)}
                       </span>
                     </div>
                     
@@ -243,7 +244,7 @@ export default function CartPage({ cart }: { cart: Cart }) {
                       <div className="flex justify-between text-sm">
                         <span className="text-[#9C7A3C]">Discount</span>
                         <span className="font-medium text-[#9C7A3C]">
-                          −{Number(cart.discount_amount).toLocaleString()} FCFA
+                          −{formatPrice(cart.discount_amount)}
                         </span>
                       </div>
                     )}
@@ -253,7 +254,7 @@ export default function CartPage({ cart }: { cart: Cart }) {
                         Total
                       </span>
                       <span className="font-serif text-xl font-medium text-[#171310]">
-                        {Number(cart.total).toLocaleString()} FCFA
+                        {formatPrice(cart.total)}
                       </span>
                     </div>
                   </div>

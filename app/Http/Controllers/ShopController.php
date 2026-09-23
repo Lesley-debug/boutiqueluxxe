@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ShopController extends Controller
@@ -51,11 +52,21 @@ class ShopController extends Controller
         };
 
         $products = $query->paginate(12)->withQueryString();
+        $this->withWishlistFlag($products->getCollection());
 
         return Inertia::render('Store/Shop', [
             'products' => $products,
             'categories' => Category::topLevel()->active()->with('children')->orderBy('sort_order')->get(),
             'filters' => $request->only(['category', 'style', 'search', 'min_price', 'max_price', 'sort']),
         ]);
+    }
+
+    private function withWishlistFlag($products)
+    {
+        if (! Auth::check()) {
+            return $products->each(fn ($p) => $p->is_wishlisted = false);
+        }
+        $wishlistedIds = Auth::user()->wishlistItems()->pluck('product_id')->toArray();
+        return $products->each(fn ($p) => $p->is_wishlisted = in_array($p->id, $wishlistedIds));
     }
 }

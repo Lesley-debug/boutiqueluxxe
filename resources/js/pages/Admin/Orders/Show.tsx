@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
+import { formatPrice } from "@/lib/format";
 import type { Order } from "@/types/order";
 
 const STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
@@ -134,16 +135,10 @@ export default function Show({ order }: { order: Order }) {
                                     <td>{item.sku}</td>
                                     <td>{item.quantity}</td>
                                     <td>
-                                        {Number(
-                                            item.unit_price,
-                                        ).toLocaleString()}{" "}
-                                        FCFA
+                                        {formatPrice(item.unit_price)}
                                     </td>
                                     <td className="text-right">
-                                        {Number(
-                                            item.line_total,
-                                        ).toLocaleString()}{" "}
-                                        FCFA
+                                        {formatPrice(item.line_total)}
                                     </td>
                                 </tr>
                             ))}
@@ -152,12 +147,10 @@ export default function Show({ order }: { order: Order }) {
 
                     <div className="mt-4 space-y-1 text-right text-sm">
                         <p>
-                            Subtotal: {Number(order.subtotal).toLocaleString()}{" "}
-                            FCFA
+                            Subtotal: {formatPrice(order.subtotal)}
                         </p>
                         <p>
-                            Shipping:{" "}
-                            {Number(order.shipping_cost).toLocaleString()} FCFA
+                            Shipping: {formatPrice(order.shipping_cost)}
                         </p>
                         {Number(order.discount_amount) > 0 && (
                             <p className="text-green-700">
@@ -165,15 +158,11 @@ export default function Show({ order }: { order: Order }) {
                                 {order.discount_code
                                     ? `(${order.discount_code})`
                                     : ""}
-                                : −
-                                {Number(
-                                    order.discount_amount,
-                                ).toLocaleString()}{" "}
-                                FCFA
+                                : −{formatPrice(order.discount_amount)}
                             </p>
                         )}
                         <p className="text-base font-semibold">
-                            Total: {Number(order.total).toLocaleString()} FCFA
+                            Total: {formatPrice(order.total)}
                         </p>
                     </div>
                 </div>

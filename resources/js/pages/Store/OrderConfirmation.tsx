@@ -2,6 +2,7 @@ import { Head, Link } from "@inertiajs/react";
 import { CheckCircle, Package, MapPin, CreditCard, Mail, ArrowRight, Download } from "lucide-react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import Reveal from "@/components/Store/Reveal";
+import { formatPrice } from "@/lib/format";
 import type { Order } from "@/types/order";
 
 interface PaymentMethod {
@@ -113,12 +114,12 @@ export default function OrderConfirmation({
                                                         SKU: {item.sku}
                                                     </p>
                                                     <p className="mt-2 text-sm text-[#252525]/70">
-                                                        Qty: {item.quantity} × {Number(item.unit_price).toLocaleString()} FCFA
+                                                        Qty: {item.quantity} × {formatPrice(item.unit_price)}
                                                     </p>
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="font-serif text-lg font-medium text-[#171310]">
-                                                        {Number(item.line_total).toLocaleString()} FCFA
+                                                        {formatPrice(item.line_total)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -130,7 +131,7 @@ export default function OrderConfirmation({
                                         <div className="flex justify-between text-sm">
                                             <span className="text-[#252525]/70">Subtotal</span>
                                             <span className="font-medium text-[#171310]">
-                                                {Number(order.subtotal).toLocaleString()} FCFA
+                                                {formatPrice(order.subtotal)}
                                             </span>
                                         </div>
                                         {Number(order.discount_amount) > 0 && (
@@ -140,7 +141,7 @@ export default function OrderConfirmation({
                                                     {order.discount_code && `(${order.discount_code})`}
                                                 </span>
                                                 <span className="font-medium">
-                                                    −{Number(order.discount_amount).toLocaleString()} FCFA
+                                                    −{formatPrice(order.discount_amount)}
                                                 </span>
                                             </div>
                                         )}
@@ -149,7 +150,7 @@ export default function OrderConfirmation({
                                                 Total
                                             </span>
                                             <span className="font-serif text-xl font-medium text-[#171310]">
-                                                {Number(order.total).toLocaleString()} FCFA
+                                                {formatPrice(order.total)}
                                             </span>
                                         </div>
                                     </div>

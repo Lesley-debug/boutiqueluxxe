@@ -1,6 +1,7 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
+import { formatPrice } from "@/lib/format";
 
 interface OrderRow {
     id: number;
@@ -112,7 +113,7 @@ export default function Index({
                                 </td>
                                 <td>{order.items_count}</td>
                                 <td>
-                                    {Number(order.total).toLocaleString()} FCFA
+                                    {formatPrice(order.total)}
                                 </td>
                                 <td>
                                     <span

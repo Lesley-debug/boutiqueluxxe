@@ -77,7 +77,7 @@ export default function Form({ discount }: { discount?: DiscountData }) {
                         <div>
                             <label className="mb-1 block text-sm font-medium">
                                 Value{" "}
-                                {data.type === "percentage" ? "(%)" : "(FCFA)"}
+                                {data.type === "percentage" ? "(%)" : "($)"}
                             </label>
                             <input
                                 type="number"

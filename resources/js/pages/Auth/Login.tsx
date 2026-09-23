@@ -1,8 +1,10 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
 import AuthLayout from "@/components/Auth/AuthLayout";
 
 export default function Login() {
+    const { registered } = usePage().props as { registered?: boolean };
+
     const { data, setData, post, processing, errors } = useForm({
         email: "",
         password: "",
@@ -20,6 +22,12 @@ export default function Login() {
             heroSubtitle="Sign in to access your account and continue your journey with us."
         >
             <Head title="Log in" />
+
+            {registered && (
+                <p className="mb-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
+                    Account created — please log in to continue.
+                </p>
+            )}
 
             <div className="mb-10">
                 <h1 className="font-serif text-3xl font-medium tracking-tight text-[#171310]">

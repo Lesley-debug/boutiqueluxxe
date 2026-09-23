@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
+import { formatPrice } from "@/lib/format";
 
 interface Product {
     id: number;
@@ -50,7 +51,7 @@ export default function Index({ products }: { products: Paginated }) {
                                 <td className="py-2">{p.name}</td>
                                 <td>{p.category.name}</td>
                                 <td>
-                                    {Number(p.base_price).toLocaleString()} FCFA
+                                    {formatPrice(p.base_price)}
                                 </td>
                                 <td>{p.status}</td>
                                 <td className="space-x-3 text-right">

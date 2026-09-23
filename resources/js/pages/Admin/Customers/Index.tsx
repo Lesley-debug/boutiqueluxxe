@@ -1,6 +1,7 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
 import { FormEvent, useState } from "react";
+import { formatPrice } from "@/lib/format";
 
 interface CustomerRow {
     customer_email: string;
@@ -86,8 +87,7 @@ export default function Index({
                                 </td>
                                 <td>{c.orders_count}</td>
                                 <td>
-                                    {Number(c.total_spent).toLocaleString()}{" "}
-                                    FCFA
+                                    {formatPrice(c.total_spent)}
                                 </td>
                                 <td className="text-xs text-stone-500">
                                     {new Date(

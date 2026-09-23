@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { TrendingUp, ShoppingBag, Users, AlertTriangle } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, Table, Badge, EmptyState } from "@/components/admin/ui";
+import { formatPrice } from "@/lib/format";
 import type { DashboardData } from "@/types/dashboard";
 
 const STATUS_TONE: Record<
@@ -16,7 +17,7 @@ const STATUS_TONE: Record<
 };
 
 function fcfa(n: number | string) {
-    return `${Number(n).toLocaleString()} FCFA`;
+    return formatPrice(n);
 }
 
 export default function Dashboard({

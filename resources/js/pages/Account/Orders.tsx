@@ -1,5 +1,15 @@
 import { Head, Link, router } from "@inertiajs/react";
+import { ChevronRight, Clock, RotateCcw, Truck, CheckCircle, XCircle } from "lucide-react";
 import StoreLayout from "@/components/Store/StoreLayout";
+import { formatPrice } from "@/lib/format";
+
+const STATUS_CONFIG: Record<string, { label: string; icon: typeof Clock; color: string; bg: string }> = {
+    pending:    { label: "Pending",    icon: Clock,       color: "text-amber-700",  bg: "bg-amber-50" },
+    processing: { label: "Processing", icon: RotateCcw,   color: "text-blue-700",   bg: "bg-blue-50" },
+    shipped:    { label: "Shipped",    icon: Truck,       color: "text-indigo-700", bg: "bg-indigo-50" },
+    delivered:  { label: "Delivered",  icon: CheckCircle, color: "text-green-700",  bg: "bg-green-50" },
+    cancelled:  { label: "Cancelled",  icon: XCircle,     color: "text-red-600",    bg: "bg-red-50" },
+};
 
 interface OrderRow {
     id: number;
@@ -41,40 +51,42 @@ export default function Orders({ orders }: { orders: Paginated }) {
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {orders.data.map((order) => (
-                            <Link
-                                key={order.id}
-                                href={`/account/orders/${order.id}`}
-                                className="block rounded-2xl border border-[#171310]/10 bg-white p-6 transition duration-300 hover:border-[#9C7A3C]/30 hover:shadow-[0_8px_24px_-8px_rgba(23,19,16,0.15)]"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-[#171310]">
-                                            Order {order.order_number}
+                    <div className="space-y-3">
+                        {orders.data.map((order) => {
+                            const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
+                            const StatusIcon = cfg.icon;
+                            return (
+                                <Link
+                                    key={order.id}
+                                    href={`/account/orders/${order.id}`}
+                                    className="group flex items-center gap-4 rounded-2xl border border-[#171310]/8 bg-white p-4 transition duration-300 hover:border-[#9C7A3C]/30 hover:shadow-[0_8px_24px_-8px_rgba(23,19,16,0.12)] sm:p-5"
+                                >
+                                    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${cfg.bg}`}>
+                                        <StatusIcon size={16} className={cfg.color} strokeWidth={1.8} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-semibold text-[#171310]">
+                                            {order.order_number}
                                         </p>
-                                        <p className="mt-1 text-sm text-[#252525]/60">
-                                            Placed on{" "}
-                                            {new Date(
-                                                order.created_at,
-                                            ).toLocaleDateString("en-US", {
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
+                                        <p className="mt-0.5 text-[11px] text-[#252525]/45">
+                                            {new Date(order.created_at).toLocaleDateString("en-US", {
+                                                month: "short", day: "numeric", year: "numeric",
                                             })}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className="rounded-full bg-[#F8F5EF] px-4 py-1.5 text-xs font-medium uppercase tracking-[0.1em] text-[#171310]">
-                                            {order.status}
+                                    <div className="flex flex-col items-end gap-1.5">
+                                        <span className="text-sm font-semibold text-[#171310]">
+                                            {formatPrice(order.total)}
                                         </span>
-                                        <span className="text-lg font-semibold text-[#171310]">
-                                            {Number(order.total).toLocaleString()} FCFA
+                                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.1em] ${cfg.bg} ${cfg.color}`}>
+                                            <StatusIcon size={9} strokeWidth={2.5} />
+                                            {cfg.label}
                                         </span>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
+                                    <ChevronRight size={15} className="flex-shrink-0 text-[#171310]/15 transition-transform group-hover:translate-x-0.5 group-hover:text-[#9C7A3C]" />
+                                </Link>
+                            );
+                        })}
                     </div>
                 )}
 
