@@ -81,6 +81,9 @@ export default function Form({ discount }: { discount?: DiscountData }) {
                             </label>
                             <input
                                 type="number"
+                                min="0"
+                                max={data.type === "percentage" ? "100" : undefined}
+                                step="0.01"
                                 value={data.value}
                                 onChange={(e) =>
                                     setData("value", e.target.value)
