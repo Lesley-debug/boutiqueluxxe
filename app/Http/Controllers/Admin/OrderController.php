@@ -51,7 +51,11 @@ class OrderController extends Controller
 
         $order->update(['status' => $data['status']]);
 
-        Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order));
+        try {
+            Mail::to($order->customer_email)->send(new OrderStatusUpdatedMail($order));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
         return back()->with('success', 'Order status updated.');
     }

@@ -121,7 +121,7 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                         <div className="rounded-2xl bg-white p-4 shadow-sm">
                             <div className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-[#9C7A3C]" />
-                                <p className="text-xs font-semibold text-[#171310]">Confirmation sent to</p>
+                                <p className="text-xs font-semibold text-[#171310]">Confirmation email</p>
                             </div>
                             <p className="mt-1 text-sm text-[#252525]/70">{order.customer_email}</p>
                         </div>
@@ -164,7 +164,7 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                 Thank you, <span className="font-medium text-[#171310]">{order.customer_name}</span>!
                             </p>
                             <p className="text-sm text-[#252525]/60">
-                                We've received your order and will send you a confirmation email shortly
+                                We've received your order. Confirmation and payment details will be sent by email.
                             </p>
                             
                             {/* Order Number Badge */}
@@ -321,10 +321,10 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                     <div className="rounded-2xl border border-[#171310]/10 bg-white p-6">
                                         <h3 className="mb-4 flex items-center gap-2 font-serif text-lg font-medium text-[#171310]">
                                             <Mail className="h-5 w-5 text-[#9C7A3C]" />
-                                            <span>Confirmation Sent</span>
+                                            <span>Confirmation Email</span>
                                         </h3>
                                         <p className="text-sm leading-relaxed text-[#252525]/70">
-                                            A confirmation email has been sent to:
+                                            Confirmation details will be sent to:
                                         </p>
                                         <p className="mt-2 font-medium text-[#171310]">
                                             {order.customer_email}

@@ -184,13 +184,21 @@ class CheckoutController extends Controller
 
         session()->push('guest_order_ids', $order->id);
 
-        Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
+        try {
+            Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
-        $admins = User::where('is_admin', true)->get();
-        Notification::send($admins, new NewOrderNotification($order));
+        try {
+            $admins = User::where('is_admin', true)->get();
+            Notification::send($admins, new NewOrderNotification($order));
 
-        foreach ($result['lowStockVariants'] as $variant) {
-            Notification::send($admins, new LowStockNotification($variant));
+            foreach ($result['lowStockVariants'] as $variant) {
+                Notification::send($admins, new LowStockNotification($variant));
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
         }
 
         return redirect("/orders/{$order->order_number}/confirmation");
