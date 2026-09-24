@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,7 @@ class GoogleAuthController extends Controller
         return redirect()->away('https://accounts.google.com/o/oauth2/v2/auth?'.$query);
     }
 
-    public function callback(Request $request): RedirectResponse
+    public function callback(Request $request, CartService $cartService): RedirectResponse
     {
         $this->ensureConfigured();
         $expectedState = (string) $request->session()->pull('google_oauth_state');
@@ -77,8 +78,16 @@ class GoogleAuthController extends Controller
             $user->forceFill(['email_verified_at' => now()])->save();
         }
 
+        $guestSessionId = $request->session()->getId();
+
         Auth::login($user, true);
         $request->session()->regenerate();
+
+        try {
+            $cartService->mergeGuestCartIntoUser($guestSessionId, $user->id);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
 
         return redirect()->intended('/');
     }

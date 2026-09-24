@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,8 +22,10 @@ class AuthController extends Controller
         return Inertia::render('Auth/Login');
     }
 
-    public function login(Request $request)
+    public function login(Request $request, CartService $cartService)
     {
+        $guestSessionId = $request->session()->getId();
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
@@ -35,6 +38,12 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        try {
+            $cartService->mergeGuestCartIntoUser($guestSessionId, (int) Auth::id());
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
         return redirect('/')->with('welcomeBack', true);
     }
