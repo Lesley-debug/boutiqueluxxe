@@ -49,7 +49,6 @@ class CheckoutController extends Controller
             'city' => ['required', 'string', 'max:100'],
             'region' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
-            'payment_method' => ['required', 'string', 'in:paypal,bank,card,zelle'],
         ]);
 
         $cart = $this->cartService->current();
@@ -152,7 +151,6 @@ class CheckoutController extends Controller
                     'status' => 'pending',
                     'fulfillment_method' => $data['fulfillment_method'],
                     'payment_status' => 'pending',
-                    'payment_method' => $data['payment_method'],
                     'customer_name' => $data['customer_name'],
                     'customer_email' => $data['customer_email'],
                     'customer_phone' => $data['customer_phone'],

@@ -1,21 +1,15 @@
 import { Head, Link } from "@inertiajs/react";
-import { CheckCircle, Package, MapPin, CreditCard, Mail, ArrowRight, Download } from "lucide-react";
+import { CheckCircle, Package, MapPin, Mail, ArrowRight, Download } from "lucide-react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import Reveal from "@/components/Store/Reveal";
 import { formatPrice } from "@/lib/format";
 import type { Order } from "@/types/order";
 
-const PAYMENT_LABELS: Record<string, string> = {
-    paypal:  "PayPal",
-    bank:    "International Bank Transfer (SWIFT/IBAN)",
-    card:    "Debit / Credit Card",
-    zelle:   "Zelle / Cash App",
-};
 
 export default function OrderConfirmation({ order }: { order: Order }) {
     return (
         <StoreLayout showMobileHeader>
-            <Head title="Order Confirmed" />
+            <Head title="Reservation Received" />
 
             {/* ── Mobile layout ── */}
             <div className="lg:hidden">
@@ -26,7 +20,7 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#9C7A3C]/10">
                             <CheckCircle className="h-7 w-7 text-[#9C7A3C]" />
                         </div>
-                        <h1 className="font-serif text-2xl font-medium text-[#171310]">Order Confirmed</h1>
+                        <h1 className="font-serif text-2xl font-medium text-[#171310]">Reservation Received</h1>
                         <p className="mt-1 text-sm text-[#252525]/60">
                             Thank you, <span className="font-medium text-[#171310]">{order.customer_name}</span>!
                         </p>
@@ -34,35 +28,9 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                             <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-[#252525]/50">Order</span>
                             <span className="font-mono text-sm font-semibold text-[#171310]">{order.order_number}</span>
                         </div>
-                        <div className="mt-2">
-                            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
-                                order.payment_status === "paid"
-                                    ? "bg-[#9C7A3C]/10 text-[#9C7A3C]"
-                                    : "bg-amber-50 text-amber-700"
-                            }`}>
-                                {order.payment_status === "paid" ? (
-                                    <><CheckCircle className="h-3.5 w-3.5" /> Payment Received</>
-                                ) : (
-                                    <><CreditCard className="h-3.5 w-3.5" /> Awaiting Payment</>
-                                )}
-                            </span>
-                        </div>
                     </div>
 
                     <div className="space-y-3 px-4">
-
-                        {/* Payment method */}
-                        <div className="rounded-2xl bg-white p-4 shadow-sm">
-                            <h2 className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9C7A3C]">
-                                <CreditCard className="h-3.5 w-3.5" /> Payment Method
-                            </h2>
-                            <p className="text-sm font-medium text-[#171310]">
-                                {order.payment_method ? PAYMENT_LABELS[order.payment_method] ?? order.payment_method : "—"}
-                            </p>
-                            <p className="mt-1.5 text-xs leading-relaxed text-[#9C7A3C]">
-                                Payment instructions will be sent to {order.customer_email} within 24 hours.
-                            </p>
-                        </div>
 
                         {/* Order items */}
                         <div className="rounded-2xl bg-white p-4 shadow-sm">
@@ -164,7 +132,7 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                 Thank you, <span className="font-medium text-[#171310]">{order.customer_name}</span>!
                             </p>
                             <p className="text-sm text-[#252525]/60">
-                                We've received your order. Confirmation and payment details will be sent by email.
+                                We've received your reservation request. Our team will contact you shortly
                             </p>
                             
                             {/* Order Number Badge */}
@@ -177,28 +145,6 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                 </span>
                             </div>
 
-                            {/* Payment Status Badge */}
-                            <div className="mt-4">
-                                <span
-                                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-                                        order.payment_status === "paid"
-                                            ? "bg-[#9C7A3C]/10 text-[#9C7A3C]"
-                                            : "bg-amber-50 text-amber-700"
-                                    }`}
-                                >
-                                    {order.payment_status === "paid" ? (
-                                        <>
-                                            <CheckCircle className="h-4 w-4" />
-                                            <span>Payment Received</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <CreditCard className="h-4 w-4" />
-                                            <span>Awaiting Payment</span>
-                                        </>
-                                    )}
-                                </span>
-                            </div>
                         </div>
                     </Reveal>
 
@@ -294,23 +240,6 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                 </div>
                             </Reveal>
 
-                            {/* Payment Method */}
-                            <Reveal delay={200}>
-                                <div className="rounded-2xl border border-[#171310]/10 bg-white p-8">
-                                    <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-medium text-[#171310]">
-                                        <CreditCard className="h-5 w-5 text-[#9C7A3C]" />
-                                        <span>Payment Method</span>
-                                    </h2>
-                                    <p className="text-base font-medium text-[#171310]">
-                                        {order.payment_method ? PAYMENT_LABELS[order.payment_method] ?? order.payment_method : "—"}
-                                    </p>
-                                    <p className="mt-3 text-sm leading-relaxed text-[#9C7A3C]">
-                                        Payment instructions will be sent to{" "}
-                                        <span className="font-medium text-[#171310]">{order.customer_email}</span>{" "}
-                                        within 24 hours.
-                                    </p>
-                                </div>
-                            </Reveal>
                         </div>
 
                         {/* Sidebar - Next Steps */}
@@ -360,7 +289,7 @@ export default function OrderConfirmation({ order }: { order: Order }) {
                                                 className="flex w-full items-center justify-between rounded-lg border border-[#171310]/10 bg-white p-3 text-sm transition hover:border-[#9C7A3C] hover:shadow-sm"
                                             >
                                                 <span className="font-medium text-[#171310]">
-                                                    Print Receipt
+                                                    Print Reservation
                                                 </span>
                                                 <Download className="h-4 w-4 text-[#9C7A3C]" />
                                             </button>

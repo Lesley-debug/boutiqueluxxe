@@ -4,10 +4,10 @@ import StoreLayout from "@/components/Store/StoreLayout";
 
 const FAQS = [
     ["Do I need an account to place an order?", "No. You can add products to your cart and complete checkout as a guest. Creating an account makes order history, saved addresses, and wishlists easier to manage."],
-    ["How does payment work?", "Checkout creates a secure order reservation. Our team reviews availability and sends payment instructions to the email address supplied at checkout."],
+    ["What happens after checkout?", "Checkout creates a secure reservation request. Our team reviews availability and contacts you directly using the details supplied at checkout to discuss the next steps."],
     ["Do you deliver internationally?", "Yes. Boutique Luxxe serves local and international clients. Delivery timing, destination availability, duties, and any additional charges are confirmed before payment."],
     ["How do I know a piece is authentic?", "Each listing is reviewed before publication and includes the product details available to us. Contact our team if you need additional documentation or condition information before ordering."],
-    ["Can I change or cancel my order?", "Contact us as soon as possible. A change may be possible before payment or dispatch, but cannot be guaranteed once fulfillment has started."],
+    ["Can I change or cancel my order?", "Contact us as soon as possible. A change may be possible before confirmation or dispatch, but cannot be guaranteed once fulfillment has started."],
     ["What is your return process?", "Return eligibility depends on the item, its condition, and the delivery destination. Contact us before sending anything back; returns require written authorization."],
     ["Why have I not received an order email?", "Check your spam folder and confirm the email address used at checkout. If it is still missing, contact us with your order number."],
 ];
@@ -15,7 +15,7 @@ const FAQS = [
 export default function Faqs() {
     return (
         <StoreLayout showMobileHeader>
-            <Head title="Frequently Asked Questions"><meta name="description" content="Answers about Boutique Luxxe ordering, payment, delivery, authenticity, and support." /></Head>
+            <Head title="Frequently Asked Questions"><meta name="description" content="Answers about Boutique Luxxe reservations, delivery, authenticity, and support." /></Head>
             <section className="border-b border-[#181512]/10 bg-white px-5 py-14 sm:py-20">
                 <div className="mx-auto max-w-3xl text-center">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9B7435]">Client care</p>

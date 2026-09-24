@@ -6,7 +6,6 @@ import {
     Check,
     ChevronRight,
     Clock,
-    CreditCard,
     MapPin,
     Shield,
 } from "lucide-react";
@@ -30,27 +29,8 @@ interface CheckoutForm {
     city: string;
     region: string;
     notes: string;
-    payment_method: string;
 }
 
-const PAYMENT_METHODS = [
-    {
-        id: "paypal",
-        label: "PayPal",
-        sub: "PayPal balance or linked card",
-    },
-    { id: "bank", label: "Bank Transfer", sub: "SWIFT / IBAN" },
-    {
-        id: "card",
-        label: "Debit / Credit Card",
-        sub: "Visa · Mastercard · Amex",
-    },
-    {
-        id: "zelle",
-        label: "Zelle / Cash App",
-        sub: "US bank-to-bank transfer",
-    },
-] as const;
 
 const TRUST = [
     { icon: Shield, text: "Secure Reservation" },
@@ -63,7 +43,6 @@ const inputCls =
 const labelCls = "mb-1.5 block text-xs font-medium text-[#252525]/60";
 
 type View = "form" | "review";
-type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 type CheckoutErrors = Partial<Record<keyof CheckoutForm, string>>;
 type SetCheckoutData = <K extends keyof CheckoutForm>(
     key: K,
@@ -190,8 +169,6 @@ interface FormViewProps {
     errors: CheckoutErrors;
     pageErrors: Record<string, string>;
     addresses: Address[];
-    selectedPayment: string;
-    onSelectPayment: (id: string) => void;
     onSelectAddress: (id: string) => void;
     canReview: boolean;
     onReview: () => void;
@@ -203,8 +180,6 @@ function FormView({
     errors,
     pageErrors,
     addresses,
-    selectedPayment,
-    onSelectPayment,
     onSelectAddress,
     canReview,
     onReview,
@@ -216,9 +191,8 @@ function FormView({
                     Complete Your Reservation
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-[#252525]/65 lg:text-sm">
-                    Reserve your order today. No payment is charged now — our team
-                    will review your selection and send complete payment instructions
-                    directly to your email.
+                    Submit your reservation securely. Our team will review availability
+                    and contact you directly to discuss the next steps.
                 </p>
             </div>
 
@@ -389,60 +363,6 @@ function FormView({
                 </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm lg:border lg:border-[#171310]/8 lg:p-6 lg:shadow-none">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9C7A3C]">
-                    Select Payment Method
-                </p>
-
-                <div className="mb-4 mt-2 rounded-xl border border-[#171310]/8 bg-[#F8F5EF] px-3 py-2.5">
-                    <p className="text-[11px] leading-relaxed text-[#252525]/60">
-                        No payment is charged now. After confirming your order,
-                        payment instructions will be emailed.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                    {PAYMENT_METHODS.map((method) => (
-                        <button
-                            key={method.id}
-                            type="button"
-                            onClick={() => onSelectPayment(method.id)}
-                            aria-pressed={selectedPayment === method.id}
-                            className={`flex items-center justify-between rounded-xl border px-3 py-3 text-left transition ${
-                                selectedPayment === method.id
-                                    ? "border-[#9C7A3C] bg-[#9C7A3C]/5"
-                                    : "border-[#171310]/10 bg-[#F8F5EF] hover:border-[#9C7A3C]/40"
-                            }`}
-                        >
-                            <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold text-[#171310]">
-                                    {method.label}
-                                </p>
-                                <p className="text-[10px] text-[#252525]/45">
-                                    {method.sub}
-                                </p>
-                            </div>
-
-                            <div
-                                className={`ml-2 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border-2 transition ${
-                                    selectedPayment === method.id
-                                        ? "border-[#9C7A3C] bg-[#9C7A3C]"
-                                        : "border-[#171310]/20"
-                                }`}
-                            >
-                                {selectedPayment === method.id && (
-                                    <Check
-                                        size={8}
-                                        strokeWidth={3}
-                                        className="text-white"
-                                    />
-                                )}
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             <div className="flex items-center gap-3">
                 <Link
                     href="/cart"
@@ -469,7 +389,6 @@ function FormView({
 interface ReviewViewProps {
     data: CheckoutForm;
     cart: Cart;
-    selectedMethod: PaymentMethod | undefined;
     agreedToTerms: boolean;
     onToggleTerms: () => void;
     onBack: () => void;
@@ -480,7 +399,6 @@ interface ReviewViewProps {
 function ReviewView({
     data,
     cart,
-    selectedMethod,
     agreedToTerms,
     onToggleTerms,
     onBack,
@@ -531,34 +449,6 @@ function ReviewView({
                             {data.customer_phone}
                         </p>
                     )}
-                </div>
-            </div>
-
-            <div className="overflow-hidden rounded-2xl bg-white shadow-sm lg:border lg:border-[#171310]/8 lg:shadow-none">
-                <div className="flex items-center gap-3 border-b border-[#171310]/6 px-5 py-3.5">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#9C7A3C]/10">
-                        <CreditCard
-                            size={14}
-                            className="text-[#9C7A3C]"
-                            strokeWidth={2}
-                        />
-                    </div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#252525]/50">
-                        Payment Method
-                    </p>
-                </div>
-
-                <div className="px-5 py-4">
-                    <p className="text-sm font-semibold text-[#171310]">
-                        {selectedMethod?.label}
-                    </p>
-                    <p className="mt-0.5 text-xs text-[#252525]/45">
-                        {selectedMethod?.sub}
-                    </p>
-                    <p className="mt-2 text-[11px] leading-relaxed text-[#9C7A3C]">
-                        Payment instructions will be sent to {data.customer_email}
-                        within 24 hours.
-                    </p>
                 </div>
             </div>
 
@@ -650,7 +540,7 @@ function ReviewView({
                         "Processing..."
                     ) : (
                         <>
-                            Complete Order <span className="opacity-70">·</span>{" "}
+                            Submit Reservation <span className="opacity-70">·</span>{" "}
                             {formatPrice(cart.total)}
                         </>
                     )}
@@ -668,7 +558,6 @@ export default function Checkout({
     const pageErrors = usePage().props.errors as Record<string, string>;
     const defaultAddress = addresses[0];
 
-    const [selectedPayment, setSelectedPayment] = useState("");
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [view, setView] = useState<View>("form");
 
@@ -682,7 +571,6 @@ export default function Checkout({
             city: defaultAddress?.city ?? "",
             region: defaultAddress?.region ?? "",
             notes: "",
-            payment_method: "",
         });
 
     function selectAddress(addressId: string) {
@@ -701,19 +589,13 @@ export default function Checkout({
         }));
     }
 
-    function handleSelectPayment(id: string) {
-        setSelectedPayment(id);
-        setData("payment_method", id);
-    }
-
     function canReview() {
         return Boolean(
             data.customer_name.trim() &&
                 data.customer_email.trim() &&
                 data.customer_phone.trim() &&
                 data.shipping_address.trim() &&
-                data.city.trim() &&
-                selectedPayment,
+                data.city.trim(),
         );
     }
 
@@ -721,10 +603,6 @@ export default function Checkout({
         event.preventDefault();
         post("/checkout");
     }
-
-    const selectedMethod = PAYMENT_METHODS.find(
-        (method) => method.id === selectedPayment,
-    );
 
     const checkoutContent =
         view === "form" ? (
@@ -734,8 +612,6 @@ export default function Checkout({
                 errors={errors}
                 pageErrors={pageErrors}
                 addresses={addresses}
-                selectedPayment={selectedPayment}
-                onSelectPayment={handleSelectPayment}
                 onSelectAddress={selectAddress}
                 canReview={canReview()}
                 onReview={() => setView("review")}
@@ -744,7 +620,6 @@ export default function Checkout({
             <ReviewView
                 data={data}
                 cart={cart}
-                selectedMethod={selectedMethod}
                 agreedToTerms={agreedToTerms}
                 onToggleTerms={() => setAgreedToTerms((current) => !current)}
                 onBack={() => setView("form")}
