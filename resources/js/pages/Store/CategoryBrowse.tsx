@@ -132,70 +132,67 @@ function DesktopCategoryBrowse({ categories }: { categories: CategoryRow[] }) {
     const withStock = categories.filter((c) => c.products_count > 0);
 
     return (
-        <StoreLayout>
-            <Head title="Categories" />
-            <Container className="py-16">
-                <h1 className="mb-2 font-serif text-3xl font-medium text-[#171310]">
-                    All Categories
-                </h1>
-                <p className="mb-8 text-sm text-[#252525]/50">
-                    Browse our curated collections
-                </p>
+        <Container className="py-16">
+            <h1 className="mb-2 font-serif text-3xl font-medium text-[#171310]">
+                All Categories
+            </h1>
+            <p className="mb-8 text-sm text-[#252525]/50">
+                Browse our curated collections
+            </p>
 
-                {withStock.length === 0 ? (
-                    <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#171310]/15 py-20 text-center">
-                        <PackageSearch size={32} className="mb-4 text-[#171310]/30" />
-                        <p className="text-sm text-[#252525]/60">
-                            No categories are stocked yet — check back soon.
-                        </p>
-                        <Link href="/shop" className="mt-4 text-sm underline">
-                            Browse all products instead
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="space-y-3">
-                        {withStock.map((c) => (
-                            <Link
-                                key={c.id}
-                                href={`/shop?category=${c.slug}`}
-                                className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md active:bg-[#F8F5EF]"
-                            >
-                                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-[#F0EBE3]">
-                                    {c.image ? (
-                                        <img
-                                            src={c.image}
-                                            alt={c.name}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full w-full items-center justify-center">
-                                            <span className="font-serif text-2xl text-[#9C7A3C]">◈</span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-semibold text-[#171310]">{c.name}</p>
-                                    {c.description && (
-                                        <p className="mt-0.5 truncate text-xs italic text-[#252525]/50">
-                                            {c.description}
-                                        </p>
-                                    )}
-                                    <p className="mt-1 flex items-center gap-1 text-xs text-[#252525]/50">
-                                        <ShoppingBag size={11} />
-                                        {c.products_count}+ Products
+            {withStock.length === 0 ? (
+                <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#171310]/15 py-20 text-center">
+                    <PackageSearch size={32} className="mb-4 text-[#171310]/30" />
+                    <p className="text-sm text-[#252525]/60">
+                        No categories are stocked yet — check back soon.
+                    </p>
+                    <Link href="/shop" className="mt-4 text-sm underline">
+                        Browse all products instead
+                    </Link>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {withStock.map((c) => (
+                        <Link
+                            key={c.id}
+                            href={`/shop?category=${c.slug}`}
+                            className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md active:bg-[#F8F5EF]"
+                        >
+                            <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-[#F0EBE3]">
+                                {c.image ? (
+                                    <img
+                                        src={c.image}
+                                        alt={c.name}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                        <span className="font-serif text-2xl text-[#9C7A3C]">◈</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-[#171310]">{c.name}</p>
+                                {c.description && (
+                                    <p className="mt-0.5 truncate text-xs italic text-[#252525]/50">
+                                        {c.description}
                                     </p>
-                                </div>
-                                <div className="flex-shrink-0">
-                                    <span className="rounded-full bg-[#9C7A3C] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-white">
-                                        View Category
-                                    </span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </Container>
-        </StoreLayout>
+                                )}
+                                <p className="mt-1 flex items-center gap-1 text-xs text-[#252525]/50">
+                                    <ShoppingBag size={11} />
+                                    {c.products_count}+ Products
+                                </p>
+                            </div>
+                            <div className="flex-shrink-0">
+                                <span className="rounded-full bg-[#9C7A3C] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-white">
+                                    View Category
+                                </span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
+        </Container>
     );
 }
 
@@ -207,7 +204,7 @@ export default function CategoryBrowse({
     categories: CategoryRow[];
 }) {
     return (
-        <>
+        <StoreLayout showMobileHeader>
             <Head title="Categories" />
             {/* Mobile */}
             <div className="lg:hidden">
@@ -217,6 +214,6 @@ export default function CategoryBrowse({
             <div className="hidden lg:block">
                 <DesktopCategoryBrowse categories={categories} />
             </div>
-        </>
+        </StoreLayout>
     );
 }

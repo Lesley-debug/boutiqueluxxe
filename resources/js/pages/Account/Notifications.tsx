@@ -78,7 +78,7 @@ export default function Notifications({
     }
 
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="Notifications" />
 
             <div className="mx-auto max-w-3xl px-6 pb-6 pt-10 sm:px-8 lg:pb-20">

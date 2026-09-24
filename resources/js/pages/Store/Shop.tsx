@@ -118,6 +118,7 @@ export default function Shop({ products, categories, filters }: ShopProps) {
     const [search, setSearch] = useState(filters.search ?? "");
     const [searchOpen, setSearchOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
+    const selectedSort = typeof filters.sort === "string" ? filters.sort : "";
 
     function applyFilter(next: Partial<ShopFilters>) {
         router.get("/shop", { ...filters, ...next }, { preserveState: true, preserveScroll: true });
@@ -132,7 +133,7 @@ export default function Shop({ products, categories, filters }: ShopProps) {
 
     const activeFilterCount = [
         filters.category,
-        filters.sort,
+        selectedSort,
         filters.search,
         filters.min_price,
         filters.max_price,
@@ -141,87 +142,83 @@ export default function Shop({ products, categories, filters }: ShopProps) {
     const activeCategory = categories.find((c) => c.slug === filters.category);
 
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="Shop" />
 
             {/* ── Mobile layout ── */}
             <div className="lg:hidden">
-                {/* Compact top bar */}
-                <div className="sticky top-0 z-30 border-b border-[#171310]/8 bg-[#F8F5EF]/95 backdrop-blur-sm">
-                    {/* Title row */}
-                    <div className="flex items-center justify-between px-4 py-3">
-                        {searchOpen ? (
-                            <form onSubmit={onSearchSubmit} className="flex flex-1 items-center gap-2">
-                                <div className="relative flex-1">
-                                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#252525]/35" />
-                                    <input
-                                        autoFocus
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Search..."
-                                        className="w-full rounded-full border-0 bg-white py-2 pl-8 pr-4 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/30"
-                                    />
-                                </div>
+                <div className="px-4 pb-2 pt-4">
+                    {searchOpen ? (
+                        <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#252525]/35" />
+                                <input
+                                    autoFocus
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="Search..."
+                                    className="w-full rounded-full border-0 bg-white py-2.5 pl-8 pr-4 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#9C7A3C]/30"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSearchOpen(false)}
+                                className="text-xs text-[#252525]/50"
+                            >
+                                Cancel
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="flex items-end justify-between gap-3">
+                            <div className="min-w-0">
+                                <h1 className="truncate font-serif text-xl font-medium text-[#171310]">
+                                    {activeCategory?.name ?? "Collection"}
+                                </h1>
+                                <p className="text-[10px] text-[#252525]/45">
+                                    {products.total} pieces
+                                </p>
+                            </div>
+                            <div className="flex flex-shrink-0 items-center gap-2">
                                 <button
-                                    type="button"
-                                    onClick={() => setSearchOpen(false)}
-                                    className="text-xs text-[#252525]/50"
+                                    onClick={() => setSearchOpen(true)}
+                                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
+                                    aria-label="Search products"
                                 >
-                                    Cancel
+                                    <Search size={15} color="#171310" strokeWidth={2} />
                                 </button>
-                            </form>
-                        ) : (
-                            <>
-                                <div>
-                                    <h1 className="font-serif text-xl font-medium text-[#171310]">
-                                        {activeCategory?.name ?? "Collection"}
-                                    </h1>
-                                    <p className="text-[10px] text-[#252525]/45">
-                                        {products.total} pieces
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => setSearchOpen(true)}
-                                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
-                                    >
-                                        <Search size={15} color="#171310" strokeWidth={2} />
-                                    </button>
-                                    <button
-                                        onClick={() => setFilterOpen(true)}
-                                        className="relative flex h-9 items-center gap-1.5 rounded-full bg-white px-3 shadow-sm"
-                                    >
-                                        <SlidersHorizontal size={14} color="#171310" strokeWidth={2} />
-                                        <span className="text-[11px] font-medium text-[#171310]">Filter</span>
-                                        {activeFilterCount > 0 && (
-                                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[8px] font-bold text-white">
-                                                {activeFilterCount}
-                                            </span>
-                                        )}
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
+                                <button
+                                    onClick={() => setFilterOpen(true)}
+                                    className="relative flex h-9 items-center gap-1.5 rounded-full bg-white px-3 shadow-sm"
+                                >
+                                    <SlidersHorizontal size={14} color="#171310" strokeWidth={2} />
+                                    <span className="text-[11px] font-medium text-[#171310]">Filter</span>
+                                    {activeFilterCount > 0 && (
+                                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[8px] font-bold text-white">
+                                            {activeFilterCount}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Active filter pills */}
-                    {(filters.category || filters.sort) && (
-                        <div className="scrollbar-hide flex gap-2 overflow-x-auto px-4 pb-2">
+                    {(filters.category || selectedSort) && (
+                        <div className="mt-3 flex flex-wrap gap-2">
                             {filters.category && (
                                 <button
                                     onClick={() => applyFilter({ category: undefined })}
-                                    className="flex flex-shrink-0 items-center gap-1 rounded-full bg-[#171310] px-3 py-1 text-[10px] font-medium text-white"
+                                    className="flex items-center gap-1 rounded-full bg-[#171310] px-3 py-1 text-[10px] font-medium text-white"
                                 >
                                     {activeCategory?.name ?? filters.category}
                                     <X size={10} />
                                 </button>
                             )}
-                            {filters.sort && (
+                            {selectedSort && (
                                 <button
                                     onClick={() => applyFilter({ sort: undefined })}
-                                    className="flex flex-shrink-0 items-center gap-1 rounded-full bg-[#171310] px-3 py-1 text-[10px] font-medium text-white"
+                                    className="flex items-center gap-1 rounded-full bg-[#171310] px-3 py-1 text-[10px] font-medium text-white"
                                 >
-                                    {SORT_LABELS[filters.sort] ?? filters.sort}
+                                    {SORT_LABELS[selectedSort] ?? selectedSort}
                                     <X size={10} />
                                 </button>
                             )}
@@ -246,7 +243,7 @@ export default function Shop({ products, categories, filters }: ShopProps) {
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             {products.data.map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
@@ -364,7 +361,7 @@ export default function Shop({ products, categories, filters }: ShopProps) {
                                     </p>
                                     <div className="relative">
                                         <select
-                                            value={String(filters.sort ?? "")}
+                                            value={selectedSort}
                                             onChange={(e) => applyFilter({ sort: e.target.value || undefined })}
                                             className="w-full appearance-none rounded-xl border border-[#171310]/10 bg-white py-2.5 pl-4 pr-8 text-sm text-[#171310] focus:border-[#9C7A3C] focus:outline-none"
                                         >

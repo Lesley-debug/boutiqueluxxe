@@ -77,16 +77,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                     />
                 )}
                 {product.new_arrival && (
-                    <span className="absolute left-3 top-3 rounded-full bg-[#171310] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-white sm:left-4 sm:top-4">
+                    <span className="absolute left-1.5 top-1.5 rounded-full bg-[#171310] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-white sm:left-4 sm:top-4 sm:px-2.5 sm:py-1 sm:text-[9px] sm:tracking-[0.15em]">
                         New
                     </span>
                 )}
                 <button
                     onClick={toggleWishlist}
-                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-[#171310] shadow-sm transition hover:bg-white sm:right-4 sm:top-4"
+                    className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[#171310] shadow-sm transition hover:bg-white sm:right-4 sm:top-4 sm:h-8 sm:w-8"
                 >
                     <Heart
-                        size={15}
+                        className="h-3.5 w-3.5 sm:h-[15px] sm:w-[15px]"
                         fill={wishlisted ? "#9C7A3C" : "none"}
                         color={wishlisted ? "#9C7A3C" : "currentColor"}
                     />
@@ -94,34 +94,34 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 {/* Toast message */}
                 {message && (
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#171310]/90 px-3 py-1.5 text-[10px] font-medium text-white shadow-lg">
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#171310]/90 px-2 py-1 text-[8px] font-medium text-white shadow-lg sm:bottom-3 sm:px-3 sm:py-1.5 sm:text-[10px]">
                         {message}
                     </div>
                 )}
 
                 {!inStock && (
                     <div className="absolute inset-0 flex items-center justify-center bg-[#F8F5EF]/80">
-                        <span className="rounded-full bg-[#171310] px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] text-white">
+                        <span className="rounded-full bg-[#171310] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-white sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.15em]">
                             Sold Out
                         </span>
                     </div>
                 )}
             </div>
-            <div className="mt-3 space-y-1 sm:mt-4">
+            <div className="mt-2 space-y-0.5 sm:mt-4 sm:space-y-1">
                 {product.brand && (
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#171310]/40 sm:text-[10px]">
+                    <p className="truncate text-[8px] font-semibold uppercase tracking-[0.1em] text-[#171310]/40 sm:text-[10px] sm:tracking-[0.15em]">
                         {product.brand}
                     </p>
                 )}
-                <p className="text-xs text-[#171310] transition group-hover:text-[#9C7A3C] sm:text-sm">
+                <p className="line-clamp-2 text-[11px] leading-tight text-[#171310] transition group-hover:text-[#9C7A3C] sm:text-sm">
                     {product.name}
                 </p>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-xs font-semibold text-[#171310] sm:text-sm">
+                <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                    <span className="text-[10px] font-semibold text-[#171310] sm:text-sm">
                         ${Number(price).toLocaleString()}
                     </span>
                     {product.sale_price && (
-                        <span className="text-[10px] text-[#252525]/35 line-through sm:text-xs">
+                        <span className="text-[9px] text-[#252525]/35 line-through sm:text-xs">
                             ${Number(product.base_price).toLocaleString()}
                         </span>
                     )}

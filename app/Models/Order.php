@@ -18,6 +18,7 @@ class Order extends Model
         'status',
         'fulfillment_method',
         'payment_status',
+        'payment_method',
         'payment_reference',
         'customer_name',
         'customer_email',

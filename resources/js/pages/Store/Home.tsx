@@ -213,7 +213,7 @@ export default function Home({
     const [showWelcome, setShowWelcome] = useState(!!welcomeBack);
 
     return (
-        <StoreLayout noPadding>
+        <StoreLayout noPadding showMobileHeader>
             <Head title="Home" />
 
             {/* ── Mobile feed (lg and above sees nothing here) ── */}
@@ -246,8 +246,6 @@ export default function Home({
                 )}
                 {/* Hero Carousel */}
                 <HeroCarousel slides={heroSlides} />
-
-                <MobileCategoryShortcuts />
 
                 {/* Category Discovery — refined layout */}
                 {categories.length > 0 && (
@@ -613,7 +611,7 @@ export default function Home({
                                         Flexible Fulfillment
                                     </h3>
                                     <p className="mt-4 text-sm leading-relaxed text-white/60">
-                                        Choose delivery or in-store pickup to suit your lifestyle.
+                                        Delivery coordinated for local and international clients.
                                     </p>
                                 </div>
                             </Reveal>

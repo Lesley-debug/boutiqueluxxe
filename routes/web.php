@@ -39,6 +39,10 @@ use App\Http\Controllers\Admin\HomepageContentController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Admin\NewsletterController as AdminNewsletterController;
 use App\Http\Controllers\Admin\HeroSlideController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 
 
 // Public homepage
@@ -51,45 +55,57 @@ Route::get('/products/{slug}', [ProductController::class, 'show'])->name('produc
 
 // Public info pages
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/faqs', fn () => Inertia::render('Store/Faqs'))->name('faqs');
+Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
+Route::get('/privacy-policy', fn () => Inertia::render('Store/PrivacyPolicy'))->name('privacy');
+Route::get('/terms-of-service', fn () => Inertia::render('Store/TermsOfService'))->name('terms');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
 Route::get('/collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');
 Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');
 Route::get('/journal/{slug}', [JournalController::class, 'show'])->name('journal.show');
 
-Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
+Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.store');
 
 // Cart — open to guests and logged-in users alike
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
-Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
-Route::patch('/cart/items/{item}', [CartController::class, 'update'])->name('cart.items.update');
-Route::delete('/cart/items/{item}', [CartController::class, 'destroy'])->name('cart.items.destroy');
-Route::post('/cart/discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
+Route::post('/cart/items', [CartController::class, 'store'])->middleware('throttle:cart')->name('cart.items.store');
+Route::patch('/cart/items/{item}', [CartController::class, 'update'])->middleware('throttle:cart')->name('cart.items.update');
+Route::delete('/cart/items/{item}', [CartController::class, 'destroy'])->middleware('throttle:cart')->name('cart.items.destroy');
+Route::post('/cart/discount', [CartController::class, 'applyDiscount'])->middleware('throttle:cart')->name('cart.discount.apply');
 Route::delete('/cart/discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
 
 // Checkout — also open to guests (guest checkout), user_id is nullable on orders
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/orders/{orderNumber}/confirmation', [OrderController::class, 'confirmation'])->name('orders.confirmation');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');
+Route::get('/orders/{orderNumber}/confirmation', [OrderController::class, 'confirmation'])->middleware('throttle:confirmation')->name('orders.confirmation');
 
 // Auth
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-    
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:auth')->name('google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:auth')->name('google.callback');
+
     // Password Reset Routes
     Route::get('/forgot-password', function () {
         return Inertia::render('Auth/ForgotPassword');
     })->name('password.request');
     
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:auth')->name('password.email');
     
     Route::get('/reset-password/{token}', function (string $token) {
-        return Inertia::render('Auth/ResetPassword', ['token' => $token]);
+        return Inertia::render('Auth/ResetPassword', [
+            'token' => $token,
+            'email' => request('email', ''),
+        ]);
     })->name('password.reset');
     
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:auth')->name('password.update');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 

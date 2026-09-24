@@ -1,6 +1,7 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import { Heart, User, ShoppingBag } from "lucide-react";
+import SlideoverCart from "./SlideoverCart";
+import { Heart, User, ShoppingCart } from "lucide-react";
 
 const ANNOUNCEMENT =
     "Complimentary shipping on selected orders · Discover the latest collection";
@@ -9,6 +10,7 @@ export default function StoreHeader() {
     const { auth, cart, megaMenu, shopByStyle } = usePage().props;
     const currentPath = usePage().url;
     const [categoriesOpen, setCategoriesOpen] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
 
     function navLinkClass(path: string) {
         const active =
@@ -18,7 +20,7 @@ export default function StoreHeader() {
     }
 
     return (
-        <header className="sticky top-0 z-40 bg-[#F8F5EF] shadow-sm">
+        <header className="w-full border-b border-[#181512]/10 bg-[#FAF8F4]/95 shadow-sm backdrop-blur-md">
             {/* Announcement bar — always visible, never collapses */}
             <div className="bg-[#171310] px-4 py-2 text-center text-[10px] font-medium tracking-[0.05em] text-[#F8F5EF]/90 sm:text-[11px]">
                 {ANNOUNCEMENT}
@@ -52,9 +54,9 @@ export default function StoreHeader() {
                     <Link
                         href="/cart"
                         className="relative rounded-full p-2.5 text-[#171310]"
-                        title="Bag"
+                        title="Shopping cart"
                     >
-                        <ShoppingBag size={20} />
+                        <ShoppingCart size={20} strokeWidth={1.8} />
                         {cart.item_count > 0 && (
                             <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[9px] font-bold text-white">
                                 {cart.item_count}
@@ -71,11 +73,11 @@ export default function StoreHeader() {
                         <img
                             src="/images/logo.png"
                             alt="Boutique Luxxe"
-                            className="h-10 w-auto"
+                            className="h-12 w-auto"
                         />
                     </Link>
 
-                    <nav className="flex items-center gap-8 text-xs font-medium uppercase tracking-[0.15em] text-[#171310]">
+                    <nav className="flex items-center gap-3 text-[9px] xl:gap-5 xl:text-[11px] font-medium uppercase tracking-[0.15em] text-[#171310]">
                         <Link href="/shop" className={navLinkClass("/shop")}>
                             Shop
                         </Link>
@@ -161,6 +163,9 @@ export default function StoreHeader() {
                         >
                             Journal
                         </Link>
+                        <Link href="/testimonials" className={navLinkClass("/testimonials")}>Testimonials</Link>
+                        <Link href="/faqs" className={navLinkClass("/faqs")}>FAQs</Link>
+                        <Link href="/contact" className={navLinkClass("/contact")}>Contact</Link>
                     </nav>
 
                     <div className="flex items-center gap-1">
@@ -190,21 +195,22 @@ export default function StoreHeader() {
                                 <User size={18} />
                             </Link>
                         )}
-                        <Link
-                            href="/cart"
+                        <button
+                            type="button"
+                            onClick={() => setCartOpen(true)}
                             className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#9C7A3C]"
-                            title="Bag"
+                            title="Open shopping cart"
+                            aria-label="Open shopping cart"
                         >
-                            <ShoppingBag size={18} />
+                            <ShoppingCart size={19} strokeWidth={1.8} />
                             {cart.item_count > 0 && (
-                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">
-                                    {cart.item_count}
-                                </span>
+                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">{cart.item_count}</span>
                             )}
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>
+            <SlideoverCart cart={cart} isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </header>
     );
 }

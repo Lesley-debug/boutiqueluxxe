@@ -1,8 +1,9 @@
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { useMemo, useState } from "react";
-import { Heart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight, Share2, Check } from "lucide-react";
+import { Heart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight, Check, Share2, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 import ProductCard from "@/components/Store/ProductCard";
 import StoreLayout from "@/components/Store/StoreLayout";
+import ShareProductDialog from "@/components/Store/ShareProductDialog";
 import { formatPrice } from "@/lib/format";
 import type { Product, ProductVariant } from "@/types/catalog";
 
@@ -12,6 +13,7 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product, related }: ProductDetailProps) {
+    const { auth } = usePage().props;
     const [activeImage, setActiveImage] = useState(0);
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
         product.variants[0]?.id ?? null,
@@ -20,13 +22,14 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
     const [wishlisted, setWishlisted] = useState(!!product.is_wishlisted);
     const [addedToCart, setAddedToCart] = useState(false);
     const [adding, setAdding] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
 
     const colors = useMemo(
-        () => [...new Set(product.variants.map((v) => v.color).filter(Boolean))],
+        () => [...new Set(product.variants.map((v) => v.color).filter((color): color is string => Boolean(color)))],
         [product.variants],
     );
     const sizes = useMemo(
-        () => [...new Set(product.variants.map((v) => v.size).filter(Boolean))],
+        () => [...new Set(product.variants.map((v) => v.size).filter((size): size is string => Boolean(size)))],
         [product.variants],
     );
 
@@ -64,11 +67,17 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
     }
 
     function toggleWishlist() {
+        if (!auth.user) {
+            router.visit("/login");
+            return;
+        }
+
         const next = !wishlisted;
         setWishlisted(next);
         if (wishlisted) {
             router.delete(`/account/wishlist/${product.id}`, {
                 preserveScroll: true,
+                preserveState: true,
                 onError: () => setWishlisted(true),
             });
         } else {
@@ -77,6 +86,7 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                 { product_id: product.id },
                 {
                     preserveScroll: true,
+                    preserveState: true,
                     onError: () => setWishlisted(false),
                 },
             );
@@ -91,8 +101,13 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
     }
 
     return (
-        <StoreLayout>
-            <Head title={product.name} />
+        <StoreLayout showMobileHeader>
+            <Head title={product.name}>
+                <meta name="description" content={product.description ?? `Shop ${product.name} at Boutique Luxxe.`} />
+                <meta property="og:title" content={product.name} />
+                <meta property="og:description" content={product.description ?? `Discover ${product.name} at Boutique Luxxe.`} />
+                {product.images[0] && <meta property="og:image" content={product.images[0].url} />}
+            </Head>
 
             {/* ── Mobile Layout ── */}
             <div className="lg:hidden">
@@ -104,9 +119,17 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                     >
                         <ChevronLeft size={17} color="#171310" strokeWidth={2} />
                     </button>
-                    <span className="flex-1 truncate text-center text-sm font-medium text-[#171310]">
+                    <span className="min-w-0 flex-1 truncate text-center text-sm font-medium text-[#171310]">
                         {product.name}
                     </span>
+                    <button
+                        type="button"
+                        onClick={() => setShareOpen(true)}
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F8F5EF] text-[#171310]"
+                        aria-label="Share this product"
+                    >
+                        <Share2 size={16} strokeWidth={1.8} />
+                    </button>
                     <button
                         onClick={toggleWishlist}
                         className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#F8F5EF]"
@@ -121,13 +144,13 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                 </div>
                 {/* Full-bleed image with swipe navigation */}
                 <div className="relative bg-[#F0EBE3]">
-                    <div className="relative aspect-[4/5] overflow-hidden">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-[radial-gradient(circle_at_50%_35%,#FBF8F2_0%,#EDE5D8_70%)]">
                         {product.images[activeImage] && (
                             <img
                                 key={activeImage}
                                 src={product.images[activeImage].url}
                                 alt={product.images[activeImage].alt_text ?? product.name}
-                                className="h-full w-full object-cover transition-opacity duration-300"
+                                className="h-full w-full object-cover transition duration-500"
                             />
                         )}
 
@@ -173,8 +196,24 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                     </div>
                 </div> {/* end bg-[#F0EBE3] wrapper */}
 
+                {product.images.length > 1 && (
+                    <div className="scrollbar-none flex gap-2 overflow-x-auto bg-[#F0EBE3] px-4 pb-5 pt-3">
+                        {product.images.map((image, index) => (
+                            <button
+                                type="button"
+                                key={image.id}
+                                onClick={() => setActiveImage(index)}
+                                aria-label={`View image ${index + 1}`}
+                                className={`h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-white p-0.5 transition ${index === activeImage ? "border-[#9B7435] shadow-md" : "border-transparent opacity-65"}`}
+                            >
+                                <img src={image.url} alt="" className="h-full w-full rounded-[9px] object-cover" />
+                            </button>
+                        ))}
+                    </div>
+                )}
+
                 {/* Product info card */}
-                <div className="rounded-t-3xl bg-white px-5 pt-5 pb-6 -mt-4 relative z-10 shadow-[0_-4px_24px_-4px_rgba(23,19,16,0.08)]">
+                <div className="relative z-10 -mt-3 rounded-t-[28px] border-t border-[#D9BB82]/25 bg-white px-5 pb-7 pt-6 shadow-[0_-12px_36px_-18px_rgba(23,19,16,.3)]">
                     {/* Brand + name + price */}
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
@@ -298,30 +337,39 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                             )}
                         </button>
                     </div>
+
+                    <div className="mt-6 grid grid-cols-3 divide-x divide-[#181512]/8 rounded-2xl bg-[#F8F5EF] px-2 py-4 text-center">
+                        <div className="px-2"><ShieldCheck className="mx-auto h-4 w-4 text-[#9B7435]" /><p className="mt-1 text-[9px] font-semibold uppercase tracking-[.1em] text-[#514C46]">Secure</p></div>
+                        <div className="px-2"><Truck className="mx-auto h-4 w-4 text-[#9B7435]" /><p className="mt-1 text-[9px] font-semibold uppercase tracking-[.1em] text-[#514C46]">Delivery</p></div>
+                        <div className="px-2"><RotateCcw className="mx-auto h-4 w-4 text-[#9B7435]" /><p className="mt-1 text-[9px] font-semibold uppercase tracking-[.1em] text-[#514C46]">Returns</p></div>
+                    </div>
                 </div>
             </div>
 
             {/* ── Desktop Layout ── */}
             <div className="hidden lg:block">
-                <div className="mx-auto max-w-7xl px-8 py-16 lg:px-12">
+                <div className="mx-auto max-w-[1440px] px-8 py-12 lg:px-12 xl:px-16">
+                    <div className="mb-8 flex items-center gap-2 text-[11px] uppercase tracking-[.14em] text-[#6F6961]">
+                        <span>Boutique Luxxe</span><span>/</span><span>{product.category?.name ?? "Collection"}</span><span>/</span><span className="truncate text-[#181512]">{product.name}</span>
+                    </div>
                     {/* Back */}
                     <button
                         onClick={() => window.history.back()}
-                        className="mb-8 inline-flex items-center gap-1.5 text-sm text-[#252525]/45 transition hover:text-[#171310]"
+                        className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#252525]/45 transition hover:text-[#171310]"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
                         Back
                     </button>
-                    <div className="grid grid-cols-2 gap-16">
+                    <div className="grid grid-cols-[minmax(0,1.12fr)_minmax(390px,.88fr)] items-start gap-12 xl:gap-20">
                         {/* Gallery */}
                         <div className="space-y-4">
-                            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-[#171310]/[0.05] bg-[#F0EBE3]">
+                            <div className="group relative aspect-[4/5] overflow-hidden rounded-[28px] border border-[#171310]/[0.06] bg-[radial-gradient(circle_at_50%_35%,#FBF8F2_0%,#EDE5D8_75%)] shadow-[0_24px_70px_-45px_rgba(24,21,18,.5)]">
                                 {product.images[activeImage] && (
                                     <img
                                         key={activeImage}
                                         src={product.images[activeImage].url}
                                         alt={product.images[activeImage].alt_text ?? product.name}
-                                        className="h-full w-full object-cover transition-opacity duration-300"
+                                        className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.015]"
                                     />
                                 )}
                                 {product.new_arrival && (
@@ -350,13 +398,13 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                         </div>
 
                         {/* Details */}
-                        <div className="flex flex-col justify-center">
+                        <div className="sticky top-28 flex flex-col rounded-[28px] border border-[#181512]/8 bg-white p-8 shadow-[0_24px_70px_-48px_rgba(24,21,18,.45)] xl:p-10">
                             {product.brand && (
                                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#9C7A3C]">
                                     {product.brand}
                                 </p>
                             )}
-                            <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-[#171310]">
+                            <h1 className="mt-2 font-serif text-5xl font-medium leading-[1.05] tracking-tight text-[#171310]">
                                 {product.name}
                             </h1>
 
@@ -394,12 +442,9 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                             <button
                                                 key={color}
                                                 onClick={() => pickByAttribute(color, selectedVariant?.size)}
-                                                className={`rounded-full border px-5 py-2.5 text-sm transition duration-300 ${
-                                                    selectedVariant?.color === color
-                                                        ? "border-[#171310] bg-[#171310] text-white"
-                                                        : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C]"
-                                                }`}
+                                                className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition duration-300 ${selectedVariant?.color === color ? "border-[#181512] bg-[#181512] text-white shadow-md" : "border-[#181512]/12 bg-[#FAF8F4] text-[#181512] hover:border-[#9B7435]"}`}
                                             >
+                                                <span className="h-5 w-5 rounded-full border border-black/10 bg-[#9B7435] shadow-inner" style={{ backgroundColor: color.toLowerCase() }} />
                                                 {color}
                                             </button>
                                         ))}
@@ -467,6 +512,16 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                     )}
                                 </button>
 
+                                <button
+                                    type="button"
+                                    onClick={() => setShareOpen(true)}
+                                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#171310]/15 text-[#171310] transition hover:border-[#9B7435] hover:bg-[#9B7435] hover:text-white"
+                                    title="Share this product"
+                                    aria-label="Share this product"
+                                >
+                                    <Share2 size={18} strokeWidth={1.8} />
+                                </button>
+
                                 {/* Wishlist */}
                                 <button
                                     onClick={toggleWishlist}
@@ -484,6 +539,12 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                     />
                                 </button>
                             </div>
+
+                            <div className="mt-8 grid grid-cols-3 gap-2 border-t border-[#181512]/8 pt-6">
+                                <div className="rounded-xl bg-[#F8F5EF] p-3"><ShieldCheck className="h-5 w-5 text-[#9B7435]" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">Secure checkout</p></div>
+                                <div className="rounded-xl bg-[#F8F5EF] p-3"><Truck className="h-5 w-5 text-[#9B7435]" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">Tracked delivery</p></div>
+                                <div className="rounded-xl bg-[#F8F5EF] p-3"><RotateCcw className="h-5 w-5 text-[#9B7435]" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">Easy returns</p></div>
+                            </div>
                         </div>
                     </div>
 
@@ -491,9 +552,7 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                     {related.length > 0 && (
                         <div className="mt-24 border-t border-[#171310]/8 pt-16">
                             <div className="mb-10 flex items-end justify-between">
-                                <h2 className="font-serif text-3xl font-medium text-[#171310]">
-                                    You may also like
-                                </h2>
+                                <div><p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[#9B7435]">Complete the collection</p><h2 className="mt-2 font-serif text-4xl font-medium text-[#171310]">You may also like</h2></div>
                             </div>
                             <div className="grid grid-cols-4 gap-6">
                                 {related.map((p) => (
@@ -509,15 +568,20 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
             {related.length > 0 && (
                 <div className="mt-8 lg:hidden px-4 pb-6">
                     <h2 className="mb-4 font-serif text-lg font-medium text-[#171310]">You may also like</h2>
-                    <div className="scrollbar-hide flex gap-3 overflow-x-auto pb-1">
+                    <div className="grid grid-cols-2 gap-3">
                         {related.map((p) => (
-                            <div key={p.id} className="w-40 flex-shrink-0">
-                                <ProductCard product={p} />
-                            </div>
+                            <ProductCard key={p.id} product={p} />
                         ))}
                     </div>
                 </div>
             )}
+
+            <ShareProductDialog
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+                productName={product.name}
+                imageUrl={product.images[0]?.url}
+            />
         </StoreLayout>
     );
 }

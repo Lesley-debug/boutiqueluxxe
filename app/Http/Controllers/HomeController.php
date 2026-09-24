@@ -18,8 +18,22 @@ class HomeController extends Controller
         return Inertia::render('Store/Home', [
             'heroSlides' => HeroSlide::active()->orderBy('sort_order')->get(),
             'categories' => $this->categoryCardData(),
-            'featuredProducts' => $this->withWishlistFlag(Product::active()->featured()->with('images')->latest()->limit(3)->get()),
-            'newArrivals' => $this->withWishlistFlag(Product::active()->newArrivals()->with('images')->latest()->limit(6)->get()),
+            'featuredProducts' => $this->withWishlistFlag(
+                Product::active()
+                    ->featured()
+                    ->with(['images', 'variants'])
+                    ->latest()
+                    ->limit(2)
+                    ->get()
+            ),
+            'newArrivals' => $this->withWishlistFlag(
+                Product::active()
+                    ->newArrivals()
+                    ->with(['images', 'variants'])
+                    ->latest()
+                    ->limit(4)
+                    ->get()
+            ),
             'content' => HomepageContent::current(),
             'styles' => Style::whereNotNull('image')
                 ->whereHas('products', fn($q) => $q->active())
@@ -43,7 +57,7 @@ class HomeController extends Controller
     {
         return Category::topLevel()
             ->active()
-            ->with(['products' => fn($q) => $q->active()->with('images')->latest()->limit(1)])
+            ->with(['products' => fn($q) => $q->active()->with(['images', 'variants'])->latest()->limit(1)])
             ->orderBy('sort_order')
             ->get()
             ->map(fn($category) => [

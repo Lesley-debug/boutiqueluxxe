@@ -17,7 +17,7 @@ export default function Collections({
     collections: CollectionCard[];
 }) {
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="Collections" />
             <Container className="py-16 sm:py-20">
                 {/* Header */}

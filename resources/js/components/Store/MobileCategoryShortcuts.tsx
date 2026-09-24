@@ -17,12 +17,12 @@ export default function MobileCategoryShortcuts() {
     if (shortcuts.length === 0) return null;
 
     return (
-        <div className="scrollbar-hide flex gap-2.5 overflow-x-auto px-4 py-4 lg:hidden">
+        <div className="flex flex-wrap gap-2 px-4 py-4 lg:hidden">
             {shortcuts.map((s) => (
                 <Link
                     key={s.label}
                     href={s.href}
-                    className="flex-shrink-0 whitespace-nowrap rounded-full border border-[#171310]/15 bg-white px-4 py-2 text-xs font-medium text-[#171310] transition active:bg-[#171310] active:text-white"
+                    className="whitespace-nowrap rounded-full border border-[#171310]/15 bg-white px-4 py-2 text-xs font-medium text-[#171310] transition active:bg-[#171310] active:text-white"
                 >
                     {s.label}
                 </Link>

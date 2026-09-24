@@ -1,3 +1,5 @@
+import type { Cart } from "./cart";
+
 export interface SharedAuthUser {
     id: number;
     name: string;
@@ -18,9 +20,7 @@ export interface SharedNotifications {
     recent: NotificationItem[];
 }
 
-export interface SharedCart {
-    item_count: number;
-}
+export interface SharedCart extends Cart {}
 
 export interface MegaMenuCategory {
     id: number;
@@ -50,5 +50,6 @@ declare module "@inertiajs/core" {
         welcomeBack?: boolean;
         registered?: boolean;
         wishlist_count?: number;
+        unreadNotificationsCount?: number;
     }
 }

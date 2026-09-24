@@ -25,7 +25,7 @@ export default function NewsletterSection() {
                 <Reveal>
                     <Eyebrow>Newsletter</Eyebrow>
                     <h2 className="mt-4 font-serif text-4xl font-medium tracking-tight text-[#171310] md:text-5xl">
-                        Enter the world of Designer Bags Boutique.
+                        Enter the world of Boutique Luxxe.
                     </h2>
                     <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-[#252525]/60">
                         Be the first to discover new arrivals, exclusive edits,

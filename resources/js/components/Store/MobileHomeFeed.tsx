@@ -1,21 +1,10 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import {
-    Bell,
     Search,
-    ShoppingBag,
     SlidersHorizontal,
     Heart,
     Plus,
-    Menu,
-    X,
-    Home,
-    LayoutGrid,
-    Package,
-    User,
     ChevronRight,
-    Mail,
-    Info,
-    BookOpen,
     Star,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -82,115 +71,6 @@ interface MobileHomeFeedProps {
     categories: CategoryCard[];
     testimonials: TestimonialItem[];
     content: HomepageContent;
-}
-
-// ─── Hamburger Drawer ─────────────────────────────────────────────────────────
-
-function HamburgerDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-    const { auth } = usePage().props;
-    const navLinks = [
-        { label: "Home", href: "/", icon: Home },
-        { label: "Shop All", href: "/shop", icon: LayoutGrid },
-        { label: "New Arrivals", href: "/shop?sort=newest", icon: Star },
-        { label: "Collections", href: "/collections", icon: Package },
-        { label: "Journal", href: "/journal", icon: BookOpen },
-        { label: "About", href: "/about", icon: Info },
-        { label: "Newsletter", href: "#newsletter", icon: Mail },
-    ];
-
-    return (
-        <>
-            {/* Backdrop */}
-            <div
-                className={`fixed inset-0 z-50 bg-[#171310]/50 backdrop-blur-sm transition-opacity duration-300 ${
-                    open ? "opacity-100" : "pointer-events-none opacity-0"
-                }`}
-                onClick={onClose}
-            />
-            {/* Drawer */}
-            <div
-                className={`fixed left-0 top-0 z-50 h-full w-[78%] max-w-[320px] bg-[#F8F5EF] shadow-2xl transition-transform duration-400 ease-out ${
-                    open ? "translate-x-0" : "-translate-x-full"
-                }`}
-            >
-                <div className="flex h-full flex-col">
-                    {/* Header */}
-                    <div className="flex items-center justify-between border-b border-[#171310]/10 px-5 py-5">
-                        <img src="/images/logo.png" alt="Boutique Luxxe" className="h-8 w-auto" />
-                        <button
-                            onClick={onClose}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
-                        >
-                            <X size={17} color="#171310" />
-                        </button>
-                    </div>
-
-                    {/* User greeting */}
-                    {auth.user && (
-                        <div className="border-b border-[#171310]/10 px-5 py-4">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9C7A3C]">
-                                Signed in as
-                            </p>
-                            <p className="mt-0.5 text-sm font-medium text-[#171310]">
-                                {auth.user.name}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Nav links */}
-                    <nav className="flex-1 overflow-y-auto px-3 py-4">
-                        {navLinks.map((link) => {
-                            const Icon = link.icon;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    onClick={onClose}
-                                    className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-medium text-[#171310] transition active:bg-[#171310]/5"
-                                >
-                                    <Icon size={17} strokeWidth={1.8} className="text-[#9C7A3C]" />
-                                    {link.label}
-                                </Link>
-                            );
-                        })}
-                    </nav>
-
-                    {/* Bottom auth links */}
-                    <div className="border-t border-[#171310]/10 px-5 py-5">
-                        {auth.user ? (
-                            <div className="space-y-2">
-                                <Link
-                                    href="/account"
-                                    onClick={onClose}
-                                    className="flex w-full items-center gap-2 rounded-full bg-[#171310] px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
-                                >
-                                    <User size={14} />
-                                    My Account
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                <Link
-                                    href="/login"
-                                    onClick={onClose}
-                                    className="block w-full rounded-full bg-[#171310] px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    onClick={onClose}
-                                    className="block w-full rounded-full border border-[#171310]/20 px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-[#171310]"
-                                >
-                                    Create Account
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </>
-    );
 }
 
 // ─── Hero Card ────────────────────────────────────────────────────────────────
@@ -270,15 +150,15 @@ function CategoryQuickScroll({ categories }: { categories: CategoryCard[] }) {
             href: `/shop?category=${c.slug}`,
             image: c.image,
         })),
-    ].slice(0, 7);
+    ].slice(0, 6);
 
     return (
-        <div className="scrollbar-hide flex gap-3 overflow-x-auto px-4 pb-1">
+        <div className="grid grid-cols-3 gap-x-3 gap-y-4 px-4">
             {items.map((s, i) => (
                 <Link
                     key={`${i}-${s.href}`}
                     href={s.href}
-                    className="flex flex-shrink-0 flex-col items-center gap-1.5"
+                    className="flex min-w-0 flex-col items-center gap-1.5"
                 >
                     <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[#171310]/10 bg-white shadow-sm">
                         {s.image ? (
@@ -287,7 +167,7 @@ function CategoryQuickScroll({ categories }: { categories: CategoryCard[] }) {
                             <span className="font-serif text-base text-[#9C7A3C]">✦</span>
                         )}
                     </div>
-                    <span className="w-16 text-center text-[10px] font-medium leading-tight text-[#171310]/65">
+                    <span className="w-full truncate text-center text-[10px] font-medium leading-tight text-[#171310]/65">
                         {s.label}
                     </span>
                 </Link>
@@ -420,7 +300,7 @@ function MobileProductCard({ product }: { product: ProductItem }) {
     }
 
     return (
-        <Link href={`/products/${product.slug}`} className="block">
+        <Link href={`/products/${product.slug}`} className="block min-w-0 max-w-full overflow-hidden">
             <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-[#F0EBE3]">
                 {primary && (
                     <img
@@ -436,10 +316,10 @@ function MobileProductCard({ product }: { product: ProductItem }) {
                 )}
                 <button
                     onClick={toggleWishlist}
-                    className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 shadow-sm"
+                    className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-sm"
                 >
                     <Heart
-                        size={11}
+                        size={15}
                         fill={product.is_wishlisted ? "#9C7A3C" : "none"}
                         color={product.is_wishlisted ? "#9C7A3C" : "#171310"}
                     />
@@ -459,8 +339,8 @@ function MobileProductCard({ product }: { product: ProductItem }) {
                     <span className="text-[11px] font-semibold text-[#171310]">
                         ${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#171310]">
-                        <Plus size={9} color="white" strokeWidth={2.5} />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#171310]">
+                        <Plus size={13} color="white" strokeWidth={2.5} />
                     </div>
                 </div>
             </div>
@@ -491,7 +371,7 @@ function ProductGrid({
                     View All <ChevronRight size={11} strokeWidth={2.5} />
                 </Link>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid w-full min-w-0 grid-cols-2 gap-x-3 gap-y-6">
                 {products.map((p) => (
                     <MobileProductCard key={p.id} product={p} />
                 ))}
@@ -666,7 +546,7 @@ function TrustFeatures() {
         {
             icon: "⬡",
             title: "Flexible Fulfillment",
-            body: "Choose delivery or in-store pickup to suit your lifestyle.",
+            body: "Delivery coordinated for local and international clients.",
         },
     ];
     return (
@@ -889,9 +769,7 @@ export default function MobileHomeFeed({
     testimonials,
     content,
 }: MobileHomeFeedProps) {
-    const { auth, cart } = usePage().props;
     const [searchTerm, setSearchTerm] = useState("");
-    const [drawerOpen, setDrawerOpen] = useState(false);
 
     function submitSearch(e: React.FormEvent) {
         e.preventDefault();
@@ -900,60 +778,8 @@ export default function MobileHomeFeed({
         }
     }
 
-    const firstName = auth.user?.name.split(" ")[0] ?? null;
-
     return (
-        <div className="min-h-screen bg-[#F8F5EF] pb-20">
-            <HamburgerDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-            {/* ── Header ── */}
-            <div className="flex items-start justify-between px-4 pb-3 pt-5">
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => setDrawerOpen(true)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
-                    >
-                        <Menu size={18} color="#171310" strokeWidth={1.8} />
-                    </button>
-                    <div>
-                        {firstName ? (
-                            <>
-                                <p className="text-[10px] text-[#252525]/50">Hello, {firstName} ✦</p>
-                                <h1 className="font-serif text-xl font-medium leading-tight text-[#171310]">
-                                    Discover Luxxe
-                                </h1>
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-[10px] text-[#252525]/50">Welcome ✦</p>
-                                <h1 className="font-serif text-xl font-medium leading-tight text-[#171310]">
-                                    Boutique Luxxe
-                                </h1>
-                            </>
-                        )}
-                    </div>
-                </div>
-                <div className="flex items-center gap-2 pt-1">
-                    <Link
-                        href="/account/notifications"
-                        className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
-                    >
-                        <Bell size={16} color="#171310" strokeWidth={1.8} />
-                    </Link>
-                    <Link
-                        href="/cart"
-                        className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#171310] shadow-sm"
-                    >
-                        <ShoppingBag size={16} color="white" strokeWidth={1.8} />
-                        {(cart as any).item_count > 0 && (
-                            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[8px] font-bold text-white">
-                                {(cart as any).item_count}
-                            </span>
-                        )}
-                    </Link>
-                </div>
-            </div>
-
+        <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden bg-[#F8F5EF] pb-20">
             {/* ── Hero ── */}
             <HeroCard slides={heroSlides} />
 
@@ -1038,11 +864,6 @@ export default function MobileHomeFeed({
             {/* ── Newsletter ── */}
             <div className="mt-6">
                 <NewsletterBlock />
-            </div>
-
-            {/* ── Footer ── */}
-            <div className="mt-6">
-                <MobileFooter />
             </div>
         </div>
     );

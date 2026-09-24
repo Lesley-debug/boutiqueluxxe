@@ -57,31 +57,31 @@ const VALUES = [
 ];
 
 const MILESTONES = [
-    { year: "2018", label: "Founded", description: "Started as a curated resale service for luxury handbags in Douala." },
-    { year: "2020", label: "Expanded", description: "Grew to include fine watches and international shipping." },
-    { year: "2022", label: "Certified", description: "Became an accredited authenticator for Chanel, Louis Vuitton, and Rolex." },
-    { year: "2024", label: "Online", description: "Launched our flagship boutique store serving clients across Africa and beyond." },
+    { year: "01", label: "Select", description: "We source distinctive pieces from trusted suppliers and established networks." },
+    { year: "02", label: "Review", description: "Every listing is assessed for quality, condition, and the details clients need." },
+    { year: "03", label: "Present", description: "We create a considered shopping experience with clear information and personal support." },
+    { year: "04", label: "Deliver", description: "Orders are prepared carefully and coordinated for local or international delivery." },
 ];
 
 const SERVICES = [
     { icon: Package, title: "White-glove Delivery", text: "Signature packaging and insured shipping on every order." },
     { icon: Shield, title: "Authenticity Cert.", text: "Digital certificate of authenticity issued with every purchase." },
-    { icon: RefreshCw, title: "Easy Returns", text: "14-day hassle-free returns on all eligible items." },
+    { icon: RefreshCw, title: "Easy Returns", text: "Clear guidance and personal support for eligible return requests." },
     { icon: Headphones, title: "Concierge Support", text: "Dedicated personal shoppers available 6 days a week." },
 ];
 
 const STATS = [
-    { value: "1,200+", label: "Pieces Authenticated" },
-    { value: "98%", label: "Client Satisfaction" },
-    { value: "40+", label: "Partner Brands" },
-    { value: "6", label: "Years of Excellence" },
+    { value: "Curated", label: "Considered selection" },
+    { value: "Personal", label: "Concierge support" },
+    { value: "Secure", label: "Protected checkout" },
+    { value: "Global", label: "International service" },
 ];
 
 export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
     const heroTitle = aboutPage.hero_title || "Where Luxury Meets Authenticity";
     const heroSubtitle =
         aboutPage.hero_subtitle ||
-        "Designer Bags Boutique is your most trusted destination for authenticated luxury handbags, fine watches, and timeless accessories — curated for those who demand the very best.";
+        "Boutique Luxxe is your most trusted destination for authenticated luxury handbags, fine watches, and timeless accessories — curated for those who demand the very best.";
     const philosophyTitle = aboutPage.philosophy_title || "Our Philosophy";
     const philosophyText =
         aboutPage.philosophy_text ||
@@ -93,10 +93,10 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
     const contactTitle = aboutPage.contact_title || "Let's Connect";
     const contactText =
         aboutPage.contact_text ||
-        "hello@designerbagsboutique.com · +237 6XX XXX XXX";
+        "concierge@boutiqueluxxe.com";
 
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="About Us" />
 
             {/* ── HERO ── */}
@@ -152,7 +152,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                             {/* Trust chips */}
                             <Reveal delay={320}>
                                 <div className="mt-10 flex flex-wrap gap-3">
-                                    {["100% Authentic", "Expert Curated", "Since 2018"].map(
+                                    {["Considered Selection", "Personal Service", "Global Delivery"].map(
                                         (chip) => (
                                             <span
                                                 key={chip}
@@ -212,7 +212,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                                         it's about the story behind every stitch."
                                     </blockquote>
                                     <p className="mt-6 text-sm text-white/40">
-                                        — Founder, Designer Bags Boutique
+                                        — The Boutique Luxxe team
                                     </p>
 
                                     {/* Gold divider */}
@@ -226,10 +226,10 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                                 {/* Floating badge */}
                                 <div className="absolute -bottom-5 -right-5 hidden rounded-2xl border border-[#9C7A3C]/20 bg-white px-6 py-4 shadow-xl lg:block">
                                     <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#9C7A3C]">
-                                        Est. 2018
+                                        Personal service
                                     </p>
                                     <p className="mt-0.5 text-xs text-[#252525]/50">
-                                        Douala, Cameroon
+                                        Local & international clients
                                     </p>
                                 </div>
                             </div>
@@ -260,8 +260,8 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                             <Reveal delay={240}>
                                 <div className="mt-10 space-y-4">
                                     {[
-                                        "Every item inspected by certified authenticators",
-                                        "Full provenance documentation provided",
+                                        "Every item reviewed before it is listed",
+                                        "Clear product details and condition information",
                                         "Discreet packaging and insured delivery",
                                         "Personal styling consultation available",
                                     ].map((point) => (
@@ -472,7 +472,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
                                         </p>
                                         <p className="flex items-center gap-3 text-sm text-white/50">
                                             <span className="inline-block h-px w-6 bg-[#9C7A3C]" />
-                                            Mon – Sat, 9 AM – 6 PM WAT
+                                            Responses within one business day
                                         </p>
                                     </div>
                                 </Reveal>

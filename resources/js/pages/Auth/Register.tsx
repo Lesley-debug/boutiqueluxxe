@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from "@inertiajs/react";
 import { FormEvent } from "react";
 import AuthLayout from "@/components/Auth/AuthLayout";
+import GoogleButton from "@/components/Auth/GoogleButton";
 
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
@@ -17,7 +18,7 @@ export default function Register() {
 
     return (
         <AuthLayout
-            heroTitle="Join Designer Bags Boutique"
+            heroTitle="Join Boutique Luxxe"
             heroSubtitle="Create your account and discover a world of timeless elegance curated just for you."
         >
             <Head title="Register" />
@@ -27,9 +28,12 @@ export default function Register() {
                     Create Account
                 </h1>
                 <p className="mt-2 text-sm text-[#252525]/60">
-                    Start your journey with Designer Bags Boutique
+                    Start your journey with Boutique Luxxe
                 </p>
             </div>
+
+            <GoogleButton label="Sign up with Google" />
+            <div className="my-6 flex items-center gap-3"><span className="h-px flex-1 bg-[#181512]/10" /><span className="text-[10px] font-semibold uppercase tracking-[.18em] text-[#6F6961]">or use email</span><span className="h-px flex-1 bg-[#181512]/10" /></div>
 
             <form onSubmit={submit} className="space-y-5">
                 <div>
@@ -112,14 +116,14 @@ export default function Register() {
                 <p className="text-xs leading-relaxed text-[#252525]/60">
                     By creating an account, you agree to our{" "}
                     <Link
-                        href="/terms"
+                        href="/terms-of-service"
                         className="text-[#9C7A3C] underline decoration-1 underline-offset-2"
                     >
                         Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
-                        href="/privacy"
+                        href="/privacy-policy"
                         className="text-[#9C7A3C] underline decoration-1 underline-offset-2"
                     >
                         Privacy Policy

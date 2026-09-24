@@ -12,7 +12,7 @@ interface PostCard {
 
 export default function Journal({ posts }: { posts: PostCard[] }) {
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="Journal" />
             <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
                 <div className="mb-16 text-center">
@@ -20,7 +20,7 @@ export default function Journal({ posts }: { posts: PostCard[] }) {
                         Journal
                     </h1>
                     <p className="mx-auto mt-4 max-w-2xl text-lg text-[#252525]/70">
-                        Style guides, care tips, and stories from Designer Bags Boutique
+                        Style guides, care tips, and stories from Boutique Luxxe
                     </p>
                 </div>
 

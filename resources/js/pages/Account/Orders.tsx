@@ -26,9 +26,9 @@ interface Paginated {
 
 export default function Orders({ orders }: { orders: Paginated }) {
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title="My Orders" />
-            <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
+            <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-16">
                 <div className="mb-12">
                     <h1 className="font-serif text-4xl font-medium tracking-tight text-[#171310]">
                         My Orders

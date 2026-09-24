@@ -38,6 +38,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $isAdminRoute = $request->is('admin/*');
+
         $shared = [
             ...parent::share($request),
             'auth' => [
@@ -47,7 +49,10 @@ class HandleInertiaRequests extends Middleware
             'errors' => fn() => $request->session()->get('errors')
                 ? $request->session()->get('errors')->getBag('default')->getMessages()
                 : (object) [],
-            'cart' => function () use ($request) {
+        ];
+
+        if (!$isAdminRoute) {
+            $shared['cart'] = function () use ($request) {
                 $cart = $request->user()
                     ? Cart::where('user_id', $request->user()->id)
                         ->with(['items.variant.product.images', 'discount'])
@@ -56,7 +61,7 @@ class HandleInertiaRequests extends Middleware
                         ->with(['items.variant.product.images', 'discount'])
                         ->first();
 
-                if (! $cart) {
+                if (!$cart) {
                     return [
                         'id' => null,
                         'item_count' => 0,
@@ -101,24 +106,28 @@ class HandleInertiaRequests extends Middleware
                         ],
                     ])->values(),
                 ];
-            },
+            };
 
-            'megaMenu' => fn() => Category::topLevel()->active()->with([
+            $shared['megaMenu'] = fn() => Category::topLevel()->active()->with([
                 'children' => fn($q) => $q->active()->orderBy('sort_order'),
             ])->orderBy('sort_order')->get()->map(fn($top) => [
-                'id' => $top->id,
-                'name' => $top->name,
-                'slug' => $top->slug,
-                'audience' => $top->children->map(fn($child) => [
-                    'id' => $child->id,
-                    'name' => $child->name,
-                    'slug' => $child->slug,
-                ]),
-            ]),
-            'shopByStyle' => fn() => Style::whereHas('products', fn($q) => $q->active())->orderBy('name')->get(['id', 'name', 'slug']),
-        ];
+                    'id' => $top->id,
+                    'name' => $top->name,
+                    'slug' => $top->slug,
+                    'audience' => $top->children->map(fn($child) => [
+                        'id' => $child->id,
+                        'name' => $child->name,
+                        'slug' => $child->slug,
+                    ]),
+                ]);
 
-        // Add notifications for all authenticated users (not just admins)
+            $shared['shopByStyle'] = fn() => Style::whereHas('products', fn($q) => $q->active())->orderBy('name')->get(['id', 'name', 'slug']);
+        } else {
+            $shared['cart'] = fn() => ['id' => null, 'item_count' => 0, 'items' => [], 'subtotal' => 0, 'discount_amount' => 0, 'total' => 0, 'discount' => null];
+            $shared['megaMenu'] = fn() => [];
+            $shared['shopByStyle'] = fn() => [];
+        }
+
         if ($request->user()) {
             $shared['notifications'] = fn() => $request->user()->notifications()
                 ->latest()
@@ -131,13 +140,11 @@ class HandleInertiaRequests extends Middleware
                     'read_at' => $n->read_at,
                     'created_at' => $n->created_at,
                 ]);
-            
-            $shared['unreadNotificationsCount'] = fn() => $request->user()->unreadNotifications()->count();
 
+            $shared['unreadNotificationsCount'] = fn() => $request->user()->unreadNotifications()->count();
             $shared['wishlist_count'] = fn() => $request->user()->wishlistItems()->count();
         }
 
-        // Admin-specific notifications (keep the existing admin logic for now)
         if ($request->user()?->is_admin) {
             $shared['adminNotifications'] = fn() => [
                 'unread_count' => $request->user()->unreadNotifications()->count(),

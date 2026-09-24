@@ -17,7 +17,7 @@ export default function CollectionDetail({
     collection,
 }: CollectionDetailProps) {
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title={collection.name} />
 
             {collection.hero_image_url && (
@@ -80,7 +80,7 @@ export default function CollectionDetail({
                                 </h2>
                             </div>
                         </Reveal>
-                        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4 lg:gap-8">
                             {collection.products.map((product, index) => (
                                 <Reveal key={product.id} delay={index * 80}>
                                     <ProductCard product={product} />

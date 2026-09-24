@@ -26,10 +26,13 @@ class CartController extends Controller
     {
         $data = $request->validate([
             'variant_id' => ['required', 'exists:product_variants,id'],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:20'],
         ]);
 
-        $variant = ProductVariant::findOrFail($data['variant_id']);
+        $variant = ProductVariant::query()
+            ->whereKey($data['variant_id'])
+            ->whereHas('product', fn ($query) => $query->where('status', 'active'))
+            ->firstOrFail();
 
         if ($variant->stock_quantity < $data['quantity']) {
             return back()->withErrors(['quantity' => 'Not enough stock available.']);
@@ -43,6 +46,10 @@ class CartController extends Controller
         ]);
 
         $newQuantity = ($item->exists ? $item->quantity : 0) + $data['quantity'];
+
+        if ($newQuantity > 20) {
+            return back()->withErrors(['quantity' => 'You can add a maximum of 20 units of one item.']);
+        }
 
         if ($newQuantity > $variant->stock_quantity) {
             return back()->withErrors(['quantity' => 'Not enough stock available.']);
@@ -58,8 +65,10 @@ class CartController extends Controller
 
     public function update(Request $request, CartItem $item)
     {
+        $this->authorizeCartItem($item);
+
         $data = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:20'],
         ]);
 
         if ($data['quantity'] > $item->variant->stock_quantity) {
@@ -73,6 +82,8 @@ class CartController extends Controller
 
     public function destroy(CartItem $item)
     {
+        $this->authorizeCartItem($item);
+
         $item->delete();
 
         return back()->with('success', 'Item removed.');
@@ -106,5 +117,10 @@ class CartController extends Controller
         $cart->update(['discount_id' => null]);
 
         return back()->with('success', 'Discount removed.');
+    }
+
+    private function authorizeCartItem(CartItem $item): void
+    {
+        abort_unless((int) $item->cart_id === (int) $this->cartService->current()->id, 404);
     }
 }
