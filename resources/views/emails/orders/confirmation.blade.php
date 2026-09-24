@@ -15,7 +15,7 @@
 
     Shipping to: {{ $order->shipping_address }}, {{ $order->city }}
 
-    <x-mail::button :url="url('/orders/' . $order->order_number . '/confirmation')">
+    <x-mail::button :url="$confirmationUrl">
         View Order
     </x-mail::button>
 

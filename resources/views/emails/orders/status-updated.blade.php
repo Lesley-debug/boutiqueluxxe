@@ -3,7 +3,7 @@
 
     Your order **{{ $order->order_number }}** status has been updated to **{{ ucfirst($order->status) }}**.
 
-    <x-mail::button :url="url('/orders/' . $order->order_number . '/confirmation')">
+    <x-mail::button :url="$confirmationUrl">
         View Order
     </x-mail::button>
 
