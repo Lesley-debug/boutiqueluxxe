@@ -116,7 +116,7 @@ return [
     ],
 
     'contact' => [
-        'address' => env('CONTACT_EMAIL', 'info@boutiqueluxxe.com'),
+        'address' => env('CONTACT_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'info@boutiqueluxxe.com'),
     ],
 
 ];

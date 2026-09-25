@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Support\Money;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -23,7 +24,7 @@ class NewOrderNotification extends Notification
         return [
             'type' => 'new_order',
             'order_id' => $this->order->id,
-            'message' => "New order {$this->order->order_number} from {$this->order->customer_name} — " . number_format((float) $this->order->total) . ' FCFA',
+            'message' => "New order {$this->order->order_number} from {$this->order->customer_name} — ".Money::format($this->order->total),
         ];
     }
 
@@ -32,7 +33,7 @@ class NewOrderNotification extends Notification
         return (new MailMessage)
             ->subject("New Order: {$this->order->order_number}")
             ->line("A new order has been placed by {$this->order->customer_name}.")
-            ->line('Total: ' . number_format((float) $this->order->total) . ' FCFA')
+            ->line('Total: '.Money::format($this->order->total))
             ->action('View Order', url("/admin/orders/{$this->order->id}"));
     }
 }

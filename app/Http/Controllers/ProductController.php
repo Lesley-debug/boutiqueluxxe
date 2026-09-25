@@ -64,7 +64,7 @@ class ProductController extends Controller
             'offers' => [
                 '@type' => 'Offer',
                 'url' => $productUrl,
-                'priceCurrency' => 'USD',
+                'priceCurrency' => config('commerce.currency', 'USD'),
                 'price' => number_format($product->display_price, 2, '.', ''),
                 'availability' => $product->in_stock
                     ? 'https://schema.org/InStock'
