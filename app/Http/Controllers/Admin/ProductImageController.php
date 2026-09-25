@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -69,12 +70,26 @@ class ProductImageController extends Controller
     {
         abort_unless($image->product_id === $product->id, 404);
 
-        Storage::disk('public')->delete($image->path);
-        $wasPrimary = $image->is_primary;
-        $image->delete();
+        $path = $image->path;
 
-        if ($wasPrimary) {
-            $product->images()->orderBy('sort_order')->first()?->update(['is_primary' => true]);
+        DB::transaction(function () use ($product, $image) {
+            $wasPrimary = $image->is_primary;
+            $image->delete();
+
+            if ($wasPrimary) {
+                $product->images()
+                    ->orderBy('sort_order')
+                    ->first()
+                    ?->update(['is_primary' => true]);
+            }
+        });
+
+        if (! str_starts_with($path, 'http')) {
+            try {
+                Storage::disk('public')->delete($path);
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
         }
 
         return back()->with('success', 'Image removed.');
