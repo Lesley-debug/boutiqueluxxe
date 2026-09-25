@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link } from "@inertiajs/react";
+import { formatPrice } from "@/lib/format";
 import type { Order } from "@/types/order";
 
 interface Summary {
@@ -64,7 +65,7 @@ export default function Show({
                     <div className="rounded-sm border border-stone-200 p-4">
                         <p className="text-xs text-stone-500">Total Spent</p>
                         <p className="text-lg font-semibold">
-                            {Number(summary.total_spent).toLocaleString()} FCFA
+                            {formatPrice(summary.total_spent)}
                         </p>
                     </div>
                     <div className="rounded-sm border border-stone-200 p-4">
@@ -115,8 +116,7 @@ export default function Show({
                                         {order.status}
                                     </td>
                                     <td className="text-right">
-                                        {Number(order.total).toLocaleString()}{" "}
-                                        FCFA
+                                        {formatPrice(order.total)}
                                     </td>
                                 </tr>
                             ))}

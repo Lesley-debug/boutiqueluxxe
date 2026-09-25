@@ -1,8 +1,15 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
 import AuthLayout from "@/components/Auth/AuthLayout";
+import GoogleButton from "@/components/Auth/GoogleButton";
 
 export default function Login() {
+    const { registered, features } = usePage().props as {
+        registered?: boolean;
+        features?: { googleAuth?: boolean };
+    };
+    const googleAuthEnabled = features?.googleAuth === true;
+
     const { data, setData, post, processing, errors } = useForm({
         email: "",
         password: "",
@@ -21,6 +28,12 @@ export default function Login() {
         >
             <Head title="Log in" />
 
+            {registered && (
+                <p className="mb-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
+                    Account created. Sign in, then open the verification link sent to your email.
+                </p>
+            )}
+
             <div className="mb-10">
                 <h1 className="font-serif text-3xl font-medium tracking-tight text-[#171310]">
                     Log in
@@ -29,6 +42,17 @@ export default function Login() {
                     Enter your credentials to access your account
                 </p>
             </div>
+
+            {googleAuthEnabled && (
+                <>
+                    <GoogleButton label="Continue with Google" />
+                    <div className="my-6 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-[#181512]/10" />
+                        <span className="text-[10px] font-semibold uppercase tracking-[.18em] text-[#6F6961]">or use email</span>
+                        <span className="h-px flex-1 bg-[#181512]/10" />
+                    </div>
+                </>
+            )}
 
             <form onSubmit={submit} className="space-y-5">
                 <div>

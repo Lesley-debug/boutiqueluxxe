@@ -5,7 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
 createInertiaApp({
-    title: (title) => `${title} - Designer Bags Boutique`,
+    title: (title) => `${title} - Boutique Luxxe`,
 
     resolve: async (name) => {
         const page = await resolvePageComponent(

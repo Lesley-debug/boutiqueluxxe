@@ -1,44 +1,16 @@
 import { Link, router, usePage } from "@inertiajs/react";
-import { useEffect, useState } from "react";
-import { Search, Heart, User, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import SlideoverCart from "./SlideoverCart";
-import NotificationDropdown from "./NotificationDropdown";
-import UserProfileDropdown from "./UserProfileDropdown";
-import type { Cart } from "@/types/cart";
+import { Heart, User, ShoppingCart } from "lucide-react";
 
 const ANNOUNCEMENT =
     "Complimentary shipping on selected orders · Discover the latest collection";
 
 export default function StoreHeader() {
-    const page = usePage();
-    const { auth, cart, megaMenu, shopByStyle } = page.props;
-    const notifications = (page.props as any).notifications || [];
-    const unreadNotificationsCount = (page.props as any).unreadNotificationsCount || 0;
+    const { auth, cart, megaMenu, shopByStyle } = usePage().props;
     const currentPath = usePage().url;
     const [categoriesOpen, setCategoriesOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [scrolled, setScrolled] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
-
-    useEffect(() => {
-        function onScroll() {
-            setScrolled(window.scrollY > 8);
-        }
-        window.addEventListener("scroll", onScroll);
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
-
-    function submitSearch(e: React.FormEvent) {
-        e.preventDefault();
-        if (searchTerm.trim()) {
-            router.get(
-                "/shop",
-                { search: searchTerm },
-                { preserveState: false },
-            );
-        }
-    }
 
     function navLinkClass(path: string) {
         const active =
@@ -48,29 +20,67 @@ export default function StoreHeader() {
     }
 
     return (
-        <header
-            className={`sticky top-0 z-40 bg-[#F8F5EF] transition-shadow ${scrolled ? "shadow-sm" : ""}`}
-        >
-            <div className="bg-[#171310] px-4 py-2.5 text-center text-[11px] font-medium tracking-[0.05em] text-[#F8F5EF]/90">
+        <header className="w-full border-b border-[#181512]/10 bg-[#FAF8F4]/95 shadow-sm backdrop-blur-md">
+            {/* Announcement bar — always visible, never collapses */}
+            <div className="bg-[#171310] px-4 py-2 text-center text-[10px] font-medium tracking-[0.05em] text-[#F8F5EF]/90 sm:text-[11px]">
                 {ANNOUNCEMENT}
             </div>
 
-            <div
-                className={`border-b transition-colors ${scrolled ? "border-[#171310]/10" : "border-transparent"} px-4 sm:px-6`}
-            >
-                <div className="mx-auto flex max-w-7xl items-center justify-between py-5">
+            {/* Mobile header — logo, account, bag only. No search. */}
+            <div className="flex items-center justify-between border-b border-[#171310]/10 px-4 py-3 lg:hidden">
+                <img
+                    src="/images/logo.png"
+                    alt="Boutique Luxxe"
+                    className="h-8 w-auto"
+                />
+                <div className="flex items-center gap-1">
+                    {auth.user ? (
+                        <Link
+                            href="/account"
+                            className="rounded-full p-2.5 text-[#171310]"
+                            title="Account"
+                        >
+                            <User size={20} />
+                        </Link>
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="rounded-full p-2.5 text-[#171310]"
+                            title="Account"
+                        >
+                            <User size={20} />
+                        </Link>
+                    )}
                     <Link
-                        href="/"
-                        className="font-serif text-lg tracking-tight text-[#171310]"
+                        href="/cart"
+                        className="relative rounded-full p-2.5 text-[#171310]"
+                        title="Shopping cart"
                     >
-                        Designer Bags Boutique
+                        <ShoppingCart size={20} strokeWidth={1.8} />
+                        {cart.item_count > 0 && (
+                            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#9C7A3C] text-[9px] font-bold text-white">
+                                {cart.item_count}
+                            </span>
+                        )}
+                    </Link>
+                </div>
+            </div>
+
+            {/* Desktop nav — unchanged, hidden below lg */}
+            <div className="hidden border-b border-[#171310]/10 px-6 lg:block">
+                <div className="mx-auto flex max-w-7xl items-center justify-between py-5">
+                    <Link href="/" className="flex items-center">
+                        <img
+                            src="/images/logo.png"
+                            alt="Boutique Luxxe"
+                            className="h-12 w-auto"
+                        />
                     </Link>
 
-                    <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.15em] text-[#171310] lg:flex">
+                    <nav className="flex items-center gap-3 text-[9px] xl:gap-5 xl:text-[11px] font-medium uppercase tracking-[0.15em] text-[#171310]">
                         <Link href="/shop" className={navLinkClass("/shop")}>
                             Shop
                         </Link>
-
                         <div
                             className="relative"
                             onMouseEnter={() => setCategoriesOpen(true)}
@@ -89,7 +99,6 @@ export default function StoreHeader() {
                                             >
                                                 {top.name}
                                             </Link>
-
                                             {top.audience.length > 0 && (
                                                 <div className="mb-4">
                                                     <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[#171310]/40">
@@ -114,7 +123,6 @@ export default function StoreHeader() {
                                             )}
                                         </div>
                                     ))}
-
                                     {shopByStyle.length > 0 && (
                                         <div className="flex-1 border-l border-[#171310]/10 pl-6">
                                             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[#171310]/40">
@@ -134,7 +142,6 @@ export default function StoreHeader() {
                                 </div>
                             )}
                         </div>
-
                         <Link
                             href="/shop?sort=newest"
                             className={navLinkClass("/shop")}
@@ -147,10 +154,7 @@ export default function StoreHeader() {
                         >
                             Collections
                         </Link>
-                        <Link
-                            href="/about"
-                            className={navLinkClass("/about")}
-                        >
+                        <Link href="/about" className={navLinkClass("/about")}>
                             About
                         </Link>
                         <Link
@@ -159,53 +163,20 @@ export default function StoreHeader() {
                         >
                             Journal
                         </Link>
+                        <Link href="/testimonials" className={navLinkClass("/testimonials")}>Testimonials</Link>
+                        <Link href="/faqs" className={navLinkClass("/faqs")}>FAQs</Link>
+                        <Link href="/contact" className={navLinkClass("/contact")}>Contact</Link>
                     </nav>
 
                     <div className="flex items-center gap-1">
-                        {searchOpen ? (
-                            <form onSubmit={submitSearch}>
-                                <input
-                                    autoFocus
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    onBlur={() =>
-                                        !searchTerm && setSearchOpen(false)
-                                    }
-                                    placeholder="Search..."
-                                    className="w-40 rounded-full border border-[#171310]/15 bg-transparent px-3 py-1.5 text-sm focus:outline-none sm:w-56"
-                                />
-                            </form>
-                        ) : (
-                            <button
-                                onClick={() => setSearchOpen(true)}
-                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
-                                title="Search"
-                            >
-                                <Search size={18} />
-                            </button>
-                        )}
-
                         {auth.user ? (
-                            <>
-                                <Link
-                                    href="/account/wishlist"
-                                    className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
-                                    title="Wishlist"
-                                >
-                                    <Heart size={18} />
-                                </Link>
-
-                                {/* Notifications Dropdown */}
-                                <NotificationDropdown
-                                    notifications={notifications || []}
-                                    unreadCount={unreadNotificationsCount || 0}
-                                />
-
-                                {/* User Profile Dropdown */}
-                                <UserProfileDropdown user={auth.user} />
-                            </>
+                            <Link
+                                href="/account/wishlist"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
+                                title="Wishlist"
+                            >
+                                <Heart size={18} />
+                            </Link>
                         ) : (
                             <Link
                                 href="/login"
@@ -215,29 +186,31 @@ export default function StoreHeader() {
                                 <User size={18} />
                             </Link>
                         )}
-
+                        {auth.user && (
+                            <Link
+                                href="/account"
+                                className="rounded-full p-2 text-[#171310] transition hover:bg-[#171310]/5 hover:text-[#9C7A3C]"
+                                title="Account"
+                            >
+                                <User size={18} />
+                            </Link>
+                        )}
                         <button
+                            type="button"
                             onClick={() => setCartOpen(true)}
                             className="relative ml-1 rounded-full bg-[#171310] p-2.5 text-white transition hover:bg-[#9C7A3C]"
-                            title="Bag"
+                            title="Open shopping cart"
+                            aria-label="Open shopping cart"
                         >
-                            <ShoppingBag size={18} />
+                            <ShoppingCart size={19} strokeWidth={1.8} />
                             {cart.item_count > 0 && (
-                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">
-                                    {cart.item_count}
-                                </span>
+                                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#9C7A3C] text-[10px] font-bold text-white ring-2 ring-[#F8F5EF]">{cart.item_count}</span>
                             )}
                         </button>
                     </div>
                 </div>
             </div>
-
-            {/* Slideover Cart */}
-            <SlideoverCart
-                cart={cart as any}
-                isOpen={cartOpen}
-                onClose={() => setCartOpen(false)}
-            />
+            <SlideoverCart cart={cart} isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </header>
     );
 }

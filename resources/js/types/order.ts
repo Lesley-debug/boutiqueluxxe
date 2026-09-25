@@ -12,6 +12,8 @@ export interface Order {
     id: number;
     order_number: string;
     status: string;
+    fulfillment_method: string;
+    payment_method: string | null;
     payment_status: string;
     customer_name: string;
     customer_email: string;

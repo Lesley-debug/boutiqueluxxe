@@ -24,7 +24,10 @@ class OrderConfirmationMail extends Mailable
     {
         return new Content(
             markdown: 'emails.orders.confirmation',
-            with: ['order' => $this->order->load('items')],
+            with: [
+                'order' => $this->order->load('items'),
+                'confirmationUrl' => $this->order->guestConfirmationUrl(),
+            ],
         );
     }
 }

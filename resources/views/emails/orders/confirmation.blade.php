@@ -7,15 +7,15 @@
         | Item | Qty | Total |
         | :--- | :-: | ----: |
         @foreach ($order->items as $item)
-        | {{ $item->product_name }}{{ $item->variant_label ? " ({$item->variant_label})" : '' }} | {{ $item->quantity }} | {{ number_format((float) $item->line_total) }} FCFA |
+        | {{ $item->product_name }}{{ $item->variant_label ? " ({$item->variant_label})" : '' }} | {{ $item->quantity }} | {{ \App\Support\Money::format($item->line_total) }} |
         @endforeach
     </x-mail::table>
 
-    **Total: {{ number_format((float) $order->total) }} FCFA**
+    **Total: {{ \App\Support\Money::format($order->total) }}**
 
     Shipping to: {{ $order->shipping_address }}, {{ $order->city }}
 
-    <x-mail::button :url="url('/orders/' . $order->order_number . '/confirmation')">
+    <x-mail::button :url="$confirmationUrl">
         View Order
     </x-mail::button>
 

@@ -27,6 +27,8 @@ class ProductVariantController extends Controller
 
     public function update(Request $request, Product $product, ProductVariant $variant)
     {
+        abort_unless($variant->product_id === $product->id, 404);
+
         $data = $request->validate([
             'color' => ['nullable', 'string', 'max:100'],
             'size' => ['nullable', 'string', 'max:50'],
@@ -43,6 +45,8 @@ class ProductVariantController extends Controller
 
     public function destroy(Product $product, ProductVariant $variant)
     {
+        abort_unless($variant->product_id === $product->id, 404);
+
         $variant->delete();
 
         return back()->with('success', 'Variant removed.');

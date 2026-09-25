@@ -4,21 +4,30 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'registered' => session('registered', false),
+            'verificationDeliveryFailed' => session('verificationDeliveryFailed', false),
+        ]);
     }
 
-    public function login(Request $request)
+    public function login(Request $request, CartService $cartService)
     {
+        $guestSessionId = $request->session()->getId();
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
@@ -32,7 +41,20 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        try {
+            $cartService->mergeGuestCartIntoUser($guestSessionId, (int) Auth::id());
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        if (
+            config('auth_features.email_verification_required')
+            && ! $request->user()->hasVerifiedEmail()
+        ) {
+            return redirect()->route('verification.notice');
+        }
+
+        return redirect()->intended('/')->with('welcomeBack', true);
     }
 
     public function showRegister()
@@ -45,7 +67,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 
         $user = User::create([
@@ -54,9 +76,18 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        Auth::login($user);
+        $deliveryFailed = false;
 
-        return redirect('/');
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $deliveryFailed = true;
+        }
+
+        return redirect('/login')
+            ->with('registered', true)
+            ->with('verificationDeliveryFailed', $deliveryFailed);
     }
 
     public function logout(Request $request)
@@ -66,5 +97,46 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => ['required', 'email']]);
+
+        try {
+            Password::sendResetLink($request->only('email'));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        return back()->with([
+            'status' => 'If an account exists for that email address, a password reset link has been sent.',
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', __($status))
+            : back()->withErrors(['email' => [__($status)]]);
     }
 }

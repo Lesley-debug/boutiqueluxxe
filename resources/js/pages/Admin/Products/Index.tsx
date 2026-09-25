@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Link, router } from "@inertiajs/react";
+import { formatPrice } from "@/lib/format";
 
 interface Product {
     id: number;
@@ -14,8 +15,12 @@ interface Paginated {
 }
 
 export default function Index({ products }: { products: Paginated }) {
-    function destroy(id: number) {
-        if (confirm("Delete this product?")) {
+    function archive(id: number) {
+        if (
+            confirm(
+                "Archive this product? It will be removed from the storefront and customer carts, while order history and media remain available.",
+            )
+        ) {
             router.delete(`/admin/products/${id}`);
         }
     }
@@ -50,7 +55,7 @@ export default function Index({ products }: { products: Paginated }) {
                                 <td className="py-2">{p.name}</td>
                                 <td>{p.category.name}</td>
                                 <td>
-                                    {Number(p.base_price).toLocaleString()} FCFA
+                                    {formatPrice(p.base_price)}
                                 </td>
                                 <td>{p.status}</td>
                                 <td className="space-x-3 text-right">
@@ -60,12 +65,14 @@ export default function Index({ products }: { products: Paginated }) {
                                     >
                                         Edit
                                     </Link>
-                                    <button
-                                        onClick={() => destroy(p.id)}
-                                        className="text-red-600 underline"
-                                    >
-                                        Delete
-                                    </button>
+                                    {p.status !== "archived" && (
+                                        <button
+                                            onClick={() => archive(p.id)}
+                                            className="text-amber-700 underline"
+                                        >
+                                            Archive
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

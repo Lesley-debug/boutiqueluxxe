@@ -77,10 +77,13 @@ export default function Form({ discount }: { discount?: DiscountData }) {
                         <div>
                             <label className="mb-1 block text-sm font-medium">
                                 Value{" "}
-                                {data.type === "percentage" ? "(%)" : "(FCFA)"}
+                                {data.type === "percentage" ? "(%)" : "($)"}
                             </label>
                             <input
                                 type="number"
+                                min="0"
+                                max={data.type === "percentage" ? "100" : undefined}
+                                step="0.01"
                                 value={data.value}
                                 onChange={(e) =>
                                     setData("value", e.target.value)

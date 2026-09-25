@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductImageController extends Controller
 {
@@ -36,6 +38,8 @@ class ProductImageController extends Controller
 
     public function setPrimary(Product $product, ProductImage $image)
     {
+        abort_unless($image->product_id === $product->id, 404);
+
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
@@ -46,7 +50,11 @@ class ProductImageController extends Controller
     {
         $data = $request->validate([
             'order' => ['required', 'array'],
-            'order.*' => ['integer', 'exists:product_images,id'],
+            'order.*' => [
+                'integer',
+                Rule::exists('product_images', 'id')
+                    ->where(fn ($query) => $query->where('product_id', $product->id)),
+            ],
         ]);
 
         foreach ($data['order'] as $index => $imageId) {
@@ -60,12 +68,28 @@ class ProductImageController extends Controller
 
     public function destroy(Product $product, ProductImage $image)
     {
-        Storage::disk('public')->delete($image->path);
-        $wasPrimary = $image->is_primary;
-        $image->delete();
+        abort_unless($image->product_id === $product->id, 404);
 
-        if ($wasPrimary) {
-            $product->images()->orderBy('sort_order')->first()?->update(['is_primary' => true]);
+        $path = $image->path;
+
+        DB::transaction(function () use ($product, $image) {
+            $wasPrimary = $image->is_primary;
+            $image->delete();
+
+            if ($wasPrimary) {
+                $product->images()
+                    ->orderBy('sort_order')
+                    ->first()
+                    ?->update(['is_primary' => true]);
+            }
+        });
+
+        if (! str_starts_with($path, 'http')) {
+            try {
+                Storage::disk('public')->delete($path);
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
         }
 
         return back()->with('success', 'Image removed.');

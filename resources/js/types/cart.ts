@@ -18,7 +18,7 @@ export interface CartDiscount {
 }
 
 export interface Cart {
-    id: number;
+    id: number | null;
     items: CartItem[];
     subtotal: number;
     item_count: number;

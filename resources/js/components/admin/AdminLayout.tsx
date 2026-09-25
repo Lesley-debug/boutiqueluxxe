@@ -9,9 +9,11 @@ import {
     ShoppingCart,
     Users,
     Percent,
+    DollarSign,
     Bell,
     FileText,
     Home,
+    Images,
     MessageSquareQuote,
     Mail,
     Info,
@@ -73,6 +75,12 @@ const NAV: NavGroup[] = [
                 icon: Layers,
                 permission: "products.manage",
             },
+            {
+                label: "Bulk Pricing",
+                href: "/admin/bulk-pricing",
+                icon: DollarSign,
+                permission: "products.manage",
+            },
         ],
     },
     {
@@ -105,6 +113,12 @@ const NAV: NavGroup[] = [
                 label: "Homepage",
                 href: "/admin/homepage",
                 icon: Home,
+                permission: "products.manage",
+            },
+            {
+                label: "Hero Slides",
+                href: "/admin/hero-slides",
+                icon: Images,
                 permission: "products.manage",
             },
             {
@@ -205,11 +219,12 @@ export default function AdminLayout({
                 >
                     <div className="flex h-full flex-col">
                         <div className="flex items-center justify-between border-b border-stone-200 px-5 py-5">
-                            <Link
-                                href="/admin"
-                                className="font-serif text-base tracking-tight text-[#171310]"
-                            >
-                                Designer Bags
+                            <Link href="/admin" className="flex items-center">
+                                <img
+                                    src="/images/logo.png"
+                                    alt="Boutique Luxxe"
+                                    className="h-8 w-auto"
+                                />
                             </Link>
                             <button
                                 onClick={() => setMobileOpen(false)}

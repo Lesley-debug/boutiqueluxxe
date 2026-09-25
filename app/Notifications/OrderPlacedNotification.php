@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Support\Money;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -24,7 +25,7 @@ class OrderPlacedNotification extends Notification
     {
         return [
             'title' => 'Order Placed Successfully',
-            'message' => "Your order #{$this->order->order_number} has been placed. Total: " . number_format($this->order->total) . " FCFA",
+            'message' => "Your order #{$this->order->order_number} has been placed. Total: ".Money::format($this->order->total),
             'url' => "/account/orders/{$this->order->order_number}",
             'icon' => 'order_placed',
             'order_id' => $this->order->id,

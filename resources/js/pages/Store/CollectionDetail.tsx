@@ -17,14 +17,18 @@ export default function CollectionDetail({
     collection,
 }: CollectionDetailProps) {
     return (
-        <StoreLayout>
+        <StoreLayout showMobileHeader>
             <Head title={collection.name} />
 
             {collection.hero_image_url && (
                 <div className="relative h-[70vh] w-full overflow-hidden">
                     <img
                         src={collection.hero_image_url}
-                        alt={collection.name}
+                        alt={`${collection.name} collection`}
+                        width={1600}
+                        height={900}
+                        fetchPriority="high"
+                        decoding="async"
                         className="h-full w-full object-cover transition-transform duration-1000 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#171310]/60 via-[#171310]/20 to-transparent" />
@@ -80,7 +84,7 @@ export default function CollectionDetail({
                                 </h2>
                             </div>
                         </Reveal>
-                        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4 lg:gap-8">
                             {collection.products.map((product, index) => (
                                 <Reveal key={product.id} delay={index * 80}>
                                     <ProductCard product={product} />

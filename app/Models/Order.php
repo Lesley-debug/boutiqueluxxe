@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -18,6 +19,7 @@ class Order extends Model
         'status',
         'fulfillment_method',
         'payment_status',
+        'payment_method',
         'payment_reference',
         'customer_name',
         'customer_email',
@@ -63,4 +65,16 @@ class Order extends Model
     {
         return $query->where('status', $status);
     }
+    public function guestConfirmationUrl(): string
+    {
+        $relativeUrl = URL::temporarySignedRoute(
+            'orders.confirmation',
+            now()->addDays(max(1, (int) config('orders.guest_confirmation_link_ttl_days', 30))),
+            ['orderNumber' => $this->order_number],
+            absolute: false,
+        );
+
+        return rtrim((string) config('app.url'), '/').$relativeUrl;
+    }
+
 }

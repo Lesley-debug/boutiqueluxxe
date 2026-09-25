@@ -1,8 +1,12 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
+import { useState, useEffect, useRef } from "react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import ProductCard from "@/components/Store/ProductCard";
 import Reveal from "@/components/Store/Reveal";
 import NewsletterSection from "@/components/Store/NewsletterSection";
+import HeroCarousel from "@/components/Store/HeroCarousel";
+import MobileCategoryShortcuts from "@/components/Store/MobileCategoryShortcuts";
+import MobileHomeFeed from "@/components/Store/MobileHomeFeed";
 import {
     Container,
     Eyebrow,
@@ -57,8 +61,20 @@ interface TestimonialItem {
     quote: string;
     rating: number;
 }
+interface Slide {
+    id: number;
+    eyebrow: string | null;
+    title: string;
+    subtitle: string | null;
+    primary_cta_text: string | null;
+    primary_cta_url: string | null;
+    secondary_cta_text: string | null;
+    secondary_cta_url: string | null;
+    image_url: string | null;
+}
 
 interface HomeProps {
+    heroSlides: Slide[];
     categories: CategoryCard[];
     featuredProducts: ProductCardType[];
     newArrivals: ProductCardType[];
@@ -67,7 +83,125 @@ interface HomeProps {
     testimonials: TestimonialItem[];
 }
 
+// ─── Testimonials Carousel ────────────────────────────────────────────────────
+
+function TestimonialsCarousel({
+    testimonials,
+}: {
+    testimonials: { id: number; customer_name: string; quote: string; rating: number }[];
+}) {
+    const [index, setIndex] = useState(0);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    function prev() {
+        setIndex((i) => (i - 1 + testimonials.length) % testimonials.length);
+    }
+
+    function next() {
+        setIndex((i) => (i + 1) % testimonials.length);
+    }
+
+    function resetTimer() {
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setIndex((i) => (i + 1) % testimonials.length);
+        }, 4000);
+    }
+
+    useEffect(() => {
+        if (testimonials.length <= 1) return;
+        timerRef.current = setInterval(() => {
+            setIndex((i) => (i + 1) % testimonials.length);
+        }, 4000);
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, [testimonials.length]);
+
+    const t = testimonials[index];
+
+    return (
+        <div className="mx-auto max-w-3xl">
+            {/* Card */}
+            <div
+                key={t.id}
+                className="relative rounded-[2px] border border-[#171310]/10 bg-white p-10 text-center shadow-[0_20px_60px_-20px_rgba(23,19,16,0.10)] transition-all duration-500"
+            >
+                {/* Decorative quote mark */}
+                <div className="absolute left-8 top-6 font-serif text-6xl leading-none text-[#9C7A3C]/15 select-none">
+                    "
+                </div>
+
+                {/* Stars */}
+                <div className="flex justify-center gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                        <svg
+                            key={s}
+                            className={`h-4 w-4 ${s <= t.rating ? "text-[#9C7A3C]" : "text-[#171310]/10"}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                    ))}
+                </div>
+
+                {/* Quote */}
+                <p className="mx-auto mt-6 max-w-xl font-serif text-xl italic leading-relaxed text-[#171310]">
+                    "{t.quote}"
+                </p>
+
+                {/* Attribution */}
+                <div className="mt-8 flex items-center justify-center gap-3">
+                    <div className="h-px w-12 bg-[#171310]/10" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#252525]/50">
+                        {t.customer_name}
+                    </p>
+                    <div className="h-px w-12 bg-[#171310]/10" />
+                </div>
+            </div>
+
+            {/* Controls */}
+            <div className="mt-8 flex items-center justify-center gap-6">
+                <button
+                    onClick={() => { prev(); resetTimer(); }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#171310]/15 bg-white text-[#171310] shadow-sm transition hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
+                    aria-label="Previous"
+                >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                {/* Dots */}
+                <div className="flex gap-2">
+                    {testimonials.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { setIndex(i); resetTimer(); }}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                                i === index ? "w-6 bg-[#9C7A3C]" : "w-1.5 bg-[#171310]/15"
+                            }`}
+                        />
+                    ))}
+                </div>
+
+                <button
+                    onClick={() => { next(); resetTimer(); }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#171310]/15 bg-white text-[#171310] shadow-sm transition hover:border-[#9C7A3C] hover:text-[#9C7A3C]"
+                    aria-label="Next"
+                >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function Home({
+    heroSlides,
     categories,
     featuredProducts,
     newArrivals,
@@ -75,93 +209,47 @@ export default function Home({
     styles,
     testimonials,
 }: HomeProps) {
+    const { welcomeBack, auth } = usePage().props;
+    const [showWelcome, setShowWelcome] = useState(!!welcomeBack);
+
     return (
-        <StoreLayout>
+        <StoreLayout noPadding showMobileHeader>
             <Head title="Home" />
 
-            <main>
-                {/* Hero - Classic with Subtle Movement */}
-                <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-                    {/* Elegant Background Layer */}
-                    <div className="absolute inset-0">
-                        {/* Base gradient - subtle and sophisticated */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#F8F5EF] via-[#F8F5EF] to-[#F8F5EF]" />
-                        
-                        {/* Subtle ambient glow - very understated */}
-                        <div 
-                            className="absolute left-0 top-0 h-[600px] w-[600px] opacity-40"
-                            style={{
-                                background: 'radial-gradient(circle, rgba(156, 122, 60, 0.08) 0%, transparent 70%)',
-                                animation: 'float 20s ease-in-out infinite',
-                            }}
-                        />
-                        <div 
-                            className="absolute right-0 bottom-0 h-[500px] w-[500px] opacity-30"
-                            style={{
-                                background: 'radial-gradient(circle, rgba(23, 19, 16, 0.04) 0%, transparent 70%)',
-                                animation: 'float 25s ease-in-out infinite reverse',
-                            }}
-                        />
-                        
-                        {/* Decorative line elements - classic luxury touch */}
-                        <div className="absolute left-1/4 top-1/3 h-px w-24 bg-gradient-to-r from-transparent via-[#9C7A3C]/20 to-transparent opacity-60" />
-                        <div className="absolute right-1/4 bottom-1/3 h-px w-32 bg-gradient-to-r from-transparent via-[#9C7A3C]/15 to-transparent opacity-50" />
+            {/* ── Mobile feed (lg and above sees nothing here) ── */}
+            <div className="lg:hidden">
+                <MobileHomeFeed
+                    heroSlides={heroSlides}
+                    featuredProducts={featuredProducts}
+                    newArrivals={newArrivals}
+                    categories={categories}
+                    testimonials={testimonials}
+                    content={content}
+                />
+            </div>
+
+            {/* ── Desktop layout (hidden on mobile) ── */}
+            <main className="hidden lg:block">
+                {showWelcome && auth.user && (
+                    <div className="bg-[#171310] px-6 py-3 text-center text-sm text-white">
+                        Welcome back, {auth.user.name.split(' ')[0]} — don&apos;t forget to visit{' '}
+                        <a href="/account" className="underline decoration-[#9C7A3C]">
+                            your dashboard
+                        </a>.
+                        <button
+                            onClick={() => setShowWelcome(false)}
+                            className="ml-4 text-white/60 hover:text-white"
+                        >
+                            ✕
+                        </button>
                     </div>
-                    
-                    {/* Content */}
-                    <div className="relative z-10 px-6 text-center">
-                        <Reveal>
-                            <Eyebrow>Designer Bags Boutique</Eyebrow>
-                        </Reveal>
-                        <Reveal delay={100}>
-                            <h1 className="mt-8 font-serif text-6xl font-medium leading-[0.95] tracking-tight text-[#171310] md:text-[7rem] lg:text-[8rem]">
-                                Your Signature
-                                <span className="block mt-2 bg-gradient-to-r from-[#171310] via-[#9C7A3C] to-[#171310] bg-clip-text text-transparent">
-                                    Style
-                                </span>
-                            </h1>
-                        </Reveal>
-                        <Reveal delay={200}>
-                            <p className="mx-auto mt-10 max-w-xl text-lg leading-relaxed text-[#252525]/70">
-                                Discover elegant, considered pieces designed to
-                                make every look unforgettable.
-                            </p>
-                        </Reveal>
-                        <Reveal delay={300}>
-                            <div className="mt-14 flex flex-col justify-center gap-4 sm:flex-row">
-                                <PrimaryButton href="/shop">
-                                    Shop Collection
-                                </PrimaryButton>
-                                <SecondaryButton href="/shop?sort=newest">
-                                    New Arrivals
-                                </SecondaryButton>
-                            </div>
-                        </Reveal>
-                        
-                        {/* Scroll indicator - subtle */}
-                        <Reveal delay={400}>
-                            <div className="mt-20 flex flex-col items-center gap-2 opacity-40">
-                                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#171310]">
-                                    Explore
-                                </span>
-                                <div className="h-8 w-px bg-gradient-to-b from-[#171310] to-transparent" />
-                            </div>
-                        </Reveal>
-                    </div>
-                    
-                    {/* Add keyframe animation for float effect */}
-                    <style>{`
-                        @keyframes float {
-                            0%, 100% { transform: translate(0, 0); }
-                            33% { transform: translate(30px, -30px); }
-                            66% { transform: translate(-20px, 20px); }
-                        }
-                    `}</style>
-                </section>
+                )}
+                {/* Hero Carousel */}
+                <HeroCarousel slides={heroSlides} />
 
                 {/* Category Discovery — refined layout */}
                 {categories.length > 0 && (
-                    <section className="bg-[#F8F5EF] py-32">
+                    <section className="bg-[#F8F5EF] py-16 sm:py-20 lg:py-28">
                         <Container>
                             <Reveal>
                                 <div className="mb-20 text-center">
@@ -210,7 +298,7 @@ export default function Home({
 
                 {/* The Edit — white background for contrast */}
                 {featuredProducts.length > 0 && (
-                    <section className="bg-white py-32">
+                    <section className="bg-white py-16 sm:py-20 lg:py-28">
                         <Container>
                             <Reveal>
                                 <div className="mb-20 text-center">
@@ -223,11 +311,13 @@ export default function Home({
                                     </p>
                                 </div>
                             </Reveal>
-                            <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:gap-10">
+                            <div className="scrollbar-hide -mx-6 flex gap-4 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 lg:gap-8">
                                 {featuredProducts.map((product, i) => (
-                                    <Reveal key={product.id} delay={i * 60}>
-                                        <ProductCard product={product} />
-                                    </Reveal>
+                                    <div key={product.id} className="w-[46%] flex-shrink-0 sm:w-auto">
+                                        <Reveal delay={i * 60}>
+                                            <ProductCard product={product} />
+                                        </Reveal>
+                                    </div>
                                 ))}
                             </div>
                         </Container>
@@ -290,7 +380,7 @@ export default function Home({
 
                 {/* New Arrivals — cream with premium carousel treatment */}
                 {newArrivals.length > 0 && (
-                    <section className="relative overflow-hidden bg-[#F8F5EF] py-32">
+                    <section className="relative overflow-hidden bg-[#F8F5EF] py-16 sm:py-20 lg:py-28">
                         <Container>
                             <div className="mb-20 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                                 <Reveal>
@@ -311,21 +401,14 @@ export default function Home({
                                 </Reveal>
                             </div>
                             
-                            {/* Enhanced Horizontal Scroll */}
-                            <div className="relative -mx-6 px-6">
-                                <div className="scrollbar-hide flex gap-8 overflow-x-auto pb-6 sm:gap-10">
-                                    {newArrivals.map((product, i) => (
-                                        <Reveal key={product.id} delay={i * 60}>
-                                            <div className="w-64 flex-shrink-0 sm:w-72">
-                                                <ProductCard product={product} />
-                                            </div>
+                            <div className="scrollbar-hide -mx-6 flex gap-4 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 lg:gap-8">
+                                {newArrivals.map((product, i) => (
+                                    <div key={product.id} className="w-[46%] flex-shrink-0 sm:w-auto">
+                                        <Reveal delay={i * 60}>
+                                            <ProductCard product={product} />
                                         </Reveal>
-                                    ))}
-                                </div>
-                                
-                                {/* Gradient fade edges for scroll hint */}
-                                <div className="pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-[#F8F5EF] to-transparent" />
-                                <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-[#F8F5EF] to-transparent" />
+                                    </div>
+                                ))}
                             </div>
                         </Container>
                     </section>
@@ -333,7 +416,7 @@ export default function Home({
 
                 {/* Shop by Style — white */}
                 {styles.length > 0 && (
-                    <section className="bg-white py-28">
+                    <section className="bg-white py-16 sm:py-20 lg:py-28">
                         <Container>
                             <Reveal>
                                 <SectionHeading
@@ -424,7 +507,7 @@ export default function Home({
 
                 {/* Brand Story — white */}
                 {content.story_image_url && (
-                    <section className="bg-white py-28">
+                    <section className="bg-white py-16 sm:py-20 lg:py-28">
                         <Container>
                             <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
                                 <Reveal>
@@ -461,7 +544,7 @@ export default function Home({
                 )}
 
                 {/* Trust Features — elegant dark band with icons */}
-                <section className="relative overflow-hidden bg-[#171310] py-32">
+                <section className="relative overflow-hidden bg-[#171310] py-16 sm:py-20 lg:py-28">
                     {/* Subtle background pattern */}
                     <div className="absolute inset-0 opacity-[0.02]">
                         <div className="absolute inset-0" style={{
@@ -528,7 +611,7 @@ export default function Home({
                                         Flexible Fulfillment
                                     </h3>
                                     <p className="mt-4 text-sm leading-relaxed text-white/60">
-                                        Choose delivery or in-store pickup to suit your lifestyle.
+                                        Delivery coordinated for local and international clients.
                                     </p>
                                 </div>
                             </Reveal>
@@ -538,46 +621,17 @@ export default function Home({
 
                 {/* Testimonials — refined presentation */}
                 {testimonials.length > 0 && (
-                    <section className="bg-[#F8F5EF] py-32">
+                    <section className="bg-[#F8F5EF] py-16 sm:py-20 lg:py-28">
                         <Container>
                             <Reveal>
-                                <div className="mb-20 text-center">
+                                <div className="mb-16 text-center">
                                     <Eyebrow>Reviews</Eyebrow>
                                     <h2 className="mt-4 font-serif text-4xl font-medium tracking-tight text-[#171310] md:text-5xl">
                                         Loved by those who wear it
                                     </h2>
                                 </div>
                             </Reveal>
-                            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 md:grid-cols-3">
-                                {testimonials.map((t, i) => (
-                                    <Reveal key={t.id} delay={i * 100}>
-                                        <div className="rounded-[2px] border border-[#171310]/10 bg-white p-8 transition-all duration-500 hover:shadow-[0_20px_40px_-20px_rgba(23,19,16,0.12)]">
-                                            {/* Stars */}
-                                            <div className="flex gap-1">
-                                                {Array.from({ length: t.rating }).map((_, idx) => (
-                                                    <svg key={idx} className="h-4 w-4 text-[#9C7A3C]" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                ))}
-                                            </div>
-                                            
-                                            {/* Quote */}
-                                            <p className="mt-6 font-serif text-base italic leading-relaxed text-[#171310]">
-                                                "{t.quote}"
-                                            </p>
-                                            
-                                            {/* Attribution */}
-                                            <div className="mt-6 flex items-center gap-3">
-                                                <div className="h-px flex-1 bg-[#171310]/10" />
-                                                <p className="text-xs font-medium uppercase tracking-[0.15em] text-[#252525]/60">
-                                                    {t.customer_name}
-                                                </p>
-                                                <div className="h-px flex-1 bg-[#171310]/10" />
-                                            </div>
-                                        </div>
-                                    </Reveal>
-                                ))}
-                            </div>
+                            <TestimonialsCarousel testimonials={testimonials} />
                         </Container>
                     </section>
                 )}

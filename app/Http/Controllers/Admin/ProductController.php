@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Style;
+use App\Models\WishlistItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -79,8 +82,33 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $product->delete();
+        DB::transaction(function () use ($product) {
+            $lockedProduct = Product::query()
+                ->whereKey($product->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted.');
+            $variantIds = $lockedProduct->variants()
+                ->lockForUpdate()
+                ->pluck('id');
+
+            CartItem::query()
+                ->whereIn('product_variant_id', $variantIds)
+                ->delete();
+
+            WishlistItem::query()
+                ->where('product_id', $lockedProduct->id)
+                ->delete();
+
+            $lockedProduct->update([
+                'status' => 'archived',
+                'featured' => false,
+                'new_arrival' => false,
+            ]);
+        });
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product archived. Order history and media were preserved.');
     }
 }

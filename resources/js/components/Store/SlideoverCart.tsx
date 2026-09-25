@@ -1,6 +1,7 @@
-import { Fragment } from 'react';
+import { useEffect } from 'react';
 import { Link, router } from '@inertiajs/react';
-import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
+import { X, ShoppingCart, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
+import { formatPrice } from '@/lib/format';
 import type { Cart } from '@/types/cart';
 
 interface SlideoverCartProps {
@@ -10,6 +11,12 @@ interface SlideoverCartProps {
 }
 
 export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartProps) {
+    useEffect(() => {
+        if (!isOpen) return;
+        const previous = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => { document.body.style.overflow = previous; };
+    }, [isOpen]);
     function updateQuantity(itemId: number, quantity: number) {
         if (quantity < 1) return;
         router.patch(
@@ -39,7 +46,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
 
             {/* Slideover Panel */}
             <div
-                className={`fixed right-0 top-0 z-50 h-full w-full bg-white shadow-2xl transition-transform duration-500 ease-out sm:w-[480px] ${
+                role="dialog" aria-modal="true" aria-label="Shopping cart" className={`fixed right-0 top-0 z-50 h-full w-full max-w-full overflow-x-hidden bg-white shadow-2xl transition-transform duration-500 ease-out sm:w-[480px] ${
                     isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >
@@ -48,7 +55,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                     <div className="flex items-center justify-between border-b border-[#171310]/10 px-6 py-5">
                         <div className="flex items-center gap-3">
                             <div className="rounded-full bg-[#F8F5EF] p-2">
-                                <ShoppingBag className="h-5 w-5 text-[#9C7A3C]" />
+                                <ShoppingCart className="h-5 w-5 text-[#9C7A3C]" />
                             </div>
                             <div>
                                 <h2 className="font-serif text-xl font-medium text-[#171310]">
@@ -178,8 +185,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                                         {/* Price & Remove */}
                                                         <div className="flex items-center gap-3">
                                                             <p className="text-sm font-medium text-[#171310]">
-                                                                {Number(item.line_total).toLocaleString()}{' '}
-                                                                FCFA
+                                                                {formatPrice(item.line_total)}
                                                             </p>
                                                             <button
                                                                 onClick={() => removeItem(item.id)}
@@ -211,7 +217,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                             </span>
                                         </div>
                                         <span className="text-sm font-medium text-[#9C7A3C]">
-                                            −{Number(cart.discount_amount).toLocaleString()} FCFA
+                                            −{formatPrice(cart.discount_amount)}
                                         </span>
                                     </div>
                                 )}
@@ -220,7 +226,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                 <div className="mb-3 flex items-center justify-between text-sm">
                                     <span className="text-[#252525]/70">Subtotal</span>
                                     <span className="font-medium text-[#171310]">
-                                        {Number(cart.subtotal).toLocaleString()} FCFA
+                                        {formatPrice(cart.subtotal)}
                                     </span>
                                 </div>
 
@@ -230,7 +236,7 @@ export default function SlideoverCart({ cart, isOpen, onClose }: SlideoverCartPr
                                         Total
                                     </span>
                                     <span className="font-serif text-xl font-medium text-[#171310]">
-                                        {Number(cart.total).toLocaleString()} FCFA
+                                        {formatPrice(cart.total)}
                                     </span>
                                 </div>
 

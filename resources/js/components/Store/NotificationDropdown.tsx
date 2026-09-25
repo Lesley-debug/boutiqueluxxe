@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { router, Link } from '@inertiajs/react';
-import { Bell, Check, X, Package, AlertCircle, Sparkles } from 'lucide-react';
+import { Bell, Check, Package, AlertCircle, Sparkles } from 'lucide-react';
 
 interface Notification {
     id: string;
@@ -38,14 +38,14 @@ export default function NotificationDropdown({ notifications, unreadCount }: Not
     }, [isOpen]);
 
     function markAsRead(notificationId: string) {
-        router.post(`/notifications/${notificationId}/read`, {}, {
+        router.post(`/account/notifications/${notificationId}/read`, {}, {
             preserveScroll: true,
             preserveState: true,
         });
     }
 
     function markAllAsRead() {
-        router.post('/notifications/mark-all-read', {}, {
+        router.post('/account/notifications/mark-all-read', {}, {
             preserveScroll: true,
             preserveState: true,
         });

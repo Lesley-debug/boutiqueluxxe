@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class DiscountController extends Controller
@@ -54,7 +55,12 @@ class DiscountController extends Controller
         return $request->validate([
             'code' => ['required', 'string', 'max:50', 'unique:discounts,code' . ($ignoreId ? ",{$ignoreId}" : '')],
             'type' => ['required', 'in:percentage,fixed'],
-            'value' => ['required', 'numeric', 'min:0'],
+            'value' => [
+                'required',
+                'numeric',
+                'min:0',
+                Rule::when($request->input('type') === 'percentage', ['max:100']),
+            ],
             'min_order_amount' => ['nullable', 'numeric', 'min:0'],
             'max_uses' => ['nullable', 'integer', 'min:1'],
             'starts_at' => ['nullable', 'date'],

@@ -190,7 +190,7 @@ export default function Form({ product, categories, styles }: FormProps) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="mb-1 block text-sm font-medium">
-                                Base Price (FCFA)
+                                Base Price ($)
                             </label>
                             <input
                                 type="number"

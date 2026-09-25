@@ -22,6 +22,9 @@ class OrderStatusUpdatedMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(markdown: 'emails.orders.status-updated');
+        return new Content(
+            markdown: 'emails.orders.status-updated',
+            with: ['confirmationUrl' => $this->order->guestConfirmationUrl()],
+        );
     }
 }

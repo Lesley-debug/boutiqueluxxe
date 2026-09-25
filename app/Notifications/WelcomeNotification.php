@@ -22,7 +22,7 @@ class WelcomeNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => 'Welcome to Designer Bags Boutique!',
+            'title' => 'Welcome to Boutique Luxxe!',
             'message' => 'Thank you for joining us. Explore our curated collection of luxury designer bags.',
             'url' => '/shop',
             'icon' => 'welcome',
