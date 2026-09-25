@@ -28,7 +28,7 @@ export default function JournalPostPage({ post }: PostProps) {
     const safeContent = sanitizeRichText(post.content);
     return (
         <StoreLayout showMobileHeader>
-            <Head title={post.title}><meta name="description" content={post.title} /></Head>
+            <Head title={post.title} />
             <article className="mx-auto max-w-3xl px-5 py-14 sm:px-8 sm:py-20">
                 <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#9B7435]">{new Date(post.published_at).toLocaleDateString()}</p>
                 <h1 className="mt-4 max-w-2xl font-serif text-4xl font-medium tracking-tight text-[#181512] sm:text-5xl">{post.title}</h1>

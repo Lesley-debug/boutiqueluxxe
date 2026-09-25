@@ -5,7 +5,7 @@ const groups = [
     { title: "Shop", links: [["All products", "/shop"], ["New arrivals", "/shop?sort=newest"], ["Collections", "/collections"]] },
     { title: "Discover", links: [["Our story", "/about"], ["Journal", "/journal"], ["Testimonials", "/testimonials"], ["My orders", "/account/orders"]] },
     { title: "Support", links: [["Contact us", "/contact"], ["Frequently asked questions", "/faqs"]] },
-    { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms of service", "/terms-of-service"]] },
+    { title: "Legal", links: [["Privacy policy", "/privacy-policy"], ["Terms of service", "/terms-of-service"], ["Cookie policy", "/cookie-policy"]] },
 ] as const;
 
 export default function StoreFooter() {

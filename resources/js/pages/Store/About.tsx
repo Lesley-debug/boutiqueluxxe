@@ -37,12 +37,12 @@ const VALUES = [
     {
         icon: Award,
         title: "Uncompromising Quality",
-        text: "Every piece in our collection is hand-selected and authenticated. We source only from verified sellers and trusted networks — never replicas, never shortcuts.",
+        text: "Every piece in our collection is carefully selected and reviewed using the product information available to our team.",
     },
     {
         icon: Shield,
-        title: "Authenticity Guaranteed",
-        text: "Each item comes with full provenance documentation. Our in-house experts inspect every detail before it ever reaches you.",
+        title: "Careful Product Review",
+        text: "We review listing details, condition information, and available documentation before presenting a piece for sale.",
     },
     {
         icon: Heart,
@@ -65,7 +65,7 @@ const MILESTONES = [
 
 const SERVICES = [
     { icon: Package, title: "White-glove Delivery", text: "Signature packaging and insured shipping on every order." },
-    { icon: Shield, title: "Authenticity Cert.", text: "Digital certificate of authenticity issued with every purchase." },
+    { icon: Shield, title: "Product Documentation", text: "Available product and condition details are shared clearly before purchase." },
     { icon: RefreshCw, title: "Easy Returns", text: "Clear guidance and personal support for eligible return requests." },
     { icon: Headphones, title: "Concierge Support", text: "Dedicated personal shoppers available 6 days a week." },
 ];
@@ -81,11 +81,11 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
     const heroTitle = aboutPage.hero_title || "Where Luxury Meets Authenticity";
     const heroSubtitle =
         aboutPage.hero_subtitle ||
-        "Boutique Luxxe is your most trusted destination for authenticated luxury handbags, fine watches, and timeless accessories — curated for those who demand the very best.";
+        "Boutique Luxxe offers curated luxury handbags, fine watches, and timeless accessories with considered selection and personal support.";
     const philosophyTitle = aboutPage.philosophy_title || "Our Philosophy";
     const philosophyText =
         aboutPage.philosophy_text ||
-        "We believe that luxury should be accessible without compromise. Every piece we carry has been verified, inspected, and approved by our team of specialists. We don't just sell bags — we curate stories.";
+        "We believe luxury should be considered and personal. We review the details available for each piece and present clear information so clients can make informed choices.";
     const approachTitle = aboutPage.approach_title || "Our Approach";
     const approachText =
         aboutPage.approach_text ||
@@ -93,7 +93,7 @@ export default function About({ aboutPage }: { aboutPage: AboutPageData }) {
     const contactTitle = aboutPage.contact_title || "Let's Connect";
     const contactText =
         aboutPage.contact_text ||
-        "concierge@boutiqueluxxe.com";
+        "info@boutiqueluxxe.com";
 
     return (
         <StoreLayout showMobileHeader>

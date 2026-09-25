@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            \App\Http\Middleware\AddRobotsTag::class,
         ]);
 
         $middleware->alias([

@@ -7,9 +7,7 @@ export interface LegalSection { title: string; paragraphs: string[]; }
 export default function LegalPage({ title, updated, intro, sections }: { title: string; updated: string; intro: string; sections: LegalSection[] }) {
     return (
         <StoreLayout showMobileHeader>
-            <Head title={title}>
-                <meta name="description" content={`${title} for Boutique Luxxe customers.`} />
-            </Head>
+            <Head title={title} />
             <div className="border-b border-[#181512]/10 bg-white">
                 <div className="mx-auto max-w-3xl px-5 py-14 sm:px-8 sm:py-20">
                     <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#6F6961] hover:text-[#181512]"><ArrowLeft className="h-4 w-4" /> Back to Boutique Luxxe</Link>
@@ -29,7 +27,7 @@ export default function LegalPage({ title, updated, intro, sections }: { title: 
                     </section>
                 ))}
                 <div className="rounded-xl border border-[#9B7435]/20 bg-[#F3EADB] p-5 text-sm leading-6 text-[#514C46]">
-                    Questions? Email <a className="font-semibold text-[#181512] underline underline-offset-4" href="mailto:concierge@boutiqueluxxe.com">concierge@boutiqueluxxe.com</a>.
+                    Questions? Email <a className="font-semibold text-[#181512] underline underline-offset-4" href="mailto:info@boutiqueluxxe.com">info@boutiqueluxxe.com</a>.
                 </div>
             </article>
         </StoreLayout>

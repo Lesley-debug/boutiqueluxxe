@@ -2,4 +2,14 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /account
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /email/verify
+Disallow: /auth/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders/
+
 Sitemap: https://boutiqueluxxe.com/sitemap.xml

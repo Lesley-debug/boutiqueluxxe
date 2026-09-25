@@ -57,6 +57,31 @@ class HandleInertiaRequests extends Middleware
                 : (object) [],
         ];
 
+        $routeName = $request->route()?->getName();
+        $pageSeo = config("seo.pages.{$routeName}", []);
+        $private = $request->is(
+            'admin*',
+            'account*',
+            'login',
+            'register',
+            'forgot-password',
+            'reset-password*',
+            'email/verify*',
+            'cart',
+            'checkout',
+            'orders/*/confirmation',
+        );
+
+        $shared['seo'] = [
+            ...config('seo.default'),
+            ...$pageSeo,
+            'canonical' => url()->current(),
+            'image' => isset($pageSeo['image'])
+                ? url($pageSeo['image'])
+                : url(config('seo.default_image')),
+            'robots' => $private ? 'noindex,nofollow,noarchive' : 'index,follow',
+        ];
+
         if (!$isAdminRoute) {
             $shared['cart'] = function () use ($request) {
                 $cart = $request->user()

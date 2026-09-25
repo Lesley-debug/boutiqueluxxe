@@ -3,6 +3,7 @@ import StoreHeader from "./StoreHeader";
 import StoreFooter from "./StoreFooter";
 import MobileTabBar from "./MobileTabBar";
 import MobileStoreHeader from "./MobileStoreHeader";
+import SeoHead from "./SeoHead";
 import BackToTop from "./BackToTop";
 
 export default function StoreLayout({
@@ -16,6 +17,7 @@ export default function StoreLayout({
 }) {
     return (
         <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#FAF8F4] text-[#181512]">
+            <SeoHead />
             <div className="sticky top-0 z-50 hidden w-full lg:block">
                 <StoreHeader />
             </div>

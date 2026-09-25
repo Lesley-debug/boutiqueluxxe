@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Collection;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class CollectionController extends Controller
@@ -27,6 +28,18 @@ class CollectionController extends Controller
 
         return Inertia::render('Store/CollectionDetail', [
             'collection' => $collection,
+            'seo' => [
+                'title' => $collection->name,
+                'description' => Str::limit(
+                    trim(strip_tags($collection->description ?: "Explore the {$collection->name} collection from Boutique Luxxe.")),
+                    160,
+                    '',
+                ),
+                'canonical' => route('collections.show', $collection->slug),
+                'image' => $collection->hero_image_url,
+                'type' => 'website',
+                'robots' => 'index,follow',
+            ],
         ]);
     }
 }

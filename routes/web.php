@@ -62,6 +62,7 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
 Route::get('/privacy-policy', fn () => Inertia::render('Store/PrivacyPolicy'))->name('privacy');
 Route::get('/terms-of-service', fn () => Inertia::render('Store/TermsOfService'))->name('terms');
+Route::get('/cookie-policy', fn () => Inertia::render('Store/CookiePolicy'))->name('cookies');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/collections', [CollectionController::class, 'index'])->name('collections.index');
 Route::get('/collections/{slug}', [CollectionController::class, 'show'])->name('collections.show');

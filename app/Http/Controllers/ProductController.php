@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -44,6 +45,18 @@ class ProductController extends Controller
         return Inertia::render('Store/ProductDetail', [
             'product' => $product,
             'related' => $related,
+            'seo' => [
+                'title' => $product->name,
+                'description' => Str::limit(
+                    trim(strip_tags($product->description ?: "Discover {$product->name}, selected by Boutique Luxxe.")),
+                    160,
+                    '',
+                ),
+                'canonical' => route('products.show', $product->slug),
+                'image' => $product->images->first()?->url,
+                'type' => 'product',
+                'robots' => 'index,follow',
+            ],
         ]);
     }
 }

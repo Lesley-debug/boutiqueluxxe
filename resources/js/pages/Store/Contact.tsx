@@ -11,7 +11,7 @@ export default function Contact({ submitted = false }: { submitted?: boolean }) 
     function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); post("/contact", { preserveScroll: true, onSuccess: () => reset() }); }
     return (
         <StoreLayout showMobileHeader>
-            <Head title="Contact"><meta name="description" content="Contact Boutique Luxxe for product, order, delivery, and concierge support." /></Head>
+            <Head title="Contact" />
             <section className="border-b border-[#181512]/10 bg-white px-5 py-14 sm:py-20">
                 <div className="mx-auto max-w-5xl">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9B7435]">Boutique concierge</p>

@@ -11,14 +11,32 @@ class SitemapController extends Controller
 {
     public function __invoke(): Response
     {
+        $staticFiles = [
+            resource_path('js/pages/Store/Home.tsx'),
+            resource_path('js/pages/Store/Contact.tsx'),
+            resource_path('js/pages/Store/Faqs.tsx'),
+            resource_path('js/pages/Store/PrivacyPolicy.tsx'),
+            resource_path('js/pages/Store/TermsOfService.tsx'),
+            resource_path('js/pages/Store/CookiePolicy.tsx'),
+        ];
+        $timestamps = array_map(
+            fn (string $path) => file_exists($path) ? filemtime($path) : 0,
+            $staticFiles,
+        );
+        $staticLastModified = date('Y-m-d', max($timestamps) ?: time());
+
         $urls = collect([
-            ['loc' => url('/'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('shop'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('collections.index'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('journal.index'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('about'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('privacy'), 'lastmod' => now()->toDateString()],
-            ['loc' => route('terms'), 'lastmod' => now()->toDateString()],
+            ['loc' => url('/'), 'lastmod' => $staticLastModified],
+            ['loc' => route('shop'), 'lastmod' => $staticLastModified],
+            ['loc' => route('collections.index'), 'lastmod' => $staticLastModified],
+            ['loc' => route('journal.index'), 'lastmod' => $staticLastModified],
+            ['loc' => route('about'), 'lastmod' => $staticLastModified],
+            ['loc' => route('categories.browse'), 'lastmod' => $staticLastModified],
+            ['loc' => route('contact'), 'lastmod' => $staticLastModified],
+            ['loc' => route('faqs'), 'lastmod' => $staticLastModified],
+            ['loc' => route('privacy'), 'lastmod' => $staticLastModified],
+            ['loc' => route('terms'), 'lastmod' => $staticLastModified],
+            ['loc' => route('cookies'), 'lastmod' => $staticLastModified],
         ]);
 
         Product::active()->select(['slug', 'updated_at'])->chunk(250, function ($products) use ($urls) {
