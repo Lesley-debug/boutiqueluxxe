@@ -1,9 +1,14 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { FormEvent } from "react";
 import AuthLayout from "@/components/Auth/AuthLayout";
 import GoogleButton from "@/components/Auth/GoogleButton";
 
 export default function Register() {
+    const { features } = usePage().props as {
+        features?: { googleAuth?: boolean };
+    };
+    const googleAuthEnabled = features?.googleAuth === true;
+
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         email: "",
@@ -32,8 +37,16 @@ export default function Register() {
                 </p>
             </div>
 
-            <GoogleButton label="Sign up with Google" />
-            <div className="my-6 flex items-center gap-3"><span className="h-px flex-1 bg-[#181512]/10" /><span className="text-[10px] font-semibold uppercase tracking-[.18em] text-[#6F6961]">or use email</span><span className="h-px flex-1 bg-[#181512]/10" /></div>
+            {googleAuthEnabled && (
+                <>
+                    <GoogleButton label="Sign up with Google" />
+                    <div className="my-6 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-[#181512]/10" />
+                        <span className="text-[10px] font-semibold uppercase tracking-[.18em] text-[#6F6961]">or use email</span>
+                        <span className="h-px flex-1 bg-[#181512]/10" />
+                    </div>
+                </>
+            )}
 
             <form onSubmit={submit} className="space-y-5">
                 <div>

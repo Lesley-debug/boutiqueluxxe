@@ -46,6 +46,12 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'permissions' => $request->user()?->grantedPermissions() ?? [],
             ],
+            'features' => [
+                'googleAuth' => (bool) (
+                    config('services.google.client_id')
+                    && config('services.google.client_secret')
+                ),
+            ],
             'errors' => fn() => $request->session()->get('errors')
                 ? $request->session()->get('errors')->getBag('default')->getMessages()
                 : (object) [],
