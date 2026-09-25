@@ -97,16 +97,16 @@ Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', function () {
         return Inertia::render('Auth/ForgotPassword');
     })->name('password.request');
-    
+
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:password-reset-request')->name('password.email');
-    
+
     Route::get('/reset-password/{token}', function (string $token) {
         return Inertia::render('Auth/ResetPassword', [
             'token' => $token,
             'email' => request('email', ''),
         ]);
     })->name('password.reset');
-    
+
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('password.update');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -138,12 +138,12 @@ Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.
 
     Route::get('orders', [AccountOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
-    
+
     // User notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
-    
+
     // User activity
     Route::get('activity', function () {
         return Inertia::render('Account/Activity');
