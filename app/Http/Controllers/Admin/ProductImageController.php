@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProductImageController extends Controller
 {
@@ -36,6 +37,8 @@ class ProductImageController extends Controller
 
     public function setPrimary(Product $product, ProductImage $image)
     {
+        abort_unless($image->product_id === $product->id, 404);
+
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
@@ -46,7 +49,11 @@ class ProductImageController extends Controller
     {
         $data = $request->validate([
             'order' => ['required', 'array'],
-            'order.*' => ['integer', 'exists:product_images,id'],
+            'order.*' => [
+                'integer',
+                Rule::exists('product_images', 'id')
+                    ->where(fn ($query) => $query->where('product_id', $product->id)),
+            ],
         ]);
 
         foreach ($data['order'] as $index => $imageId) {
@@ -60,6 +67,8 @@ class ProductImageController extends Controller
 
     public function destroy(Product $product, ProductImage $image)
     {
+        abort_unless($image->product_id === $product->id, 404);
+
         Storage::disk('public')->delete($image->path);
         $wasPrimary = $image->is_primary;
         $image->delete();

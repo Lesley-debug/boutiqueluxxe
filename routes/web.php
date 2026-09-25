@@ -148,13 +148,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::resource('products', AdminProductController::class);
 
         Route::post('products/{product}/variants', [ProductVariantController::class, 'store'])->name('products.variants.store');
-        Route::put('products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->name('products.variants.update');
-        Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->name('products.variants.destroy');
+        Route::put('products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])->scopeBindings()->name('products.variants.update');
+        Route::delete('products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])->scopeBindings()->name('products.variants.destroy');
 
         Route::post('products/{product}/images', [ProductImageController::class, 'store'])->name('products.images.store');
-        Route::patch('products/{product}/images/{image}/primary', [ProductImageController::class, 'setPrimary'])->name('products.images.primary');
+        Route::patch('products/{product}/images/{image}/primary', [ProductImageController::class, 'setPrimary'])->scopeBindings()->name('products.images.primary');
         Route::post('products/{product}/images/reorder', [ProductImageController::class, 'reorder'])->name('products.images.reorder');
-        Route::delete('products/{product}/images/{image}', [ProductImageController::class, 'destroy'])->name('products.images.destroy');
+        Route::delete('products/{product}/images/{image}', [ProductImageController::class, 'destroy'])->scopeBindings()->name('products.images.destroy');
 
         Route::resource('styles', AdminStyleController::class)->only(['index', 'store', 'destroy']);
         Route::resource('collections', AdminCollectionController::class);
