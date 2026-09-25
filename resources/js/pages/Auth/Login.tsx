@@ -30,7 +30,7 @@ export default function Login() {
 
             {registered && (
                 <p className="mb-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
-                    Account created — please log in to continue.
+                    Account created. Sign in, then open the verification link sent to your email.
                 </p>
             )}
 

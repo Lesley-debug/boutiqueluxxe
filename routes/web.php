@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Account\ProfileController;
@@ -109,8 +110,20 @@ Route::middleware('guest')->group(function () {
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
+
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [EmailVerificationController::class, 'show'])
+        ->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'store'])
+        ->middleware('throttle:email-verification')
+        ->name('verification.send');
+});
+
 // Customer account — requires login, no admin flag needed
-Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.')->group(function () {
     Route::get('/', [AccountDashboardController::class, 'index'])->name('dashboard');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -138,7 +151,7 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
 });
 
 //Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'email.verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::middleware('permission:dashboard.view')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     });

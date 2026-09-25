@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Notifications\WelcomeNotification;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +18,10 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('Auth/Login', [
+            'registered' => session('registered', false),
+            'verificationDeliveryFailed' => session('verificationDeliveryFailed', false),
+        ]);
     }
 
     public function login(Request $request, CartService $cartService)
@@ -45,7 +47,14 @@ class AuthController extends Controller
             report($exception);
         }
 
-        return redirect('/')->with('welcomeBack', true);
+        if (
+            config('auth_features.email_verification_required')
+            && ! $request->user()->hasVerifiedEmail()
+        ) {
+            return redirect()->route('verification.notice');
+        }
+
+        return redirect()->intended('/')->with('welcomeBack', true);
     }
 
     public function showRegister()
@@ -67,9 +76,18 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $user->notify(new WelcomeNotification());
+        $deliveryFailed = false;
 
-        return redirect('/login')->with('registered', true);
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $deliveryFailed = true;
+        }
+
+        return redirect('/login')
+            ->with('registered', true)
+            ->with('verificationDeliveryFailed', $deliveryFailed);
     }
 
     public function logout(Request $request)
