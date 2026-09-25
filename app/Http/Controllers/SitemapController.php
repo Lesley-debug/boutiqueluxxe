@@ -39,14 +39,32 @@ class SitemapController extends Controller
             ['loc' => route('cookies'), 'lastmod' => $staticLastModified],
         ]);
 
-        Product::active()->select(['slug', 'updated_at'])->chunk(250, function ($products) use ($urls) {
-            foreach ($products as $product) $urls->push(['loc' => route('products.show', $product->slug), 'lastmod' => $product->updated_at->toDateString()]);
-        });
+        Product::active()
+            ->select(['id', 'slug', 'name', 'updated_at'])
+            ->with(['images:id,product_id,path,alt_text,sort_order,is_primary'])
+            ->chunk(250, function ($products) use ($urls) {
+                foreach ($products as $product) {
+                    $image = $product->images->first();
+                    $urls->push([
+                        'loc' => route('products.show', $product->slug),
+                        'lastmod' => $product->updated_at->toDateString(),
+                        'image' => $image?->url,
+                        'image_title' => $image?->alt_text ?: $product->name,
+                    ]);
+                }
+            });
         Collection::active()->select(['slug', 'updated_at'])->chunk(250, function ($collections) use ($urls) {
             foreach ($collections as $collection) $urls->push(['loc' => route('collections.show', $collection->slug), 'lastmod' => $collection->updated_at->toDateString()]);
         });
-        JournalPost::published()->select(['slug', 'updated_at'])->chunk(250, function ($posts) use ($urls) {
-            foreach ($posts as $post) $urls->push(['loc' => route('journal.show', $post->slug), 'lastmod' => $post->updated_at->toDateString()]);
+        JournalPost::published()->select(['slug', 'title', 'cover_image', 'updated_at'])->chunk(250, function ($posts) use ($urls) {
+            foreach ($posts as $post) {
+                $urls->push([
+                    'loc' => route('journal.show', $post->slug),
+                    'lastmod' => $post->updated_at->toDateString(),
+                    'image' => $post->cover_image_url,
+                    'image_title' => $post->title,
+                ]);
+            }
         });
 
         $xml = view('sitemap', ['urls' => $urls])->render();

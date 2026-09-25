@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default_image' => '/images/logo.png',
+    'default_image' => '/images/boutique-luxxe-social.png',
     'default' => [
         'title' => 'Boutique Luxxe',
         'description' => 'Discover curated luxury bags, watches, and accessories selected with care and supported by personal service.',

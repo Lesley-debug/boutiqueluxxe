@@ -24,7 +24,11 @@ export default function CollectionDetail({
                 <div className="relative h-[70vh] w-full overflow-hidden">
                     <img
                         src={collection.hero_image_url}
-                        alt={collection.name}
+                        alt={`${collection.name} collection`}
+                        width={1600}
+                        height={900}
+                        fetchPriority="high"
+                        decoding="async"
                         className="h-full w-full object-cover transition-transform duration-1000 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#171310]/60 via-[#171310]/20 to-transparent" />

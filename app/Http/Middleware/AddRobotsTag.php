@@ -28,6 +28,16 @@ class AddRobotsTag
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         }
 
+        $queryKeys = array_keys($request->query());
+        $indexableShopLanding = $request->routeIs('shop')
+            && count($queryKeys) === 1
+            && in_array($queryKeys[0], ['category', 'style'], true)
+            && $request->filled($queryKeys[0]);
+
+        if ($request->routeIs('shop') && $request->query() && ! $indexableShopLanding) {
+            $response->headers->set('X-Robots-Tag', 'noindex, follow');
+        }
+
         return $response;
     }
 }

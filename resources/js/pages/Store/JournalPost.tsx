@@ -32,7 +32,7 @@ export default function JournalPostPage({ post }: PostProps) {
             <article className="mx-auto max-w-3xl px-5 py-14 sm:px-8 sm:py-20">
                 <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#9B7435]">{new Date(post.published_at).toLocaleDateString()}</p>
                 <h1 className="mt-4 max-w-2xl font-serif text-4xl font-medium tracking-tight text-[#181512] sm:text-5xl">{post.title}</h1>
-                {post.cover_image_url && <img src={post.cover_image_url} alt="" className="mt-10 aspect-[16/9] w-full rounded-xl object-cover" />}
+                {post.cover_image_url && <img src={post.cover_image_url} alt={`${post.title} cover`} width={1200} height={675} fetchPriority="high" decoding="async" className="mt-10 aspect-[16/9] w-full rounded-xl object-cover" />}
                 <div className="prose prose-stone mt-10 max-w-none prose-headings:font-serif prose-a:text-[#9B7435]" dangerouslySetInnerHTML={{ __html: safeContent }} />
             </article>
         </StoreLayout>

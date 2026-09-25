@@ -19,10 +19,27 @@
         $organizationSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
+            '@id' => url('/').'#organization',
             'name' => 'Boutique Luxxe',
-            'url' => config('app.url'),
-            'logo' => url('/images/logo.png'),
+            'url' => url('/'),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => url('/images/logo.png'),
+            ],
             'email' => 'info@boutiqueluxxe.com',
+        ];
+        $websiteSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            '@id' => url('/').'#website',
+            'name' => 'Boutique Luxxe',
+            'url' => url('/'),
+            'publisher' => ['@id' => url('/').'#organization'],
+        ];
+        $structuredData = [
+            $organizationSchema,
+            $websiteSchema,
+            ...data_get($seo, 'schema', []),
         ];
     @endphp
     <meta charset="utf-8">
@@ -45,7 +62,9 @@
     @if ($seoImage)
         <meta name="twitter:image" content="{{ $seoImage }}">
     @endif
-    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @foreach ($structuredData as $schema)
+        <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @endforeach
     <title inertia>{{ $fullTitle }}</title>
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])

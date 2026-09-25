@@ -7,6 +7,7 @@ interface SeoMetadata {
     image?: string | null;
     robots: string;
     type?: string;
+    schema?: Record<string, unknown>[];
 }
 
 export default function SeoHead() {
@@ -30,6 +31,16 @@ export default function SeoHead() {
             <meta {...keyed("twitter:title")} name="twitter:title" content={seo.title} />
             <meta {...keyed("twitter:description")} name="twitter:description" content={seo.description} />
             {seo.image && <meta {...keyed("twitter:image")} name="twitter:image" content={seo.image} />}
+            {seo.schema?.map((schema, index) => (
+                <script
+                    {...keyed(`structured-data-${index}`)}
+                    key={`structured-data-${index}`}
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(schema).replace(/</g, "\u003c"),
+                    }}
+                />
+            ))}
         </Head>
     );
 }

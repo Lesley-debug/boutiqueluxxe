@@ -60,7 +60,11 @@ export default function Collections({
                                 {c.hero_image_url ? (
                                     <img
                                         src={c.hero_image_url}
-                                        alt={c.name}
+                                        alt={`${c.name} collection`}
+                                        width={1200}
+                                        height={900}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                                     />
                                 ) : (

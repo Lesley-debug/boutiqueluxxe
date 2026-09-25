@@ -150,6 +150,10 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                 key={activeImage}
                                 src={product.images[activeImage].url}
                                 alt={product.images[activeImage].alt_text ?? product.name}
+                                width={1200}
+                                height={1500}
+                                fetchPriority="high"
+                                decoding="async"
                                 className="h-full w-full object-cover transition duration-500"
                             />
                         )}
@@ -206,7 +210,7 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                 aria-label={`View image ${index + 1}`}
                                 className={`h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-white p-0.5 transition ${index === activeImage ? "border-[#9B7435] shadow-md" : "border-transparent opacity-65"}`}
                             >
-                                <img src={image.url} alt="" className="h-full w-full rounded-[9px] object-cover" />
+                                <img src={image.url} alt={`${product.name} view ${index + 1}`} width={160} height={160} loading="lazy" decoding="async" className="h-full w-full rounded-[9px] object-cover" />
                             </button>
                         ))}
                     </div>
@@ -369,6 +373,10 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                         key={activeImage}
                                         src={product.images[activeImage].url}
                                         alt={product.images[activeImage].alt_text ?? product.name}
+                                        width={1200}
+                                        height={1500}
+                                        fetchPriority="high"
+                                        decoding="async"
                                         className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.015]"
                                     />
                                 )}
@@ -390,7 +398,7 @@ export default function ProductDetail({ product, related }: ProductDetailProps) 
                                                     : "border-transparent opacity-60 hover:opacity-100"
                                             }`}
                                         >
-                                            <img src={img.url} alt="" className="h-full w-full object-cover" />
+                                            <img src={img.url} alt={`${product.name} view ${i + 1}`} width={160} height={160} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                                         </button>
                                     ))}
                                 </div>
