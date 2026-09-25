@@ -85,18 +85,18 @@ Route::get('/orders/{orderNumber}/confirmation', [OrderController::class, 'confi
 // Auth
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
-    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:auth')->name('google.redirect');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:auth')->name('google.callback');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->middleware('throttle:oauth')->name('google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:oauth')->name('google.callback');
 
     // Password Reset Routes
     Route::get('/forgot-password', function () {
         return Inertia::render('Auth/ForgotPassword');
     })->name('password.request');
     
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:auth')->name('password.email');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('throttle:password-reset-request')->name('password.email');
     
     Route::get('/reset-password/{token}', function (string $token) {
         return Inertia::render('Auth/ResetPassword', [
@@ -105,7 +105,7 @@ Route::middleware('guest')->group(function () {
         ]);
     })->name('password.reset');
     
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:auth')->name('password.update');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('password.update');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
