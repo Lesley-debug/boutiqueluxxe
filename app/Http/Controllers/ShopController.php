@@ -15,9 +15,9 @@ class ShopController extends Controller
         $query = Product::query()->active()->with(['category', 'images', 'variants']);
 
         if ($request->filled('category')) {
-            $category = Category::where('slug', $request->string('category'))->first();
+            $category = Category::active()->where('slug', $request->string('category'))->first();
             if ($category) {
-                $ids = $category->children()->pluck('id')->push($category->id);
+                $ids = $category->children()->active()->pluck('id')->push($category->id);
                 $query->whereIn('category_id', $ids);
             }
         }
@@ -56,7 +56,11 @@ class ShopController extends Controller
 
         return Inertia::render('Store/Shop', [
             'products' => $products,
-            'categories' => Category::topLevel()->active()->with('children')->orderBy('sort_order')->get(),
+            'categories' => Category::topLevel()
+                ->active()
+                ->with(['children' => fn ($query) => $query->active()->orderBy('sort_order')])
+                ->orderBy('sort_order')
+                ->get(),
             'filters' => $request->only(['category', 'style', 'search', 'min_price', 'max_price', 'sort']),
         ]);
     }

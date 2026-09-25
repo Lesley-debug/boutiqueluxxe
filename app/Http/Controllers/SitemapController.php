@@ -24,7 +24,7 @@ class SitemapController extends Controller
         Product::active()->select(['slug', 'updated_at'])->chunk(250, function ($products) use ($urls) {
             foreach ($products as $product) $urls->push(['loc' => route('products.show', $product->slug), 'lastmod' => $product->updated_at->toDateString()]);
         });
-        Collection::query()->select(['slug', 'updated_at'])->chunk(250, function ($collections) use ($urls) {
+        Collection::active()->select(['slug', 'updated_at'])->chunk(250, function ($collections) use ($urls) {
             foreach ($collections as $collection) $urls->push(['loc' => route('collections.show', $collection->slug), 'lastmod' => $collection->updated_at->toDateString()]);
         });
         JournalPost::published()->select(['slug', 'updated_at'])->chunk(250, function ($posts) use ($urls) {

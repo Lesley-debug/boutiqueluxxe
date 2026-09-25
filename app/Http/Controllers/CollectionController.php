@@ -18,7 +18,11 @@ class CollectionController extends Controller
     {
         $collection = Collection::active()
             ->where('slug', $slug)
-            ->with('products.images')
+            ->with([
+                'products' => fn ($query) => $query
+                    ->active()
+                    ->with(['images', 'variants']),
+            ])
             ->firstOrFail();
 
         return Inertia::render('Store/CollectionDetail', [
