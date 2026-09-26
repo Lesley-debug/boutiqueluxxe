@@ -25,6 +25,7 @@ class ProductionLaunchConfigurationTest extends TestCase
         $template = file_get_contents(base_path('.env.production.example'));
 
         $this->assertStringContainsString('CONTACT_EMAIL=info@boutiqueluxxe.com', $template);
+        $this->assertStringContainsString('ORDER_NOTIFICATION_EMAIL=info@boutiqueluxxe.com', $template);
         $this->assertStringContainsString('STORE_CURRENCY=USD', $template);
         $this->assertSame('USD', config('commerce.currency'));
         $this->assertSame('$1,234.50', Money::format(1234.5));
@@ -50,6 +51,21 @@ class ProductionLaunchConfigurationTest extends TestCase
         $confirmationTemplate = file_get_contents(resource_path('views/emails/orders/confirmation.blade.php'));
         $this->assertStringNotContainsString('FCFA', $confirmationTemplate);
         $this->assertStringContainsString('Money::format', $confirmationTemplate);
+        $this->assertStringNotContainsString('    # Thank you', $confirmationTemplate);
+        $this->assertSame(['database'], (new NewOrderNotification($order))->via(null));
+        $this->assertSame(['mail'], (new NewOrderNotification($order, mailOnly: true))->via(null));
+    }
+
+    public function test_checkout_and_product_cards_do_not_duplicate_or_fake_customer_data(): void
+    {
+        $checkout = file_get_contents(resource_path('js/pages/Store/Checkout.tsx'));
+        $mobileFeed = file_get_contents(resource_path('js/components/Store/MobileHomeFeed.tsx'));
+        $productCard = file_get_contents(resource_path('js/components/Store/ProductCard.tsx'));
+
+        $this->assertSame(1, substr_count($checkout, '<OrderSummaryCard cart={cart} />'));
+        $this->assertStringNotContainsString('displayRating = 4', $mobileFeed);
+        $this->assertStringContainsString('reviewsCount={product.reviews_count}', $mobileFeed);
+        $this->assertStringContainsString('reviewsCount={product.reviews_count}', $productCard);
     }
 
     public function test_contact_recipient_has_safe_non_empty_fallback(): void
@@ -60,5 +76,6 @@ class ProductionLaunchConfigurationTest extends TestCase
             "env('CONTACT_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'info@boutiqueluxxe.com')",
             $mailConfig,
         );
+        $this->assertStringContainsString("env('ORDER_NOTIFICATION_EMAIL')", $mailConfig);
     }
 }

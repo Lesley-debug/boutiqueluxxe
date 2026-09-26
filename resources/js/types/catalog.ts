@@ -34,6 +34,8 @@ export interface Product {
     description: string | null;
     base_price: string;
     sale_price: string | null;
+    rating: string | null;
+    reviews_count: number;
     featured: boolean;
     new_arrival: boolean;
     images: ProductImage[];

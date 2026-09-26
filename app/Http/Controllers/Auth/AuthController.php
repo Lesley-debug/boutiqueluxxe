@@ -62,8 +62,9 @@ class AuthController extends Controller
         return Inertia::render('Auth/Register');
     }
 
-    public function register(Request $request)
+    public function register(Request $request, CartService $cartService)
     {
+        $guestSessionId = $request->session()->getId();
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
@@ -76,6 +77,15 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        try {
+            $cartService->mergeGuestCartIntoUser($guestSessionId, (int) $user->id);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
         $deliveryFailed = false;
 
         try {
@@ -85,8 +95,11 @@ class AuthController extends Controller
             $deliveryFailed = true;
         }
 
-        return redirect('/login')
-            ->with('registered', true)
+        if (! config('auth_features.email_verification_required')) {
+            return redirect()->route('account.dashboard');
+        }
+
+        return redirect()->route('verification.notice')
             ->with('verificationDeliveryFailed', $deliveryFailed);
     }
 

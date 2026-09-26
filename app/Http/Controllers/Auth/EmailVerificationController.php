@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Notifications\WelcomeNotification;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,17 +28,28 @@ class EmailVerificationController extends Controller
         ]);
     }
 
-    public function verify(EmailVerificationRequest $request): RedirectResponse
+    public function verify(Request $request, int $id, string $hash): RedirectResponse
     {
-        if (! $request->user()->hasVerifiedEmail()) {
-            $request->fulfill();
+        $user = User::findOrFail($id);
+
+        abort_unless(
+            hash_equals($hash, sha1($user->getEmailForVerification())),
+            403,
+        );
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+            event(new Verified($user));
 
             try {
-                $request->user()->notify(new WelcomeNotification());
+                $user->notify(new WelcomeNotification());
             } catch (\Throwable $exception) {
                 report($exception);
             }
         }
+
+        Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect()->route('account.dashboard')
             ->with('status', 'email-verified');

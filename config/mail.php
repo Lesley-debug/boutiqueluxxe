@@ -119,4 +119,10 @@ return [
         'address' => env('CONTACT_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'info@boutiqueluxxe.com'),
     ],
 
+    'order_notifications' => [
+        'address' => env('ORDER_NOTIFICATION_EMAIL')
+            ?: env('CONTACT_EMAIL')
+            ?: env('MAIL_FROM_ADDRESS', 'info@boutiqueluxxe.com'),
+    ],
+
 ];

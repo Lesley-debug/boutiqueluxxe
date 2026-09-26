@@ -189,6 +189,13 @@ class CheckoutController extends Controller
         }
 
         try {
+            Notification::route('mail', config('mail.order_notifications.address'))
+                ->notify(new NewOrderNotification($order, mailOnly: true));
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        try {
             $admins = User::where('is_admin', true)->get();
             Notification::send($admins, new NewOrderNotification($order));
 
