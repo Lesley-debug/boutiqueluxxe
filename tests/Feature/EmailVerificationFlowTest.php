@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Notifications\VerifyEmailNotification;
 use App\Notifications\WelcomeNotification;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -30,7 +30,7 @@ class EmailVerificationFlowTest extends TestCase
         $response->assertRedirect('/email/verify');
         $this->assertAuthenticatedAs($user);
         $this->assertFalse($user->hasVerifiedEmail());
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmailNotification::class);
     }
 
     public function test_unverified_user_can_access_account_when_enforcement_is_disabled(): void
@@ -140,7 +140,7 @@ class EmailVerificationFlowTest extends TestCase
         }
 
         $this->post('/email/verification-notification')->assertStatus(429);
-        Notification::assertSentToTimes($user, VerifyEmail::class, 3);
+        Notification::assertSentToTimes($user, VerifyEmailNotification::class, 3);
     }
 
     public function test_guest_storefront_remains_available_when_verification_is_enforced(): void
