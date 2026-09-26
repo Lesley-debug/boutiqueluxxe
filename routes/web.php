@@ -112,12 +112,13 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify', [EmailVerificationController::class, 'show'])
         ->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'store'])
         ->middleware('throttle:email-verification')
         ->name('verification.send');

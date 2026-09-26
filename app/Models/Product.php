@@ -21,6 +21,8 @@ class Product extends Model
         'description',
         'base_price',
         'sale_price',
+        'rating',
+        'reviews_count',
         'status',
         'featured',
         'new_arrival',
@@ -31,6 +33,8 @@ class Product extends Model
     protected $casts = [
         'base_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'rating' => 'decimal:2',
+        'reviews_count' => 'integer',
         'featured' => 'boolean',
         'new_arrival' => 'boolean',
     ];

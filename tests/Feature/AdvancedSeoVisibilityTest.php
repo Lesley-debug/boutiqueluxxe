@@ -42,6 +42,27 @@ class AdvancedSeoVisibilityTest extends TestCase
         $response->assertDontSee('Review', false);
     }
 
+    public function test_rated_product_outputs_factual_aggregate_rating_schema(): void
+    {
+        $category = Category::create(['name' => 'Jewelry', 'slug' => 'jewelry', 'status' => 'active', 'sort_order' => 0]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Rated Necklace',
+            'slug' => 'rated-necklace',
+            'base_price' => 800,
+            'rating' => 4.75,
+            'reviews_count' => 12,
+            'status' => 'active',
+        ]);
+        ProductVariant::create(['product_id' => $product->id, 'sku' => 'RATE-001', 'stock_quantity' => 1]);
+
+        $this->get('/products/rated-necklace')
+            ->assertOk()
+            ->assertSee('"@type":"AggregateRating"', false)
+            ->assertSee('"ratingValue":"4.75"', false)
+            ->assertSee('"reviewCount":12', false);
+    }
+
     public function test_journal_post_outputs_article_schema(): void
     {
         $post = JournalPost::create([

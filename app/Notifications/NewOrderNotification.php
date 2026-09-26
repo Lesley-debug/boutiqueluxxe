@@ -5,18 +5,21 @@ namespace App\Notifications;
 use App\Models\Order;
 use App\Support\Money;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NewOrderNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public Order $order) {}
+    public function __construct(
+        public Order $order,
+        public bool $mailOnly = false,
+    ) {}
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return $this->mailOnly ? ['mail'] : ['database'];
     }
 
     public function toDatabase($notifiable): array

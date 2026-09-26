@@ -61,6 +61,13 @@ class ProductController extends Controller
             'sku' => $sku,
             'brand' => $product->brand ? ['@type' => 'Brand', 'name' => $product->brand] : null,
             'category' => $product->category?->name,
+            'aggregateRating' => $product->rating && $product->reviews_count > 0 ? [
+                '@type' => 'AggregateRating',
+                'ratingValue' => number_format((float) $product->rating, 2, '.', ''),
+                'reviewCount' => $product->reviews_count,
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ] : null,
             'offers' => [
                 '@type' => 'Offer',
                 'url' => $productUrl,
