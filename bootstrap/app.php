@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\PreventDynamicResponseCaching;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,10 +25,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PROTO,
         );
 
-        $middleware->web(append: [
-            HandleInertiaRequests::class,
-            \App\Http\Middleware\AddRobotsTag::class,
-        ]);
+        $middleware->web(
+            prepend: [PreventDynamicResponseCaching::class],
+            append: [
+                HandleInertiaRequests::class,
+                \App\Http\Middleware\AddRobotsTag::class,
+            ],
+        );
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
