@@ -20,6 +20,7 @@ class UserActivityLog extends Model
     const TYPE_CART_UPDATED = 'cart_updated';
     const TYPE_PRODUCT_VIEWED = 'product_viewed';
     const TYPE_PROFILE_UPDATED = 'profile_updated';
+    const TYPE_PASSWORD_CHANGED = 'password_changed';
     const TYPE_ADDRESS_ADDED = 'address_added';
     const TYPE_ADDRESS_UPDATED = 'address_updated';
     const TYPE_ADDRESS_DELETED = 'address_deleted';

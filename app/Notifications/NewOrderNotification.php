@@ -26,8 +26,12 @@ class NewOrderNotification extends Notification
     {
         return [
             'type' => 'new_order',
-            'order_id' => $this->order->id,
+            'title' => 'New order received',
             'message' => "New order {$this->order->order_number} from {$this->order->customer_name} — ".Money::format($this->order->total),
+            'url' => "/admin/orders/{$this->order->id}",
+            'icon' => 'new_order',
+            'order_id' => $this->order->id,
+            'order_number' => $this->order->order_number,
         ];
     }
 

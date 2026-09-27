@@ -21,6 +21,8 @@ class AuthController extends Controller
         return Inertia::render('Auth/Login', [
             'registered' => session('registered', false),
             'verificationDeliveryFailed' => session('verificationDeliveryFailed', false),
+            'passwordChanged' => session('passwordChanged', false),
+            'status' => session('status'),
         ]);
     }
 
