@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Account\ActivityController;
 use App\Http\Controllers\Account\AddressController;
 use App\Http\Controllers\Admin\AboutPageController;
 use App\Http\Controllers\CategoryBrowseController;
@@ -146,9 +147,7 @@ Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.
     Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
 
     // User activity
-    Route::get('activity', function () {
-        return Inertia::render('Account/Activity');
-    })->name('activity.index');
+    Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
 
 });
 

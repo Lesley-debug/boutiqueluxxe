@@ -9,8 +9,10 @@ use App\Models\Discount;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Models\UserActivityLog;
 use App\Notifications\LowStockNotification;
 use App\Notifications\NewOrderNotification;
+use App\Notifications\OrderPlacedNotification;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -195,15 +197,46 @@ class CheckoutController extends Controller
             report($exception);
         }
 
-        try {
-            $admins = User::where('is_admin', true)->get();
-            Notification::send($admins, new NewOrderNotification($order));
-
-            foreach ($result['lowStockVariants'] as $variant) {
-                Notification::send($admins, new LowStockNotification($variant));
+        if ($order->user_id) {
+            try {
+                $order->user()->first()?->notify(new OrderPlacedNotification($order));
+            } catch (\Throwable $exception) {
+                report($exception);
             }
+
+            try {
+                UserActivityLog::log(
+                    (int) $order->user_id,
+                    UserActivityLog::TYPE_ORDER_PLACED,
+                    "Placed order {$order->order_number}",
+                    [
+                        'order_id' => $order->id,
+                        'order_number' => $order->order_number,
+                        'total' => $order->total,
+                    ],
+                );
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
+
+        $admins = User::query()
+            ->where('is_admin', true)
+            ->orWhereIn('role', ['super_admin', 'manager', 'support_staff'])
+            ->get();
+
+        try {
+            Notification::send($admins, new NewOrderNotification($order));
         } catch (\Throwable $exception) {
             report($exception);
+        }
+
+        foreach ($result['lowStockVariants'] as $variant) {
+            try {
+                Notification::send($admins, new LowStockNotification($variant));
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
         }
 
         return redirect("/orders/{$order->order_number}/confirmation");

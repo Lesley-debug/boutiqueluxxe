@@ -1,417 +1,546 @@
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import {
-    Package,
-    Heart,
-    MapPin,
-    User as UserIcon,
-    LogOut,
-    ChevronRight,
-    ShoppingBag,
-    Bell,
-    Settings,
-    Clock,
-    CheckCircle,
-    Truck,
-    XCircle,
-    RotateCcw,
-    Star,
+  Activity,
+  ArrowUpRight,
+  Bell,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Heart,
+  LockKeyhole,
+  MapPin,
+  Package,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Truck,
+  User,
+  XCircle,
 } from "lucide-react";
-import { router } from "@inertiajs/react";
 import StoreLayout from "@/components/Store/StoreLayout";
 import { formatPrice } from "@/lib/format";
 
 interface OrderRow {
-    id: number;
-    order_number: string;
-    status: string;
-    total: string;
-    created_at: string;
+  id: number;
+  order_number: string;
+  status: string;
+  total: string;
+  created_at: string;
 }
 
-interface Stats {
+interface NotificationRow {
+  id: string;
+  data: { title?: string; message?: string; url?: string; icon?: string };
+  read_at: string | null;
+  created_at: string;
+}
+
+interface ActivityRow {
+  id: number;
+  activity_type: string;
+  description: string;
+  created_at: string;
+}
+
+interface DashboardProps {
+  stats: {
     orders_count: number;
+    active_orders_count: number;
     wishlist_count: number;
     addresses_count: number;
+    unread_notifications_count: number;
+    total_spent: number;
+  };
+  profileCompletion: number;
+  account: { member_since: string | null; email_verified: boolean };
+  recentOrders: OrderRow[];
+  recentNotifications: NotificationRow[];
+  recentActivity: ActivityRow[];
 }
 
-// ─── Status helpers ───────────────────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<
-    string,
-    { label: string; icon: typeof Clock; color: string; bg: string }
-> = {
-    pending:    { label: "Pending",    icon: Clock,        color: "text-amber-600",  bg: "bg-amber-50" },
-    processing: { label: "Processing", icon: RotateCcw,    color: "text-blue-600",   bg: "bg-blue-50" },
-    shipped:    { label: "Shipped",    icon: Truck,        color: "text-indigo-600", bg: "bg-indigo-50" },
-    delivered:  { label: "Delivered",  icon: CheckCircle,  color: "text-green-600",  bg: "bg-green-50" },
-    cancelled:  { label: "Cancelled",  icon: XCircle,      color: "text-red-500",    bg: "bg-red-50" },
-};
+const STATUS = {
+  pending: {
+    label: "Pending",
+    icon: Clock,
+    style: "bg-amber-50 text-amber-700",
+  },
+  processing: {
+    label: "Processing",
+    icon: Activity,
+    style: "bg-blue-50 text-blue-700",
+  },
+  shipped: {
+    label: "Shipped",
+    icon: Truck,
+    style: "bg-indigo-50 text-indigo-700",
+  },
+  delivered: {
+    label: "Delivered",
+    icon: CheckCircle2,
+    style: "bg-emerald-50 text-emerald-700",
+  },
+  cancelled: {
+    label: "Cancelled",
+    icon: XCircle,
+    style: "bg-red-50 text-red-600",
+  },
+} as const;
 
 function StatusBadge({ status }: { status: string }) {
-    const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
-    const Icon = cfg.icon;
-    return (
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] ${cfg.bg} ${cfg.color}`}>
-            <Icon size={10} strokeWidth={2.5} />
-            {cfg.label}
-        </span>
-    );
+  const item = STATUS[status as keyof typeof STATUS] ?? STATUS.pending;
+  const Icon = item.icon;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-[0.1em] ${item.style}`}
+    >
+      <Icon className="h-3 w-3" /> {item.label}
+    </span>
+  );
 }
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+function timeAgo(value: string) {
+  const seconds = Math.max(0, (Date.now() - new Date(value).getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
-function StatCard({
-    href,
-    icon: Icon,
-    value,
-    label,
-    sub,
+function MetricCard({
+  label,
+  value,
+  hint,
+  icon: Icon,
+  tone,
 }: {
-    href: string;
-    icon: typeof Package;
-    value: number;
-    label: string;
-    sub?: string;
+  label: string;
+  value: string | number;
+  hint: string;
+  icon: typeof Package;
+  tone: "gold" | "ink" | "cream";
 }) {
-    return (
-        <Link
-            href={href}
-            className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm transition duration-300 hover:shadow-[0_20px_40px_-12px_rgba(23,19,16,0.15)]"
+  const styles = {
+    gold: "bg-[#9B7435] text-white",
+    ink: "bg-[#171310] text-white",
+    cream: "border border-[#171310]/8 bg-white text-[#171310]",
+  };
+  return (
+    <div
+      className={`relative min-w-0 overflow-hidden rounded-2xl p-4 shadow-[0_14px_35px_-24px_rgba(23,19,16,.5)] ${styles[tone]}`}
+    >
+      <div className="absolute -right-5 -top-5 h-16 w-16 rounded-full bg-white/10" />
+      <div className="flex items-center justify-between">
+        <p
+          className={`truncate text-[9px] font-bold uppercase tracking-[0.15em] ${tone === "cream" ? "text-[#6F6961]" : "text-white/70"}`}
         >
-            {/* Subtle gold accent corner */}
-            <div className="absolute right-0 top-0 h-16 w-16 rounded-bl-[3rem] bg-[#9C7A3C]/5 transition-all duration-300 group-hover:h-20 group-hover:w-20" />
-
-            <div className="relative">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F8F5EF]">
-                    <Icon size={18} className="text-[#9C7A3C]" strokeWidth={1.8} />
-                </div>
-                <p className="mt-4 font-serif text-3xl font-medium text-[#171310]">
-                    {value}
-                </p>
-                <p className="mt-1 text-xs font-medium text-[#252525]/60">{label}</p>
-                {sub && <p className="mt-0.5 text-[10px] text-[#252525]/35">{sub}</p>}
-            </div>
-
-            <div className="absolute bottom-4 right-4 text-[#9C7A3C] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <ChevronRight size={16} strokeWidth={2} />
-            </div>
-        </Link>
-    );
+          {label}
+        </p>
+        <Icon
+          className={`h-4 w-4 ${tone === "cream" ? "text-[#9B7435]" : "text-white/80"}`}
+        />
+      </div>
+      <p className="mt-3 font-serif text-2xl font-semibold">{value}</p>
+      <p
+        className={`mt-1 truncate text-[10px] ${tone === "cream" ? "text-[#6F6961]" : "text-white/60"}`}
+      >
+        {hint}
+      </p>
+    </div>
+  );
 }
-
-// ─── Quick action ─────────────────────────────────────────────────────────────
-
-function QuickAction({
-    href,
-    icon: Icon,
-    label,
-    description,
-    onClick,
-    danger,
-}: {
-    href?: string;
-    icon: typeof UserIcon;
-    label: string;
-    description: string;
-    onClick?: () => void;
-    danger?: boolean;
-}) {
-    const cls = `group flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm transition duration-300 hover:shadow-[0_12px_32px_-8px_rgba(23,19,16,0.12)] ${
-        danger ? "hover:border-red-100" : ""
-    }`;
-
-    const inner = (
-        <>
-            <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${danger ? "bg-red-50" : "bg-[#F8F5EF]"} transition-colors duration-300`}>
-                <Icon size={17} className={danger ? "text-red-500" : "text-[#9C7A3C]"} strokeWidth={1.8} />
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className={`text-sm font-medium ${danger ? "text-red-600" : "text-[#171310]"}`}>
-                    {label}
-                </p>
-                <p className="text-xs text-[#252525]/45">{description}</p>
-            </div>
-            <ChevronRight size={15} className="flex-shrink-0 text-[#171310]/20 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-[#9C7A3C]" />
-        </>
-    );
-
-    if (onClick) {
-        return (
-            <button onClick={onClick} className={`${cls} w-full text-left`}>
-                {inner}
-            </button>
-        );
-    }
-    return <Link href={href!} className={cls}>{inner}</Link>;
-}
-
-// ─── Main dashboard ───────────────────────────────────────────────────────────
 
 export default function Dashboard({
-    stats,
-    recentOrders,
-}: {
-    stats: Stats;
-    recentOrders: OrderRow[];
-}) {
-    const { auth } = usePage().props;
-    const firstName = auth.user?.name.split(" ")[0] ?? "there";
-    const fullName = auth.user?.name ?? "";
+  stats,
+  profileCompletion,
+  account,
+  recentOrders,
+  recentNotifications,
+  recentActivity,
+}: DashboardProps) {
+  const { auth } = usePage().props;
+  const name = auth.user?.name ?? "Luxury Member";
+  const firstName = name.split(" ")[0];
+  const initials = name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
-    // Greeting based on time of day
-    const hour = new Date().getHours();
-    const greeting =
-        hour < 12 ? "Good morning" :
-        hour < 17 ? "Good afternoon" :
-        "Good evening";
+  return (
+    <StoreLayout showMobileHeader>
+      <Head title="My Account" />
+      <main className="min-h-screen bg-[#F4F0E8] pb-24 lg:pb-16">
+        <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-10 lg:pt-10">
+          <section className="relative overflow-hidden rounded-[30px] bg-[#171310] px-5 pb-6 pt-5 text-white shadow-[0_30px_80px_-45px_rgba(23,19,16,.9)] sm:px-8 sm:py-8">
+            <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-[#B58A43]/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-16 h-48 w-48 rounded-full border border-white/10" />
+            <div className="relative flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.24em] text-[#D9BB82]">
+                  <Sparkles className="h-3.5 w-3.5" /> Private account
+                </div>
+                <h1 className="mt-3 font-serif text-3xl font-medium sm:text-5xl">
+                  Welcome back, {firstName}
+                </h1>
+                <p className="mt-2 max-w-lg text-xs leading-6 text-white/55 sm:text-sm">
+                  Track your collection, orders, security and private updates in
+                  one elegant space.
+                </p>
+              </div>
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 font-serif text-xl backdrop-blur sm:h-16 sm:w-16 sm:text-2xl">
+                {initials}
+              </div>
+            </div>
 
-    return (
-        <StoreLayout>
-            <Head title="My Account" />
+            <div className="relative mt-7 grid grid-cols-[auto_1fr] items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-sm sm:max-w-md">
+              <div
+                className="grid h-14 w-14 place-items-center rounded-full p-1"
+                style={{
+                  background: `conic-gradient(#D9BB82 ${profileCompletion * 3.6}deg, rgba(255,255,255,.12) 0deg)`,
+                }}
+              >
+                <div className="grid h-full w-full place-items-center rounded-full bg-[#171310] text-[11px] font-bold">
+                  {profileCompletion}%
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold">Account completion</p>
+                  <ShieldCheck className="h-4 w-4 text-[#D9BB82]" />
+                </div>
+                <p className="mt-1 text-[10px] leading-5 text-white/45">
+                  {account.email_verified
+                    ? "Email verified"
+                    : "Verify your email"}{" "}
+                  ·{" "}
+                  {stats.addresses_count > 0
+                    ? "Delivery ready"
+                    : "Add a delivery address"}
+                </p>
+              </div>
+            </div>
+          </section>
 
-            {/* ── Hero Header ── */}
-            <div className="relative overflow-hidden bg-[#171310]">
-                {/* Ambient radial glows */}
-                <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#9C7A3C]/10 blur-3xl" />
-                <div className="pointer-events-none absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-[#9C7A3C]/8 blur-2xl" />
+          <section className="-mt-2 grid grid-cols-3 gap-2.5 px-1 sm:gap-4 lg:-mt-5 lg:px-8">
+            <MetricCard
+              label="Orders"
+              value={stats.orders_count}
+              hint={`${stats.active_orders_count} active`}
+              icon={Package}
+              tone="ink"
+            />
+            <MetricCard
+              label="Wishlist"
+              value={stats.wishlist_count}
+              hint="Saved pieces"
+              icon={Heart}
+              tone="gold"
+            />
+            <MetricCard
+              label="Updates"
+              value={stats.unread_notifications_count}
+              hint="Unread"
+              icon={Bell}
+              tone="cream"
+            />
+          </section>
 
-                {/* Fine dot grid */}
+          <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6">
+            <section className="overflow-hidden rounded-3xl bg-white shadow-[0_18px_50px_-38px_rgba(23,19,16,.5)] lg:col-span-5">
+              <div className="border-b border-[#171310]/8 p-5 sm:p-6">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#9B7435]">
+                  Collection overview
+                </p>
+                <div className="mt-3 flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs text-[#6F6961]">Lifetime spend</p>
+                    <p className="mt-1 font-serif text-3xl font-semibold text-[#171310]">
+                      {formatPrice(stats.total_spent)}
+                    </p>
+                  </div>
+                  <Link
+                    href="/shop"
+                    className="grid h-11 w-11 place-items-center rounded-full bg-[#171310] text-white transition hover:bg-[#9B7435]"
+                    aria-label="Browse the boutique"
+                  >
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
                 <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-                        backgroundSize: "28px 28px",
-                    }}
-                />
+                  className="mt-5 flex h-12 items-end gap-1.5"
+                  aria-hidden="true"
+                >
+                  {[28, 45, 34, 64, 48, 78, 62, 92, 70, 100].map(
+                    (height, index) => (
+                      <span
+                        key={index}
+                        className="flex-1 rounded-t-full bg-gradient-to-t from-[#9B7435] to-[#D9BB82]"
+                        style={{
+                          height: `${height}%`,
+                          opacity: 0.38 + index * 0.05,
+                        }}
+                      />
+                    ),
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-px bg-[#171310]/8">
+                <Link
+                  href="/account/orders"
+                  className="bg-white p-5 transition hover:bg-[#FAF8F4]"
+                >
+                  <ShoppingBag className="h-5 w-5 text-[#9B7435]" />
+                  <p className="mt-3 text-sm font-semibold">My orders</p>
+                  <p className="mt-1 text-[10px] text-[#6F6961]">
+                    Track purchases
+                  </p>
+                </Link>
+                <Link
+                  href="/account/addresses"
+                  className="bg-white p-5 transition hover:bg-[#FAF8F4]"
+                >
+                  <MapPin className="h-5 w-5 text-[#9B7435]" />
+                  <p className="mt-3 text-sm font-semibold">Delivery</p>
+                  <p className="mt-1 text-[10px] text-[#6F6961]">
+                    {stats.addresses_count} saved
+                  </p>
+                </Link>
+              </div>
+            </section>
 
-                <div className="relative mx-auto max-w-7xl px-6 pb-14 pt-12 sm:px-8 lg:px-12">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#9C7A3C]">
-                                {greeting}
-                            </p>
-                            <h1 className="mt-1 font-serif text-4xl font-medium tracking-tight text-white sm:text-5xl">
-                                {firstName}
-                            </h1>
-                            <p className="mt-2 text-sm text-white/45">
-                                {auth.user?.email}
-                            </p>
-                        </div>
-
-                        {/* Avatar circle */}
-                        <div className="flex-shrink-0">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur-sm sm:h-16 sm:w-16">
-                                <span className="font-serif text-2xl font-medium text-white sm:text-3xl">
-                                    {firstName[0]?.toUpperCase()}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Member since strip */}
-                    <div className="mt-8 flex items-center gap-2">
-                        <Star size={12} className="text-[#9C7A3C]" fill="#9C7A3C" />
-                        <p className="text-[11px] text-white/40">
-                            Boutique Luxxe Member
+            <section className="rounded-3xl bg-white p-5 shadow-[0_18px_50px_-38px_rgba(23,19,16,.5)] sm:p-6 lg:col-span-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#9B7435]">
+                    Purchases
+                  </p>
+                  <h2 className="mt-1 font-serif text-2xl font-medium">
+                    Recent orders
+                  </h2>
+                </div>
+                <Link
+                  href="/account/orders"
+                  className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#9B7435]"
+                >
+                  View all <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              {recentOrders.length === 0 ? (
+                <div className="mt-5 rounded-2xl border border-dashed border-[#171310]/12 p-8 text-center">
+                  <ShoppingBag className="mx-auto h-7 w-7 text-[#9B7435]" />
+                  <p className="mt-3 text-sm font-semibold">
+                    Your collection begins here
+                  </p>
+                  <Link
+                    href="/shop"
+                    className="mt-4 inline-flex rounded-full bg-[#171310] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[.14em] text-white"
+                  >
+                    Explore pieces
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-5 space-y-2.5">
+                  {recentOrders.map((order) => (
+                    <Link
+                      key={order.id}
+                      href={`/account/orders/${order.id}`}
+                      className="group flex items-center gap-3 rounded-2xl border border-[#171310]/7 bg-[#FAF8F4] p-3.5 transition hover:border-[#9B7435]/35 hover:bg-white"
+                    >
+                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-white shadow-sm">
+                        <Package className="h-4 w-4 text-[#9B7435]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold">
+                          {order.order_number}
                         </p>
-                        <span className="mx-2 text-white/15">·</span>
-                        <ShoppingBag size={12} className="text-white/40" />
-                        <p className="text-[11px] text-white/40">
-                            {stats.orders_count} {stats.orders_count === 1 ? "order" : "orders"} placed
+                        <p className="mt-1 text-[10px] text-[#6F6961]">
+                          {new Date(order.created_at).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )}
                         </p>
-                    </div>
-                </div>
-
-                {/* Bottom fade into page background */}
-                <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#F8F5EF] to-transparent" />
-            </div>
-
-            {/* ── Page Body ── */}
-            <div className="mx-auto max-w-7xl px-6 pb-6 pt-2 sm:px-8 lg:pb-20 lg:px-12">
-
-                {/* ── Stat Cards ── */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:grid-cols-3">
-                    <StatCard
-                        href="/account/orders"
-                        icon={Package}
-                        value={stats.orders_count}
-                        label="Orders"
-                        sub="All time"
-                    />
-                    <StatCard
-                        href="/account/wishlist"
-                        icon={Heart}
-                        value={stats.wishlist_count}
-                        label="Saved"
-                        sub="Wishlist"
-                    />
-                    <StatCard
-                        href="/account/addresses"
-                        icon={MapPin}
-                        value={stats.addresses_count}
-                        label="Addresses"
-                        sub="Saved"
-                    />
-                </div>
-
-                {/* ── Main two-col layout ── */}
-                <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5">
-
-                    {/* Left — Recent Orders */}
-                    <div className="lg:col-span-3">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h2 className="font-serif text-xl font-medium text-[#171310]">
-                                Recent Orders
-                            </h2>
-                            <Link
-                                href="/account/orders"
-                                className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9C7A3C] transition hover:text-[#171310]"
-                            >
-                                View all <ChevronRight size={12} strokeWidth={2.5} />
-                            </Link>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold">
+                          {formatPrice(order.total)}
+                        </p>
+                        <div className="mt-1">
+                          <StatusBadge status={order.status} />
                         </div>
-
-                        {recentOrders.length === 0 ? (
-                            <div className="flex flex-col items-center rounded-2xl border border-dashed border-[#171310]/10 py-16 text-center">
-                                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F8F5EF]">
-                                    <ShoppingBag size={22} className="text-[#171310]/25" strokeWidth={1.5} />
-                                </div>
-                                <p className="text-sm font-medium text-[#171310]">No orders yet</p>
-                                <p className="mt-1 text-xs text-[#252525]/45">
-                                    Your order history will appear here
-                                </p>
-                                <Link
-                                    href="/shop"
-                                    className="mt-5 rounded-full bg-[#171310] px-6 py-2.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-[#9C7A3C]"
-                                >
-                                    Start Shopping
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {recentOrders.map((o, i) => (
-                                    <Link
-                                        key={o.id}
-                                        href={`/account/orders/${o.id}`}
-                                        className="group flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm transition duration-300 hover:shadow-[0_12px_32px_-8px_rgba(23,19,16,0.12)] sm:p-5"
-                                    >
-                                        {/* Order index badge */}
-                                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#F8F5EF] font-serif text-sm font-medium text-[#9C7A3C]">
-                                            {String(i + 1).padStart(2, "0")}
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-semibold text-[#171310]">
-                                                    {o.order_number}
-                                                </p>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-[#252525]/45">
-                                                {new Date(o.created_at).toLocaleDateString("en-US", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    year: "numeric",
-                                                })}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex flex-col items-end gap-1.5">
-                                            <p className="text-sm font-semibold text-[#171310]">
-                                                {formatPrice(o.total)}
-                                            </p>
-                                            <StatusBadge status={o.status} />
-                                        </div>
-
-                                        <ChevronRight
-                                            size={15}
-                                            className="flex-shrink-0 text-[#171310]/15 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-[#9C7A3C]"
-                                        />
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Right — Quick Actions */}
-                    <div className="lg:col-span-2">
-                        <h2 className="mb-4 font-serif text-xl font-medium text-[#171310]">
-                            Quick Actions
-                        </h2>
-                        <div className="space-y-3">
-                            <QuickAction
-                                href="/account/profile"
-                                icon={UserIcon}
-                                label="Edit Profile"
-                                description="Update your name and email"
-                            />
-                            <QuickAction
-                                href="/account/orders"
-                                icon={Package}
-                                label="My Orders"
-                                description="Track and manage orders"
-                            />
-                            <QuickAction
-                                href="/account/wishlist"
-                                icon={Heart}
-                                label="Wishlist"
-                                description="Pieces you've saved"
-                            />
-                            <QuickAction
-                                href="/account/addresses"
-                                icon={MapPin}
-                                label="Addresses"
-                                description="Manage delivery addresses"
-                            />
-                            <QuickAction
-                                href="/account/notifications"
-                                icon={Bell}
-                                label="Notifications"
-                                description="View your updates"
-                            />
-                            <QuickAction
-                                href="/account/profile"
-                                icon={Settings}
-                                label="Account Settings"
-                                description="Password and preferences"
-                            />
-                            <QuickAction
-                                icon={LogOut}
-                                label="Sign Out"
-                                description="Log out of your account"
-                                onClick={() => router.post("/logout")}
-                                danger
-                            />
-                        </div>
-                    </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-[#171310]/20 transition group-hover:translate-x-0.5" />
+                    </Link>
+                  ))}
                 </div>
+              )}
+            </section>
 
-                {/* ── Bottom CTA ── */}
-                <div className="mt-10 overflow-hidden rounded-2xl bg-[#171310]">
-                    <div className="relative flex flex-col items-start gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-                        <div
-                            className="pointer-events-none absolute right-0 top-0 h-40 w-40 rounded-bl-full bg-[#9C7A3C]/10"
-                        />
-                        <div className="relative">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#9C7A3C]">
-                                Continue Exploring
-                            </p>
-                            <p className="mt-1 font-serif text-2xl font-medium text-white">
-                                Discover new arrivals
-                            </p>
-                            <p className="mt-1 text-xs text-white/45">
-                                The latest pieces, curated for you
-                            </p>
-                        </div>
-                        <Link
-                            href="/shop?sort=newest"
-                            className="relative inline-flex items-center gap-2 rounded-full bg-[#9C7A3C] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-white shadow-[0_8px_24px_-8px_rgba(156,122,60,0.6)] transition hover:bg-[#b08d4c]"
-                        >
-                            Shop New Arrivals
-                            <ChevronRight size={14} strokeWidth={2.5} />
-                        </Link>
-                    </div>
+            <section className="rounded-3xl bg-white p-5 shadow-[0_18px_50px_-38px_rgba(23,19,16,.5)] sm:p-6 lg:col-span-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#9B7435]">
+                    Private updates
+                  </p>
+                  <h2 className="mt-1 font-serif text-2xl font-medium">
+                    Notifications
+                  </h2>
                 </div>
-            </div>
-        </StoreLayout>
-    );
+                <Link
+                  href="/account/notifications"
+                  className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F4F0E8]"
+                >
+                  <Bell className="h-4 w-4 text-[#9B7435]" />
+                  {stats.unread_notifications_count > 0 && (
+                    <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#171310] px-1 text-[9px] font-bold text-white">
+                      {stats.unread_notifications_count > 9
+                        ? "9+"
+                        : stats.unread_notifications_count}
+                    </span>
+                  )}
+                </Link>
+              </div>
+              <div className="mt-5 space-y-2">
+                {recentNotifications.length === 0 ? (
+                  <p className="rounded-2xl bg-[#FAF8F4] p-6 text-center text-xs text-[#6F6961]">
+                    No notifications yet.
+                  </p>
+                ) : (
+                  recentNotifications.map((notification) => (
+                    <Link
+                      key={notification.id}
+                      href={notification.data.url ?? "/account/notifications"}
+                      className={`flex items-start gap-3 rounded-2xl p-3.5 transition ${notification.read_at ? "bg-[#FAF8F4]/60" : "border border-[#9B7435]/15 bg-[#F8F1E5]"}`}
+                    >
+                      <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl bg-white">
+                        <Bell className="h-4 w-4 text-[#9B7435]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-xs font-semibold">
+                            {notification.data.title ?? "Account update"}
+                          </p>
+                          <span className="text-[9px] text-[#6F6961]">
+                            {timeAgo(notification.created_at)}
+                          </span>
+                        </div>
+                        <p className="mt-1 line-clamp-2 text-[10px] leading-5 text-[#6F6961]">
+                          {notification.data.message}
+                        </p>
+                      </div>
+                      {!notification.read_at && (
+                        <span className="mt-2 h-2 w-2 rounded-full bg-[#9B7435]" />
+                      )}
+                    </Link>
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-[#171310] p-5 text-white shadow-[0_18px_50px_-35px_rgba(23,19,16,.8)] sm:p-6 lg:col-span-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#D9BB82]">
+                    Security & activity
+                  </p>
+                  <h2 className="mt-1 font-serif text-2xl font-medium">
+                    Account pulse
+                  </h2>
+                </div>
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/10">
+                  <LockKeyhole className="h-5 w-5 text-[#D9BB82]" />
+                </div>
+              </div>
+              <div className="mt-5 space-y-3">
+                {recentActivity.length === 0 ? (
+                  <p className="rounded-2xl border border-white/10 p-5 text-xs text-white/50">
+                    Your secure account activity will appear here.
+                  </p>
+                ) : (
+                  recentActivity.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.05] p-3"
+                    >
+                      <Activity className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#D9BB82]" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-white/85">
+                          {item.description}
+                        </p>
+                        <p className="mt-1 text-[9px] text-white/35">
+                          {timeAgo(item.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <Link
+                href="/account/activity"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-[#171310]"
+              >
+                View security activity <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </section>
+          </div>
+
+          <section className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              {
+                href: "/account/profile",
+                icon: User,
+                label: "Profile",
+                hint: "Personal details",
+              },
+              {
+                href: "/account/wishlist",
+                icon: Heart,
+                label: "Wishlist",
+                hint: "Saved pieces",
+              },
+              {
+                href: "/account/addresses",
+                icon: MapPin,
+                label: "Addresses",
+                hint: "Delivery details",
+              },
+              {
+                href: "/account/notifications",
+                icon: Bell,
+                label: "Updates",
+                hint: "Private alerts",
+              },
+            ].map(({ href, icon: Icon, label, hint }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group rounded-2xl border border-[#171310]/7 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-[#F4F0E8]">
+                    <Icon className="h-4 w-4 text-[#9B7435]" />
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 text-[#171310]/20 transition group-hover:text-[#9B7435]" />
+                </div>
+                <p className="mt-3 text-xs font-bold">{label}</p>
+                <p className="mt-1 text-[9px] text-[#6F6961]">{hint}</p>
+              </Link>
+            ))}
+          </section>
+
+          <button
+            type="button"
+            onClick={() => router.post("/logout")}
+            className="mt-6 w-full rounded-full border border-[#171310]/12 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#6F6961] transition hover:border-red-200 hover:text-red-600 sm:w-auto sm:px-8"
+          >
+            Sign out securely
+          </button>
+        </div>
+      </main>
+    </StoreLayout>
+  );
 }
