@@ -1,4 +1,4 @@
-import { Head, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 import {
   Heart,
@@ -23,6 +23,32 @@ import type { Product, ProductVariant } from "@/types/catalog";
 interface ProductDetailProps {
   product: Product;
   related: Product[];
+}
+
+function compactVariantLabel(value: string | null | undefined) {
+  if (!value) return "";
+  return value.split(/\s+with\s+|\s*\(/i)[0].trim();
+}
+
+function variantDetail(value: string | null | undefined) {
+  if (!value) return null;
+  const match = value.match(/\((.+)\)/);
+  return match?.[1] ?? null;
+}
+
+function swatchColor(value: string) {
+  const normalized = value.toLowerCase();
+  if (normalized.includes("black")) return "#1F1F1F";
+  if (normalized.includes("white")) return "#F5F1E8";
+  if (normalized.includes("cream") || normalized.includes("beige"))
+    return "#D8C19B";
+  if (normalized.includes("brown")) return "#6F4E37";
+  if (normalized.includes("blue")) return "#334E68";
+  if (normalized.includes("green")) return "#355C4A";
+  if (normalized.includes("red")) return "#8B2E2E";
+  if (normalized.includes("gold")) return "#B58A43";
+  if (normalized.includes("silver")) return "#B8BEC3";
+  return "#9B7435";
 }
 
 export default function ProductDetail({
@@ -443,29 +469,26 @@ export default function ProductDetail({
         </div>
       </div>
 
-      {/* ── Desktop Layout ── */}
+      {/* ── Desktop product experience ── */}
       <div className="hidden lg:block">
-        <div className="mx-auto max-w-[1440px] px-8 py-12 lg:px-12 xl:px-16">
-          <div className="mb-8 flex items-center gap-2 text-[11px] uppercase tracking-[.14em] text-[#6F6961]">
-            <span>Boutique Luxxe</span>
+        <div className="mx-auto max-w-[1480px] px-8 py-10 xl:px-12">
+          <nav
+            className="mb-7 flex items-center gap-2 overflow-hidden text-[10px] font-semibold uppercase tracking-[0.14em] text-[#6F6961]"
+            aria-label="Breadcrumb"
+          >
+            <Link href="/">Home</Link>
+            <span>/</span>
+            <Link href="/shop">Shop</Link>
             <span>/</span>
             <span>{product.category?.name ?? "Collection"}</span>
             <span>/</span>
             <span className="truncate text-[#181512]">{product.name}</span>
-          </div>
-          {/* Back */}
-          <button
-            onClick={() => window.history.back()}
-            className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#252525]/45 transition hover:text-[#171310]"
-          >
-            <ChevronLeft size={15} strokeWidth={2} />
-            Back
-          </button>
-          <div className="grid grid-cols-[minmax(0,1.12fr)_minmax(390px,.88fr)] items-start gap-12 xl:gap-20">
-            {/* Gallery */}
-            <div className="space-y-4">
-              <div className="group relative aspect-[4/5] overflow-hidden rounded-[28px] border border-[#171310]/[0.06] bg-[radial-gradient(circle_at_50%_35%,#FBF8F2_0%,#EDE5D8_75%)] shadow-[0_24px_70px_-45px_rgba(24,21,18,.5)]">
-                {product.images[activeImage] && (
+          </nav>
+
+          <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(410px,.85fr)] items-start gap-10 xl:gap-16">
+            <div className="min-w-0">
+              <div className="group relative aspect-[5/6] max-h-[760px] overflow-hidden rounded-[28px] border border-[#181512]/7 bg-[radial-gradient(circle_at_50%_35%,#FFFCF7,#E9E0D3_78%)] shadow-[0_30px_80px_-55px_rgba(24,21,18,.55)]">
+                {product.images[activeImage] ? (
                   <img
                     key={activeImage}
                     src={product.images[activeImage].url}
@@ -474,35 +497,50 @@ export default function ProductDetail({
                     height={1500}
                     fetchPriority="high"
                     decoding="async"
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.015]"
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.012]"
                   />
+                ) : (
+                  <div className="flex h-full items-center justify-center font-serif text-3xl text-[#9B7435]">
+                    Boutique Luxxe
+                  </div>
                 )}
                 {product.new_arrival && (
-                  <span className="absolute left-4 top-4 rounded-full bg-[#171310] px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-white">
-                    New Arrival
+                  <span className="absolute left-5 top-5 rounded-full bg-[#181512] px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-white">
+                    New arrival
                   </span>
+                )}
+                {product.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </>
                 )}
               </div>
               {product.images.length > 1 && (
-                <div className="flex gap-3">
-                  {product.images.map((img, i) => (
+                <div className="mt-4 grid grid-cols-6 gap-3">
+                  {product.images.slice(0, 6).map((image, index) => (
                     <button
-                      key={img.id}
-                      onClick={() => setActiveImage(i)}
-                      className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 transition duration-300 ${
-                        i === activeImage
-                          ? "border-[#9C7A3C]"
-                          : "border-transparent opacity-60 hover:opacity-100"
-                      }`}
+                      key={image.id}
+                      onClick={() => setActiveImage(index)}
+                      className={`aspect-square overflow-hidden rounded-xl border-2 bg-white p-0.5 transition ${index === activeImage ? "border-[#9B7435]" : "border-transparent opacity-65 hover:opacity-100"}`}
                     >
                       <img
-                        src={img.url}
-                        alt={`${product.name} view ${i + 1}`}
-                        width={160}
-                        height={160}
+                        src={image.url}
+                        alt={`${product.name} view ${index + 1}`}
+                        className="h-full w-full rounded-[9px] object-cover"
                         loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover"
                       />
                     </button>
                   ))}
@@ -510,83 +548,69 @@ export default function ProductDetail({
               )}
             </div>
 
-            {/* Details */}
-            <div className="sticky top-28 flex flex-col rounded-[28px] border border-[#181512]/8 bg-white p-8 shadow-[0_24px_70px_-48px_rgba(24,21,18,.45)] xl:p-10">
+            <aside className="sticky top-32 rounded-[28px] border border-[#181512]/8 bg-white p-8 shadow-[0_28px_80px_-58px_rgba(24,21,18,.55)] xl:p-10">
+              <button
+                onClick={() => window.history.back()}
+                className="mb-5 inline-flex items-center gap-1.5 text-xs text-[#6F6961] transition hover:text-[#181512]"
+              >
+                <ChevronLeft size={14} /> Back to collection
+              </button>
               {product.brand && (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#9C7A3C]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#9B7435]">
                   {product.brand}
                 </p>
               )}
-              <h1 className="mt-2 font-serif text-5xl font-medium leading-[1.05] tracking-tight text-[#171310]">
+              <h1 className="mt-2 font-serif text-[clamp(2.35rem,3.3vw,3.8rem)] font-medium leading-[1.01] tracking-[-0.035em] text-[#181512]">
                 {product.name}
               </h1>
-
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="font-serif text-3xl font-medium text-[#171310]">
-                  {formatPrice(price)}
-                </span>
-                {product.sale_price && (
-                  <span className="text-sm text-[#252525]/30 line-through">
-                    {formatPrice(product.base_price)}
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-serif text-3xl font-medium">
+                    {formatPrice(price)}
                   </span>
-                )}
-              </div>
-
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`h-2 w-2 rounded-full ${inStock ? "bg-green-500" : "bg-red-400"}`}
-                  />
-                  <span
-                    className={`text-[11px] font-semibold uppercase tracking-[0.15em] ${inStock ? "text-green-600" : "text-red-500"}`}
-                  >
-                    {inStock ? "In Stock" : "Out of Stock"}
-                  </span>
+                  {product.sale_price && (
+                    <span className="text-sm text-[#6F6961]/60 line-through">
+                      {formatPrice(product.base_price)}
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
+                <span
+                  className={`flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] ${inStock ? "text-emerald-700" : "text-red-600"}`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${inStock ? "bg-emerald-500" : "bg-red-500"}`}
+                  />
+                  {inStock ? "In stock" : "Out of stock"}
+                </span>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-4 border-b border-[#181512]/8 pb-6">
+                <ProductRating
+                  rating={product.rating}
+                  reviewsCount={product.reviews_count}
+                />
+                <div className="flex gap-2">
                   <button
-                    type="button"
                     onClick={() => setShareOpen(true)}
-                    className="flex h-10 items-center gap-2 rounded-full border border-[#171310]/15 px-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#171310] transition hover:border-[#9B7435] hover:text-[#9B7435]"
-                    aria-label="Share this product"
+                    className="flex h-9 items-center gap-1.5 rounded-full border border-[#181512]/12 px-3 text-[9px] font-semibold uppercase tracking-[0.12em]"
                   >
-                    <Share2 size={15} strokeWidth={1.8} /> Share
+                    <Share2 size={13} /> Share
                   </button>
                   <button
-                    type="button"
                     onClick={toggleWishlist}
-                    className={`flex h-10 items-center gap-2 rounded-full border px-4 text-[10px] font-semibold uppercase tracking-[0.14em] transition ${wishlisted ? "border-[#9C7A3C] bg-[#9C7A3C]/8 text-[#9C7A3C]" : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C] hover:text-[#9C7A3C]"}`}
-                    aria-label={
-                      wishlisted ? "Remove from wishlist" : "Add to wishlist"
-                    }
+                    className={`flex h-9 items-center gap-1.5 rounded-full border px-3 text-[9px] font-semibold uppercase tracking-[0.12em] ${wishlisted ? "border-[#9B7435] text-[#9B7435]" : "border-[#181512]/12"}`}
                   >
-                    <Heart
-                      size={15}
-                      fill={wishlisted ? "#9C7A3C" : "none"}
-                      strokeWidth={1.8}
-                    />
+                    <Heart size={13} fill={wishlisted ? "#9B7435" : "none"} />
                     {wishlisted ? "Saved" : "Wishlist"}
                   </button>
                 </div>
               </div>
-              <ProductRating
-                className="mt-3"
-                rating={product.rating}
-                reviewsCount={product.reviews_count}
-              />
-
-              {product.description && (
-                <p className="mt-6 text-sm leading-relaxed text-[#252525]/65 border-t border-[#171310]/8 pt-6">
-                  {product.description}
-                </p>
-              )}
 
               {colors.length > 0 && (
                 <div className="mt-6">
-                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#252525]/50">
-                    Color —{" "}
-                    <span className="text-[#171310]">
-                      {selectedVariant?.color}
+                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6F6961]">
+                    Color{" "}
+                    <span className="ml-2 text-[#181512]">
+                      {compactVariantLabel(selectedVariant?.color)}
                     </span>
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -596,25 +620,24 @@ export default function ProductDetail({
                         onClick={() =>
                           pickByAttribute(color, selectedVariant?.size)
                         }
-                        className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition duration-300 ${selectedVariant?.color === color ? "border-[#181512] bg-[#181512] text-white shadow-md" : "border-[#181512]/12 bg-[#FAF8F4] text-[#181512] hover:border-[#9B7435]"}`}
+                        className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs transition ${selectedVariant?.color === color ? "border-[#181512] bg-[#181512] text-white" : "border-[#181512]/12 bg-[#FAF8F4]"}`}
                       >
                         <span
-                          className="h-5 w-5 rounded-full border border-black/10 bg-[#9B7435] shadow-inner"
-                          style={{ backgroundColor: color.toLowerCase() }}
+                          className="h-4 w-4 rounded-full border border-black/10"
+                          style={{ backgroundColor: swatchColor(color) }}
                         />
-                        {color}
+                        {compactVariantLabel(color)}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-
               {sizes.length > 0 && (
                 <div className="mt-5">
-                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#252525]/50">
-                    Size —{" "}
-                    <span className="text-[#171310]">
-                      {selectedVariant?.size}
+                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6F6961]">
+                    Size{" "}
+                    <span className="ml-2 text-[#181512]">
+                      {compactVariantLabel(selectedVariant?.size)}
                     </span>
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -624,103 +647,117 @@ export default function ProductDetail({
                         onClick={() =>
                           pickByAttribute(selectedVariant?.color, size)
                         }
-                        className={`rounded-full border px-5 py-2.5 text-sm transition duration-300 ${
-                          selectedVariant?.size === size
-                            ? "border-[#171310] bg-[#171310] text-white"
-                            : "border-[#171310]/15 text-[#171310] hover:border-[#9C7A3C]"
-                        }`}
+                        className={`rounded-full border px-5 py-2.5 text-sm transition ${selectedVariant?.size === size ? "border-[#181512] bg-[#181512] text-white" : "border-[#181512]/12 hover:border-[#9B7435]"}`}
                       >
-                        {size}
+                        {compactVariantLabel(size)}
                       </button>
                     ))}
                   </div>
+                  {variantDetail(selectedVariant?.size) && (
+                    <p className="mt-2 text-xs text-[#6F6961]">
+                      Dimensions: {variantDetail(selectedVariant?.size)}
+                    </p>
+                  )}
                 </div>
               )}
 
-              <div className="mt-8 flex items-center gap-3">
-                {/* Quantity */}
-                <div className="flex items-center rounded-full border border-[#171310]/15">
+              <div className="mt-7 flex items-center gap-3">
+                <div className="flex items-center rounded-full border border-[#181512]/15">
                   <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="flex h-11 w-11 items-center justify-center text-[#171310] transition hover:text-[#9C7A3C]"
+                    onClick={() =>
+                      setQuantity((value) => Math.max(1, value - 1))
+                    }
+                    className="flex h-12 w-11 items-center justify-center"
                   >
-                    <Minus size={14} strokeWidth={2} />
+                    <Minus size={14} />
                   </button>
-                  <span className="w-10 text-center text-sm font-semibold text-[#171310]">
+                  <span className="w-8 text-center text-sm font-semibold">
                     {quantity}
                   </span>
                   <button
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="flex h-11 w-11 items-center justify-center text-[#171310] transition hover:text-[#9C7A3C]"
+                    onClick={() => setQuantity((value) => value + 1)}
+                    className="flex h-12 w-11 items-center justify-center"
                   >
-                    <Plus size={14} strokeWidth={2} />
+                    <Plus size={14} />
                   </button>
                 </div>
-
-                {/* Add to cart */}
                 <button
                   onClick={handleAddToCart}
                   disabled={!inStock || adding}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-full py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] shadow-[0_8px_24px_-8px_rgba(23,19,16,0.35)] transition duration-300 disabled:opacity-40 ${
-                    addedToCart
-                      ? "bg-green-600 text-white"
-                      : "bg-[#171310] text-white hover:bg-[#9C7A3C]"
-                  }`}
+                  className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-lg transition disabled:opacity-40 ${addedToCart ? "bg-emerald-600" : "bg-[#181512] hover:bg-[#9B7435]"}`}
                 >
                   {addedToCart ? (
                     <>
-                      <Check size={14} strokeWidth={2.5} /> Added to Bag
+                      <Check size={15} /> Added to bag
                     </>
                   ) : (
                     <>
-                      <ShoppingBag size={14} strokeWidth={1.8} /> Add to Bag
+                      <ShoppingBag size={15} /> Add to bag
                     </>
                   )}
                 </button>
               </div>
-
-              <div className="mt-8 grid grid-cols-3 gap-2 border-t border-[#181512]/8 pt-6">
-                <div className="rounded-xl bg-[#F8F5EF] p-3">
-                  <ShieldCheck className="h-5 w-5 text-[#9B7435]" />
-                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">
-                    Secure checkout
-                  </p>
-                </div>
-                <div className="rounded-xl bg-[#F8F5EF] p-3">
-                  <Truck className="h-5 w-5 text-[#9B7435]" />
-                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">
-                    Tracked delivery
-                  </p>
-                </div>
-                <div className="rounded-xl bg-[#F8F5EF] p-3">
-                  <RotateCcw className="h-5 w-5 text-[#9B7435]" />
-                  <p className="mt-2 text-[10px] font-semibold uppercase tracking-[.12em] text-[#181512]">
-                    Easy returns
-                  </p>
-                </div>
+              <div className="mt-6 grid grid-cols-3 gap-2 border-t border-[#181512]/8 pt-5">
+                {[
+                  [ShieldCheck, "Secure checkout"],
+                  [Truck, "Tracked delivery"],
+                  [RotateCcw, "Easy returns"],
+                ].map(([Icon, label]) => {
+                  const ServiceIcon = Icon as typeof ShieldCheck;
+                  return (
+                    <div
+                      key={label as string}
+                      className="rounded-xl bg-[#F8F5EF] p-3"
+                    >
+                      <ServiceIcon className="h-4 w-4 text-[#9B7435]" />
+                      <p className="mt-2 text-[8px] font-semibold uppercase tracking-[0.1em]">
+                        {label as string}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            </aside>
           </div>
 
-          {/* Related products */}
+          {product.description && (
+            <section className="mt-14 grid grid-cols-[.35fr_.65fr] gap-12 rounded-[28px] bg-white p-10">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9B7435]">
+                  Details
+                </p>
+                <h2 className="mt-3 font-serif text-4xl">About this piece</h2>
+              </div>
+              <p className="text-base leading-8 text-[#6F6961]">
+                {product.description}
+              </p>
+            </section>
+          )}
+
           {related.length > 0 && (
-            <div className="mt-24 border-t border-[#171310]/8 pt-16">
-              <div className="mb-10 flex items-end justify-between">
+            <section className="mt-16 border-t border-[#181512]/8 pt-14">
+              <div className="mb-9 flex items-end justify-between">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[#9B7435]">
                     Complete the collection
                   </p>
-                  <h2 className="mt-2 font-serif text-4xl font-medium text-[#171310]">
+                  <h2 className="mt-2 font-serif text-4xl">
                     You may also like
                   </h2>
                 </div>
+                <Link
+                  href="/shop"
+                  className="text-[10px] font-semibold uppercase tracking-[0.16em] underline decoration-[#9B7435] underline-offset-8"
+                >
+                  Shop all
+                </Link>
               </div>
               <div className="grid grid-cols-4 gap-6">
-                {related.map((p) => (
-                  <ProductCard key={p.id} product={p} />
+                {related.slice(0, 4).map((item) => (
+                  <ProductCard key={item.id} product={item} />
                 ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
       </div>
