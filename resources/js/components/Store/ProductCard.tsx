@@ -1,7 +1,8 @@
 import { Link, router, usePage } from "@inertiajs/react";
-import { useState } from "react";
-import { Heart } from "lucide-react";
+import { ArrowUpRight, Heart, ImageOff } from "lucide-react";
+import { useEffect, useState } from "react";
 import ProductRating from "@/components/Store/ProductRating";
+import { formatPrice } from "@/lib/format";
 
 interface ProductCardProps {
   product: {
@@ -24,11 +25,19 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { auth } = usePage().props;
   const price = product.sale_price ?? product.base_price;
   const primary = product.images[0];
+  const secondary = product.images[1];
   const inStock = product.variants
     ? product.variants.some((variant) => variant.stock_quantity > 0)
     : true;
   const [wishlisted, setWishlisted] = useState(!!product.is_wishlisted);
   const [message, setMessage] = useState<string | null>(null);
+  const [primaryFailed, setPrimaryFailed] = useState(false);
+  const [secondaryFailed, setSecondaryFailed] = useState(false);
+
+  useEffect(() => {
+    setPrimaryFailed(false);
+    setSecondaryFailed(false);
+  }, [primary?.url, secondary?.url]);
 
   function toggleWishlist(event: React.MouseEvent) {
     event.preventDefault();
@@ -39,17 +48,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     const next = !wishlisted;
     setWishlisted(next);
-    setMessage(next ? "Added to wishlist" : "Removed from wishlist");
-    setTimeout(() => setMessage(null), 2500);
+    setMessage(next ? "Saved" : "Removed");
+    window.setTimeout(() => setMessage(null), 2200);
 
     if (wishlisted) {
       router.delete(`/account/wishlist/${product.id}`, {
         preserveScroll: true,
         preserveState: true,
-        onError: () => {
-          setWishlisted(true);
-          setMessage(null);
-        },
+        onError: () => setWishlisted(true),
       });
     } else {
       router.post(
@@ -58,19 +64,19 @@ export default function ProductCard({ product }: ProductCardProps) {
         {
           preserveScroll: true,
           preserveState: true,
-          onError: () => {
-            setWishlisted(false);
-            setMessage(null);
-          },
+          onError: () => setWishlisted(false),
         },
       );
     }
   }
 
   return (
-    <Link href={`/products/${product.slug}`} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-[#171310]/[0.06] bg-[#F8F5EF] transition-all duration-500 group-hover:shadow-[0_24px_48px_-24px_rgba(23,19,16,0.3)]">
-        {primary && (
+    <Link
+      href={`/products/${product.slug}`}
+      className="group flex h-full min-w-0 flex-col"
+    >
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-[#181512]/[0.07] bg-[#F0EBE3] lg:aspect-[4/5] lg:rounded-[20px]">
+        {primary && !primaryFailed ? (
           <img
             src={primary.url}
             alt={product.name}
@@ -78,11 +84,37 @@ export default function ProductCard({ product }: ProductCardProps) {
             height={1000}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+            onError={() => setPrimaryFailed(true)}
+            className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]"
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center bg-[radial-gradient(circle_at_50%_35%,#FFFCF7,#E9E0D3)] px-5 text-center">
+            <ImageOff className="h-7 w-7 text-[#9B7435]/65" strokeWidth={1.4} />
+            <span className="mt-3 font-serif text-lg text-[#181512]/70">
+              Boutique Luxxe
+            </span>
+            <span className="mt-1 text-[9px] uppercase tracking-[0.18em] text-[#6F6961]">
+              Image coming soon
+            </span>
+          </div>
+        )}
+        {secondary && !secondaryFailed && !primaryFailed && (
+          <img
+            src={secondary.url}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setSecondaryFailed(true)}
+            className="absolute inset-0 hidden h-full w-full object-cover opacity-0 transition duration-700 group-hover:opacity-100 lg:block"
           />
         )}
+        <div className="absolute inset-x-0 bottom-0 hidden translate-y-full bg-gradient-to-t from-[#181512]/75 to-transparent px-5 pb-5 pt-14 transition duration-300 group-hover:translate-y-0 lg:block">
+          <span className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+            View piece <ArrowUpRight className="h-4 w-4" />
+          </span>
+        </div>
         {product.new_arrival && (
-          <span className="absolute left-1.5 top-1.5 rounded-full bg-[#171310] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-white sm:left-4 sm:top-4 sm:px-2.5 sm:py-1 sm:text-[9px] sm:tracking-[0.15em]">
+          <span className="absolute left-2 top-2 rounded-full bg-[#181512] px-2 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-white sm:left-4 sm:top-4 sm:px-3 sm:text-[9px]">
             New
           </span>
         )}
@@ -90,50 +122,51 @@ export default function ProductCard({ product }: ProductCardProps) {
           type="button"
           onClick={toggleWishlist}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[#171310] shadow-sm transition hover:bg-white sm:right-4 sm:top-4 sm:h-9 sm:w-9"
+          className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full border border-[#181512]/8 bg-white/94 text-[#181512] shadow-sm transition hover:border-[#9B7435] hover:text-[#9B7435] sm:right-4 sm:top-4"
         >
           <Heart
-            className="h-3.5 w-3.5 sm:h-4 sm:w-4"
-            fill={wishlisted ? "#9C7A3C" : "none"}
-            color={wishlisted ? "#9C7A3C" : "currentColor"}
+            className="h-4 w-4"
+            fill={wishlisted ? "#9B7435" : "none"}
+            color={wishlisted ? "#9B7435" : "currentColor"}
           />
         </button>
-
         {message && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#171310]/90 px-2 py-1 text-[8px] font-medium text-white shadow-lg sm:bottom-3 sm:px-3 sm:py-1.5 sm:text-[10px]">
+          <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-[#181512] px-3 py-1.5 text-[9px] font-medium text-white">
             {message}
-          </div>
+          </span>
         )}
-
         {!inStock && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#F8F5EF]/80">
-            <span className="rounded-full bg-[#171310] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-white sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.15em]">
-              Sold Out
+          <div className="absolute inset-0 flex items-center justify-center bg-[#F8F5EF]/70 backdrop-blur-[1px]">
+            <span className="rounded-full bg-[#181512] px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-white">
+              Sold out
             </span>
           </div>
         )}
       </div>
-      <div className="mt-2 space-y-1 sm:mt-4 sm:space-y-1.5">
+
+      <div className="flex flex-1 flex-col pt-3 sm:pt-4">
         {product.brand && (
-          <p className="truncate text-[8px] font-semibold uppercase tracking-[0.1em] text-[#171310]/40 sm:text-[10px] sm:tracking-[0.15em]">
+          <p className="truncate text-[9px] font-semibold uppercase tracking-[0.18em] text-[#9B7435]">
             {product.brand}
           </p>
         )}
-        <p className="line-clamp-2 text-[11px] leading-tight text-[#171310] transition group-hover:text-[#9C7A3C] sm:text-sm">
+        <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-[12px] font-medium leading-5 text-[#181512] transition group-hover:text-[#9B7435] sm:text-sm">
           {product.name}
         </p>
-        <ProductRating
-          rating={product.rating}
-          reviewsCount={product.reviews_count}
-          compact
-        />
-        <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-          <span className="text-[10px] font-semibold text-[#171310] sm:text-sm">
-            ${Number(price).toLocaleString()}
+        <div className="mt-1.5 min-h-4">
+          <ProductRating
+            rating={product.rating}
+            reviewsCount={product.reviews_count}
+            compact
+          />
+        </div>
+        <div className="mt-auto flex flex-wrap items-baseline gap-2 pt-2">
+          <span className="text-sm font-semibold text-[#181512]">
+            {formatPrice(price)}
           </span>
           {product.sale_price && (
-            <span className="text-[9px] text-[#252525]/35 line-through sm:text-xs">
-              ${Number(product.base_price).toLocaleString()}
+            <span className="text-xs text-[#6F6961]/60 line-through">
+              {formatPrice(product.base_price)}
             </span>
           )}
         </div>
