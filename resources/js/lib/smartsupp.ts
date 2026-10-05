@@ -10,6 +10,27 @@ declare global {
   }
 }
 
+export const CHAT_OVERLAY_EVENT = "boutique-luxxe:store-overlay-change";
+const storeOverlays = new Set<symbol>();
+
+export function isStoreOverlayOpen(): boolean {
+  return storeOverlays.size > 0;
+}
+
+// Only our own drawers call this. Never infer state from vendor scroll locks.
+export function registerStoreOverlay(): () => void {
+  const token = Symbol("store-overlay");
+  storeOverlays.add(token);
+  window.dispatchEvent(new Event(CHAT_OVERLAY_EVENT));
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    storeOverlays.delete(token);
+    window.dispatchEvent(new Event(CHAT_OVERLAY_EVENT));
+  };
+}
+
 let loading: Promise<void> | undefined;
 
 // Explicit allowlist: unknown/new routes are excluded by default.

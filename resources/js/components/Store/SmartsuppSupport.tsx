@@ -1,6 +1,8 @@
 import { router } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 import {
+  CHAT_OVERLAY_EVENT,
+  isStoreOverlayOpen,
   chatHasStarted,
   hideChat,
   isPublicChatUrl,
@@ -69,16 +71,8 @@ export default function SmartsuppSupport({
 
     function syncVisibility() {
       if (!readyRef.current) return;
-      // Existing mobile menu and cart drawer both lock body scrolling.
-      // Hide the vendor widget as well, regardless of its iframe z-index.
-      const locked = [document.body, document.documentElement].some(
-        (element) => {
-          const style = getComputedStyle(element);
-          return [style.overflow, style.overflowY].some(
-            (value) => value === "hidden" || value === "clip",
-          );
-        },
-      );
+      // Explicit store drawer state only: opening Smartsupp must not hide itself.
+      const locked = isStoreOverlayOpen();
       if (
         current &&
         allowedRef.current &&
@@ -89,15 +83,7 @@ export default function SmartsuppSupport({
       else hideChat();
     }
 
-    const observer = new MutationObserver(syncVisibility);
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
+    window.addEventListener(CHAT_OVERLAY_EVENT, syncVisibility);
 
     loadChat()
       .then(() => {
@@ -114,7 +100,7 @@ export default function SmartsuppSupport({
       });
     return () => {
       current = false;
-      observer.disconnect();
+      window.removeEventListener(CHAT_OVERLAY_EVENT, syncVisibility);
     };
   }, [allowed]);
 
