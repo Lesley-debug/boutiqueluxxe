@@ -7,6 +7,9 @@ use Inertia\Middleware;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Style;
+use App\Support\StaffPanelRequest;
+use Closure;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,6 +21,16 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Filament and Livewire have their own HTML/JSON response protocol.
+        if (StaffPanelRequest::matches($request)) {
+            return $next($request);
+        }
+
+        return parent::handle($request, $next);
+    }
 
     /**
      * Determines the current asset version.

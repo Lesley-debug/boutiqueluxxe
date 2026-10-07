@@ -79,6 +79,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 ],
             ];
 
+            // Do not turn Filament/Livewire failures into Inertia responses.
+            if (\App\Support\StaffPanelRequest::matches($request)) {
+                $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+                $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0');
+
+                return $response;
+            }
+
             if (
                 config('app.debug')
                 || $request->is('api/*')
