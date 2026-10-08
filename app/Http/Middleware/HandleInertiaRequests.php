@@ -24,8 +24,15 @@ class HandleInertiaRequests extends Middleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        // Filament and Livewire have their own HTML/JSON response protocol.
-        if (StaffPanelRequest::matches($request)) {
+        // Filament, Livewire and the explicit legacy Orders handoff do not return
+        // Inertia pages. Do not rewrite their location responses on asset mismatch.
+        // Authentication, verification, permission and cache middleware still run.
+        if (StaffPanelRequest::matches($request) || $request->routeIs(
+            'admin.orders.index',
+            'admin.orders.show',
+            'admin.orders.status',
+            'admin.orders.payment',
+        )) {
             return $next($request);
         }
 

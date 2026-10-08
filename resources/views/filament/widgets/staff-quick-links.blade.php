@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Manage your store">
         <p style="margin: 0 0 1rem; color: #57534e; line-height: 1.6;">
-            Products and styles now use the new staff workspace. Other shortcuts open the current admin with your existing permissions while migration continues.
+            Products, styles and orders now use the new staff workspace. Other shortcuts open the current admin with your existing permissions while migration continues.
         </p>
         <style>
             .bl-staff-links { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }

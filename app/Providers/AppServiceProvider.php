@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Policies\OrderPolicy;
 use App\Models\Product;
 use App\Models\Style;
 use App\Policies\ProductPolicy;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Order::class, OrderPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Style::class, StylePolicy::class);
 

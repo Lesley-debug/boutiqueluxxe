@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\StaffDashboard;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Filament\Resources\Products\ProductResource;
 use App\Filament\Resources\Styles\StyleResource;
 use App\Filament\Widgets\StaffQuickLinks;
@@ -44,7 +45,7 @@ class StaffPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->strictAuthorization()
             // Explicit registration prevents accidentally exposing generated resources.
-            ->resources([ProductResource::class, StyleResource::class])
+            ->resources([ProductResource::class, StyleResource::class, OrderResource::class])
             ->pages([StaffDashboard::class])
             ->widgets([StoreOverviewStats::class, StaffQuickLinks::class])
             ->middleware([

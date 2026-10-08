@@ -30,7 +30,7 @@ class StaffQuickLinks extends Widget
             ['label' => 'Styles', 'path' => '/staff/styles', 'permission' => 'products.manage'],
             ['label' => 'Categories', 'path' => '/admin/categories', 'permission' => 'products.manage'],
             ['label' => 'Collections', 'path' => '/admin/collections', 'permission' => 'products.manage'],
-            ['label' => 'Orders', 'path' => '/admin/orders', 'permission' => 'orders.manage'],
+            ['label' => 'Orders', 'path' => '/staff/orders', 'permission' => 'orders.manage'],
             ['label' => 'Customers', 'path' => '/admin/customers', 'permission' => 'customers.view'],
             ['label' => 'Discounts', 'path' => '/admin/discounts', 'permission' => 'discounts.manage'],
             ['label' => 'Homepage content', 'path' => '/admin/homepage', 'permission' => 'products.manage'],

@@ -89,7 +89,7 @@ class StaffCatalogTest extends TestCase
         $links = collect(app(StaffQuickLinks::class)->links())->keyBy('label');
         $this->assertSame('/staff/products', $links['Products']['path']);
         $this->assertSame('/staff/styles', $links['Styles']['path']);
-        $this->assertSame('/admin/orders', $links['Orders']['path']);
+        $this->assertSame('/staff/orders', $links['Orders']['path']);
     }
 
     public function test_support_staff_cannot_view_catalog_or_call_editor_services(): void
