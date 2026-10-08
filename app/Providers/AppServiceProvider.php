@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(\App\Models\Category::class, \App\Policies\CategoryPolicy::class);
+        Gate::policy(\App\Models\Collection::class, \App\Policies\CollectionPolicy::class);
+        Gate::policy(\App\Models\Discount::class, \App\Policies\DiscountPolicy::class);
+        Gate::policy(\App\Models\ContactMessage::class, \App\Policies\ContactMessagePolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Style::class, StylePolicy::class);
 
@@ -61,7 +65,10 @@ class AppServiceProvider extends ServiceProvider
         );
         RateLimiter::for('checkout', fn(Request $request) => Limit::perMinute(6)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
         RateLimiter::for('newsletter', fn(Request $request) => Limit::perMinute(6)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
-        RateLimiter::for('contact', fn(Request $request) => Limit::perHour(5)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
+        RateLimiter::for('contact', fn(Request $request) => [
+            Limit::perHour(20)->by('contact:ip:'.$request->ip()),
+            Limit::perHour(5)->by('contact:email:'.$emailKey($request)),
+        ]);
         RateLimiter::for('confirmation', fn(Request $request) => Limit::perMinute(12)->by($request->ip()));
         RateLimiter::for('cart', fn(Request $request) => Limit::perMinute(30)->by($request->ip()));
         RateLimiter::for('email-verification', function (Request $request) {

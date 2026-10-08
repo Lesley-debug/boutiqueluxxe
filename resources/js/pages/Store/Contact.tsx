@@ -28,7 +28,7 @@ export default function Contact({ submitted = false }: { submitted?: boolean }) 
                     <Link href="/faqs" className="mt-8 inline-flex min-h-11 items-center rounded-lg border border-white/20 px-4 text-sm font-medium text-white transition hover:bg-white/10">Read our FAQs</Link>
                 </aside>
                 <div className="rounded-xl border border-[#181512]/10 bg-[#FAF8F4] p-5 sm:p-8">
-                    {submitted && <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-700/15 bg-emerald-50 p-4 text-sm text-emerald-800"><CheckCircle className="mt-0.5 h-5 w-5 shrink-0" /><span>Your message has been sent. We will reply as soon as possible.</span></div>}
+                    {submitted && <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-700/15 bg-emerald-50 p-4 text-sm text-emerald-800"><CheckCircle className="mt-0.5 h-5 w-5 shrink-0" /><span>Your message has been received by our team. We will reply as soon as possible.</span></div>}
                     <form onSubmit={submit} className="space-y-5">
                         <div className="grid gap-5 sm:grid-cols-2">
                             <label className="text-sm font-medium text-[#514C46]">Name<input value={data.name} onChange={(e) => setData("name", e.target.value)} autoComplete="name" className={inputClass} />{errors.name && <span className="mt-1 block text-xs text-red-600">{errors.name}</span>}</label>

@@ -45,8 +45,8 @@ class StaffPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->strictAuthorization()
             // Explicit registration prevents accidentally exposing generated resources.
-            ->resources([ProductResource::class, StyleResource::class, OrderResource::class])
-            ->pages([StaffDashboard::class])
+            ->resources([ProductResource::class, StyleResource::class, OrderResource::class, \App\Filament\Resources\Categories\CategoryResource::class, \App\Filament\Resources\Collections\CollectionResource::class, \App\Filament\Resources\Discounts\DiscountResource::class, \App\Filament\Resources\Contacts\ContactResource::class])
+            ->pages([StaffDashboard::class, \App\Filament\Pages\Customers::class])
             ->widgets([StoreOverviewStats::class, StaffQuickLinks::class])
             ->middleware([
                 PreventDynamicResponseCaching::class,
