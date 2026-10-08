@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Manage your store">
         <p style="margin: 0 0 1rem; color: #57534e; line-height: 1.6;">
-            The new staff workspace is being introduced in stages. These shortcuts open the current admin with your existing permissions.
+            Products and styles now use the new staff workspace. Other shortcuts open the current admin with your existing permissions while migration continues.
         </p>
         <style>
             .bl-staff-links { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }
@@ -16,7 +16,7 @@
             @foreach ($this->links() as $link)
                 <a class="bl-staff-link" href="{{ url($link['path']) }}">
                     <strong>{{ $link['label'] }}</strong>
-                    <small>Open current admin &rarr;</small>
+                    <small>{{ str_starts_with($link['path'], '/staff/') ? 'Open staff workspace' : 'Open current admin' }} &rarr;</small>
                 </a>
             @endforeach
         </div>

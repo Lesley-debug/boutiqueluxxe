@@ -26,8 +26,8 @@ class StaffQuickLinks extends Widget
         abort_unless($current instanceof User && $current->canAccessStaffPanel(), 403);
 
         $links = [
-            ['label' => 'Products', 'path' => '/admin/products', 'permission' => 'products.manage'],
-            ['label' => 'Styles', 'path' => '/admin/styles', 'permission' => 'products.manage'],
+            ['label' => 'Products', 'path' => '/staff/products', 'permission' => 'products.manage'],
+            ['label' => 'Styles', 'path' => '/staff/styles', 'permission' => 'products.manage'],
             ['label' => 'Categories', 'path' => '/admin/categories', 'permission' => 'products.manage'],
             ['label' => 'Collections', 'path' => '/admin/collections', 'permission' => 'products.manage'],
             ['label' => 'Orders', 'path' => '/admin/orders', 'permission' => 'orders.manage'],

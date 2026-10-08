@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\StaffDashboard;
+use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Resources\Styles\StyleResource;
 use App\Filament\Widgets\StaffQuickLinks;
 use App\Filament\Widgets\StoreOverviewStats;
 use App\Http\Middleware\AddRobotsTag;
@@ -42,6 +44,7 @@ class StaffPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->strictAuthorization()
             // Explicit registration prevents accidentally exposing generated resources.
+            ->resources([ProductResource::class, StyleResource::class])
             ->pages([StaffDashboard::class])
             ->widgets([StoreOverviewStats::class, StaffQuickLinks::class])
             ->middleware([
