@@ -23,7 +23,7 @@ class CategoryResource extends Resource
     protected static string | UnitEnum | null $navigationGroup = 'Catalog';
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-folder';
     public static function getEloquentQuery(): Builder { abort_unless(StaffWorkspaceAccess::allows(auth('web')->user(),'products.manage'),403); return parent::getEloquentQuery()->with('parent')->withCount('products'); }
-    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'), TextInput::make('slug')->label('Existing URL identifier')->disabled()->dehydrated(false)->visible(fn (?Category $record): bool => $record?->exists ?? false), 
+    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'), TextInput::make('slug')->label('Existing URL identifier')->disabled()->dehydrated(false)->visible(fn (?Category $record): bool => $record?->exists ?? false),
             TextInput::make('name')->required()->maxLength(255),
             Select::make('parent_id')->label('Parent category')->searchable()->options(fn (): array => Category::whereNull('parent_id')->orderBy('name')->pluck('name','id')->all())->helperText('Leave empty for a top-level category. Two levels only; categories with children cannot become children.'),
             Select::make('status')->required()->default('active')->options(['active'=>'Active','inactive'=>'Inactive / archived'])->helperText('An inactive parent hides its children publicly without deleting them or their products.'),

@@ -23,7 +23,7 @@ class DiscountResource extends Resource
     protected static string | UnitEnum | null $navigationGroup = 'Sales & support';
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-ticket';
     public static function getEloquentQuery(): Builder { abort_unless(StaffWorkspaceAccess::allows(auth('web')->user(),'discounts.manage'),403); return parent::getEloquentQuery(); }
-    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'),  
+    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'),
             TextInput::make('code')->required(fn (?Discount $record): bool => ! $record?->exists)->disabled(fn (?Discount $record): bool => $record?->exists ?? false)->dehydrated(fn (?Discount $record): bool => ! $record?->exists)->maxLength(50)->helperText('New codes use uppercase letters, numbers, hyphens or underscores. Existing codes stay unchanged to preserve order history.'),
             Select::make('type')->required()->default('percentage')->options(['percentage'=>'Percentage (up to 100%)','fixed'=>'Fixed amount in USD']),
             TextInput::make('value')->numeric()->required()->minValue(0.01)->label('Discount value'),

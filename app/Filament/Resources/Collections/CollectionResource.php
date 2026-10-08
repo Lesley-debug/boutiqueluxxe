@@ -23,7 +23,7 @@ class CollectionResource extends Resource
     protected static string | UnitEnum | null $navigationGroup = 'Catalog';
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-folder';
     public static function getEloquentQuery(): Builder { abort_unless(StaffWorkspaceAccess::allows(auth('web')->user(),'products.manage'),403); return parent::getEloquentQuery()->withCount('products'); }
-    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'), TextInput::make('slug')->label('Existing URL identifier')->disabled()->dehydrated(false)->visible(fn (?Collection $record): bool => $record?->exists ?? false), 
+    public static function form(Schema $schema): Schema { return $schema->components([Hidden::make('expected_snapshot'), TextInput::make('slug')->label('Existing URL identifier')->disabled()->dehydrated(false)->visible(fn (?Collection $record): bool => $record?->exists ?? false),
             TextInput::make('name')->required()->maxLength(255),
             Textarea::make('description')->maxLength(10000),
             Select::make('product_ids')->label('Products')->multiple()->searchable()->options(fn (): array => \App\Models\Product::orderBy('name')->pluck('name','id')->all())->helperText('Choose up to 500 products. Public pages still hide inactive products.'),
