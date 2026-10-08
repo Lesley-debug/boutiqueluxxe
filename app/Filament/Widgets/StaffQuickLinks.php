@@ -34,8 +34,11 @@ class StaffQuickLinks extends Widget
             ['label' => 'Contact messages', 'path' => '/staff/contacts', 'permission' => 'contacts.manage'],
             ['label' => 'Customers', 'path' => '/staff/customers', 'permission' => 'customers.view'],
             ['label' => 'Discounts', 'path' => '/staff/discounts', 'permission' => 'discounts.manage'],
-            ['label' => 'Homepage content', 'path' => '/admin/homepage', 'permission' => 'products.manage'],
-            ['label' => 'Journal', 'path' => '/admin/journal', 'permission' => 'products.manage'],
+            ['label' => 'Homepage content', 'path' => '/staff/homepage', 'permission' => 'products.manage'],
+            ['label' => 'Hero slides', 'path' => '/staff/hero-slides', 'permission' => 'products.manage'],
+            ['label' => 'About page', 'path' => '/staff/about', 'permission' => 'products.manage'],
+            ['label' => 'Testimonials', 'path' => '/staff/testimonials', 'permission' => 'products.manage'],
+            ['label' => 'Journal', 'path' => '/staff/journal', 'permission' => 'products.manage'],
             ['label' => 'Notifications', 'path' => '/admin/notifications', 'permission' => 'notifications.view'],
             ['label' => 'Admin team', 'path' => '/admin/users', 'permission' => 'admins.manage'],
         ];

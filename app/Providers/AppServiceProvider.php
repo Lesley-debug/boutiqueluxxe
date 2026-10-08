@@ -30,6 +30,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(\App\Models\HomepageContent::class,\App\Policies\HomepageContentPolicy::class);
+        Gate::policy(\App\Models\HeroSlide::class,\App\Policies\HeroSlidePolicy::class);
+        Gate::policy(\App\Models\AboutPage::class,\App\Policies\AboutPagePolicy::class);
+        Gate::policy(\App\Models\JournalPost::class,\App\Policies\JournalPostPolicy::class);
+        Gate::policy(\App\Models\Testimonial::class,\App\Policies\TestimonialPolicy::class);
         Gate::policy(\App\Models\Category::class, \App\Policies\CategoryPolicy::class);
         Gate::policy(\App\Models\Collection::class, \App\Policies\CollectionPolicy::class);
         Gate::policy(\App\Models\Discount::class, \App\Policies\DiscountPolicy::class);

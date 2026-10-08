@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Manage your store">
         <p style="margin: 0 0 1rem; color: #57534e; line-height: 1.6;">
-            Catalog, orders, contacts, discounts and customer history now use the staff workspace. Remaining content and team shortcuts open the current admin with your existing permissions.
+            Catalog, orders, contacts, discounts and customer history now use the staff workspace. Public content also uses this workspace. Notifications, newsletter and team management remain in the current admin during migration.
         </p>
         <style>
             .bl-staff-links { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }
