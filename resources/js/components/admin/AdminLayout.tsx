@@ -7,7 +7,6 @@ import {
     Shapes,
     Layers,
     ShoppingCart,
-    Users,
     Percent,
     DollarSign,
     Bell,
@@ -93,12 +92,6 @@ const NAV: NavGroup[] = [
                 permission: "orders.manage",
             },
             {
-                label: "Customers",
-                href: "/admin/customers",
-                icon: Users,
-                permission: "customers.view",
-            },
-            {
                 label: "Discounts",
                 href: "/admin/discounts",
                 icon: Percent,
@@ -157,7 +150,7 @@ const NAV: NavGroup[] = [
                 permission: "notifications.view",
             },
             {
-                label: "Admin Users",
+                label: "Staff & Managers",
                 href: "/admin/users",
                 icon: UserCog,
                 permission: "admins.manage",

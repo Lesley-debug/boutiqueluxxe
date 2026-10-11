@@ -5,7 +5,7 @@ import {
   ChevronDown,
   Heart,
   Search,
-  ShoppingBag,
+  ShoppingCart,
   User,
   X,
 } from "lucide-react";
@@ -195,9 +195,9 @@ export default function StoreHeader() {
             type="button"
             onClick={() => setCartOpen(true)}
             className="relative ml-1 flex h-11 w-11 items-center justify-center rounded-full bg-[#181512] text-white shadow-sm transition hover:bg-[#9B7435]"
-            aria-label="Open shopping bag"
+            aria-label="Open shopping cart"
           >
-            <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={1.8} />
             {cart.item_count > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#9B7435] px-1 text-[9px] font-bold text-white ring-2 ring-[#FAF8F4]">
                 {cart.item_count > 99 ? "99+" : cart.item_count}

@@ -151,6 +151,7 @@ class StaffPanelFoundationTest extends TestCase
         $this->assertContains('Orders', $labels);
         $this->assertNotContains('Products', $labels);
         $this->assertNotContains('Admin team', $labels);
+        $this->assertNotContains('Staff & Managers', $labels);
     }
 
     public function test_demotion_is_checked_again_even_when_an_old_user_instance_is_passed(): void

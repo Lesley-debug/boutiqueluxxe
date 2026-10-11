@@ -9,6 +9,7 @@ use Livewire\WithPagination;
 class Customers extends Page
 {
     use WithPagination;
+    protected static bool $shouldRegisterNavigation=false;
     protected static ?string $slug='customers';
     protected static string | UnitEnum | null $navigationGroup='Sales & support';
     protected static string | BackedEnum | null $navigationIcon='heroicon-o-users';

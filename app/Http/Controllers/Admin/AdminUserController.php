@@ -1,36 +1,13 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
+use App\Filament\Resources\Team\StaffUserResource;
 use App\Models\User;
+use App\Support\StaffTeamAccess;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 class AdminUserController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Admin/Users/Index', [
-            'users' => User::orderBy('name')->get(['id', 'name', 'email', 'is_admin', 'role']),
-        ]);
-    }
-
-    public function updateRole(Request $request, User $user)
-    {
-        if ($user->id === $request->user()->id) {
-            return back()->withErrors(['role' => 'You cannot change your own role.']);
-        }
-
-        $data = $request->validate([
-            'role' => ['nullable', 'in:super_admin,manager,support_staff'],
-        ]);
-
-        $user->update([
-            'role' => $data['role'],
-            'is_admin' => $data['role'] !== null,
-        ]);
-
-        return back()->with('success', 'Role updated.');
-    }
+    public function index(Request $request) { StaffTeamAccess::authorize($request->user()); $url=StaffUserResource::getUrl('index',panel:'staff'); return $request->header('X-Inertia') ? Inertia::location($url) : redirect()->to($url); }
+    public function updateRole(Request $request,User $user) { StaffTeamAccess::authorize($request->user()); abort_unless(in_array($user->role,StaffTeamAccess::ROLES,true),403); return $this->index($request); }
 }

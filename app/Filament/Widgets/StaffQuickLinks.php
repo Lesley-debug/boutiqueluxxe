@@ -32,7 +32,6 @@ class StaffQuickLinks extends Widget
             ['label' => 'Collections', 'path' => '/staff/collections', 'permission' => 'products.manage'],
             ['label' => 'Orders', 'path' => '/staff/orders', 'permission' => 'orders.manage'],
             ['label' => 'Contact messages', 'path' => '/staff/contacts', 'permission' => 'contacts.manage'],
-            ['label' => 'Customers', 'path' => '/staff/customers', 'permission' => 'customers.view'],
             ['label' => 'Discounts', 'path' => '/staff/discounts', 'permission' => 'discounts.manage'],
             ['label' => 'Homepage content', 'path' => '/staff/homepage', 'permission' => 'products.manage'],
             ['label' => 'Hero slides', 'path' => '/staff/hero-slides', 'permission' => 'products.manage'],
@@ -40,9 +39,9 @@ class StaffQuickLinks extends Widget
             ['label' => 'Testimonials', 'path' => '/staff/testimonials', 'permission' => 'products.manage'],
             ['label' => 'Journal', 'path' => '/staff/journal', 'permission' => 'products.manage'],
             ['label' => 'Notifications', 'path' => '/admin/notifications', 'permission' => 'notifications.view'],
-            ['label' => 'Admin team', 'path' => '/admin/users', 'permission' => 'admins.manage'],
+            ['label' => 'Staff & Managers', 'path' => '/staff/team', 'permission' => 'admins.manage'],
         ];
 
-        return array_values(array_filter($links, fn (array $link): bool => $current->hasPermission($link['permission'])));
+        return array_values(array_filter($links, fn (array $link): bool => $link['permission']==='admins.manage' ? \App\Support\StaffTeamAccess::allows($current) : $current->hasPermission($link['permission'])));
     }
 }
