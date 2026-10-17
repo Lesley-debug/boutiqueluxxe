@@ -46,7 +46,7 @@ class StaffPanelProvider extends PanelProvider
             ->strictAuthorization()
             // Explicit registration prevents accidentally exposing generated resources.
             ->resources([ProductResource::class, StyleResource::class, OrderResource::class, \App\Filament\Resources\Categories\CategoryResource::class, \App\Filament\Resources\Collections\CollectionResource::class, \App\Filament\Resources\Discounts\DiscountResource::class, \App\Filament\Resources\Contacts\ContactResource::class, \App\Filament\Resources\Homepage\HomepageContentResource::class, \App\Filament\Resources\About\AboutPageResource::class, \App\Filament\Resources\HeroSlides\HeroSlideResource::class, \App\Filament\Resources\Journal\JournalPostResource::class, \App\Filament\Resources\Testimonials\TestimonialResource::class, \App\Filament\Resources\Team\StaffUserResource::class])
-            ->pages([StaffDashboard::class, \App\Filament\Pages\Customers::class, \App\Filament\Pages\StaffNotifications::class, \App\Filament\Pages\StaffNewsletter::class])
+            ->pages([StaffDashboard::class, \App\Filament\Pages\Customers::class, \App\Filament\Pages\StaffNotifications::class, \App\Filament\Pages\StaffNewsletter::class, \App\Filament\Pages\BulkPricing::class])
             ->widgets([StoreOverviewStats::class, StaffQuickLinks::class])
             ->renderHook(\Filament\View\PanelsRenderHook::GLOBAL_SEARCH_AFTER, fn () => view('filament.partials.notification-sound'))
             ->middleware([

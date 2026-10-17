@@ -27,6 +27,7 @@ class StaffQuickLinks extends Widget
 
         $links = [
             ['label' => 'Products', 'path' => '/staff/products', 'permission' => 'products.manage'],
+            ['label' => 'Bulk pricing', 'path' => '/staff/bulk-pricing', 'permission' => 'products.manage'],
             ['label' => 'Styles', 'path' => '/staff/styles', 'permission' => 'products.manage'],
             ['label' => 'Categories', 'path' => '/staff/categories', 'permission' => 'products.manage'],
             ['label' => 'Collections', 'path' => '/staff/collections', 'permission' => 'products.manage'],

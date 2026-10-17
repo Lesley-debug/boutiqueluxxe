@@ -28,6 +28,7 @@ class HandleInertiaRequests extends Middleware
         // Inertia pages. Do not rewrite their location responses on asset mismatch.
         // Authentication, verification, permission and cache middleware still run.
         if (StaffPanelRequest::matches($request) || $request->routeIs(
+            'admin.dashboard', 'admin.bulk-pricing.*',
             'admin.users.*', 'admin.notifications.*', 'admin.newsletter.*',
             'admin.homepage.*', 'admin.about-page.*', 'admin.hero-slides.*', 'admin.journal.*', 'admin.testimonials.*',
             'admin.categories.*', 'admin.collections.*', 'admin.discounts.*', 'admin.customers.*',
