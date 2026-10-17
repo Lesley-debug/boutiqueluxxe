@@ -1,7 +1,7 @@
 <x-filament-widgets::widget>
     <x-filament::section heading="Manage your store">
         <p style="margin: 0 0 1rem; color: #57534e; line-height: 1.6;">
-            Catalog, orders, contacts, discounts and public content use this workspace. Staff access is managed only by the super admin. Notifications and newsletter remain in the current admin during migration.
+            Catalog, orders, contacts, discounts and public content use this workspace. Staff access is managed only by the super admin. Your private notifications and read-only newsletter subscriptions are also available here.
         </p>
         <style>
             .bl-staff-links { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }
