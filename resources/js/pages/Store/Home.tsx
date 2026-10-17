@@ -1,5 +1,6 @@
 import LifestyleEditorial from "@/components/Store/LifestyleEditorial";
 import EditorialCampaign from "@/components/Store/EditorialCampaign";
+import SecondaryCampaign from "@/components/Store/SecondaryCampaign";
 import { Head, usePage } from "@inertiajs/react";
 import { useState, useEffect, useRef } from "react";
 import StoreLayout from "@/components/Store/StoreLayout";
@@ -404,6 +405,8 @@ export default function Home({
             </Container>
           </section>
         )}
+
+        <SecondaryCampaign content={content} />
 
         <LifestyleEditorial content={content} />
 
