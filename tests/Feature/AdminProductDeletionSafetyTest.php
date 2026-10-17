@@ -12,6 +12,7 @@ use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\WishlistItem;
+use App\Services\StaffProductEditor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -21,7 +22,7 @@ class AdminProductDeletionSafetyTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_product_deletion_archives_and_preserves_order_history_and_media(): void
+    public function test_native_product_archive_preserves_order_history_and_media(): void
     {
         Storage::fake('public');
         $product = $this->createProduct();
@@ -57,9 +58,7 @@ class AdminProductDeletionSafetyTest extends TestCase
             'line_total' => 10000,
         ]);
 
-        $this->actingAs($this->admin())
-            ->delete("/admin/products/{$product->id}")
-            ->assertRedirect('/admin/products');
+        app(StaffProductEditor::class)->archive($this->admin(), $product);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
@@ -78,7 +77,7 @@ class AdminProductDeletionSafetyTest extends TestCase
         Storage::disk('public')->assertExists($image->path);
     }
 
-    public function test_failed_image_database_deletion_does_not_remove_the_file(): void
+    public function test_retired_image_delete_never_invokes_database_delete_or_removes_file(): void
     {
         Storage::fake('public');
         $product = $this->createProduct();
@@ -100,17 +99,17 @@ class AdminProductDeletionSafetyTest extends TestCase
 
         try {
             $this->actingAs($this->admin())
-                ->delete("/admin/products/{$product->id}/images/{$image->id}");
-            $this->fail('The simulated deletion failure was not thrown.');
-        } catch (RuntimeException $exception) {
-            $this->assertSame('Simulated database failure.', $exception->getMessage());
+                ->delete("/admin/products/{$product->id}/images/{$image->id}")
+                ->assertRedirect("/staff/products/{$product->id}/edit");
+        } finally {
+            ProductImage::flushEventListeners();
         }
 
         $this->assertDatabaseHas('product_images', ['id' => $image->id]);
         Storage::disk('public')->assertExists($image->path);
     }
 
-    public function test_successful_image_deletion_removes_file_and_promotes_next_image(): void
+    public function test_retired_image_delete_keeps_both_files_and_does_not_change_cover(): void
     {
         Storage::fake('public');
         $product = $this->createProduct();
@@ -133,9 +132,10 @@ class AdminProductDeletionSafetyTest extends TestCase
             ->delete("/admin/products/{$product->id}/images/{$primary->id}")
             ->assertRedirect();
 
-        $this->assertDatabaseMissing('product_images', ['id' => $primary->id]);
-        $this->assertTrue($next->fresh()->is_primary);
-        Storage::disk('public')->assertMissing($primary->path);
+        $this->assertDatabaseHas('product_images', ['id' => $primary->id]);
+        $this->assertTrue($primary->fresh()->is_primary);
+        $this->assertFalse($next->fresh()->is_primary);
+        Storage::disk('public')->assertExists($primary->path);
         Storage::disk('public')->assertExists($next->path);
     }
 

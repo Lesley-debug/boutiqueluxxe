@@ -24,11 +24,12 @@ class HandleInertiaRequests extends Middleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        // Filament, Livewire and the explicit legacy Orders handoff do not return
+        // Filament, Livewire and the explicit legacy admin handoffs do not return
         // Inertia pages. Do not rewrite their location responses on asset mismatch.
         // Authentication, verification, permission and cache middleware still run.
         if (StaffPanelRequest::matches($request) || $request->routeIs(
             'admin.dashboard', 'admin.bulk-pricing.*',
+            'admin.products.*', 'admin.styles.*',
             'admin.users.*', 'admin.notifications.*', 'admin.newsletter.*',
             'admin.homepage.*', 'admin.about-page.*', 'admin.hero-slides.*', 'admin.journal.*', 'admin.testimonials.*',
             'admin.categories.*', 'admin.collections.*', 'admin.discounts.*', 'admin.customers.*',

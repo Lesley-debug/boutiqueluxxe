@@ -3,117 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CartItem;
-use App\Models\Category;
 use App\Models\Product;
-use App\Models\Style;
-use App\Models\WishlistItem;
+use App\Support\LegacyCatalogHandoff;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Admin/Products/Index', [
-            'products' => Product::with('category')->latest()->paginate(15),
-        ]);
-    }
-
-    public function create()
-    {
-        return Inertia::render('Admin/Products/Form', [
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'styles' => Style::orderBy('name')->get(['id', 'name', 'slug']),
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        Product::create($this->validatedData($request));
-
-        return redirect()->route('admin.products.index')->with('success', 'Product created.');
-    }
-
-    public function edit(Product $product)
-    {
-        return Inertia::render('Admin/Products/Form', [
-            'product' => $product->load(['variants', 'images' => fn ($query) => $query->orderBy('sort_order')]),
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'styles' => Style::orderBy('name')->get(['id', 'name', 'slug']),
-        ]);
-    }
-
-    public function update(Request $request, Product $product)
-    {
-        $product->update($this->validatedData($request, $product));
-
-        return redirect()->route('admin.products.index')->with('success', 'Product updated.');
-    }
-
-    public function destroy(Product $product)
-    {
-        DB::transaction(function () use ($product) {
-            $lockedProduct = Product::query()
-                ->whereKey($product->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            $variantIds = $lockedProduct->variants()
-                ->lockForUpdate()
-                ->pluck('id');
-
-            CartItem::query()->whereIn('product_variant_id', $variantIds)->delete();
-            WishlistItem::query()->where('product_id', $lockedProduct->id)->delete();
-
-            $lockedProduct->update([
-                'status' => 'archived',
-                'featured' => false,
-                'new_arrival' => false,
-            ]);
-        });
-
-        return redirect()
-            ->route('admin.products.index')
-            ->with('success', 'Product archived. Order history and media were preserved.');
-    }
-
-    private function validatedData(Request $request, ?Product $product = null): array
-    {
-        $data = $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'style_id' => ['nullable', 'exists:styles,id'],
-            'brand' => ['nullable', 'string', 'max:255'],
-            'name' => ['required', 'string', 'max:255'],
-            'slug' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('products', 'slug')->ignore($product?->id),
-            ],
-            'description' => ['nullable', 'string'],
-            'base_price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:base_price'],
-            'rating' => [
-                Rule::requiredIf(fn () => $request->integer('reviews_count') > 0),
-                'nullable',
-                'numeric',
-                'min:0.01',
-                'max:5',
-            ],
-            'reviews_count' => ['required', 'integer', 'min:0'],
-            'status' => ['required', 'in:draft,active,archived'],
-            'featured' => ['boolean'],
-            'new_arrival' => ['boolean'],
-        ]);
-
-        $data['reviews_count'] = (int) $data['reviews_count'];
-        if ($data['reviews_count'] === 0) {
-            $data['rating'] = null;
-        }
-
-        return $data;
-    }
+    public function index(Request $request) { return LegacyCatalogHandoff::products($request); }
+    public function create(Request $request) { return LegacyCatalogHandoff::products($request, 'create'); }
+    public function store(Request $request) { return $this->create($request); }
+    public function show(Request $request, Product $product) { return $this->edit($request, $product); }
+    public function edit(Request $request, Product $product) { return LegacyCatalogHandoff::products($request, 'edit', $product); }
+    public function update(Request $request, Product $product) { return $this->edit($request, $product); }
+    public function destroy(Request $request, Product $product) { return $this->edit($request, $product); }
 }
