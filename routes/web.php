@@ -125,6 +125,11 @@ Route::middleware('auth')->group(function () {
         ->name('verification.send');
 });
 
+// Staff sound feed: private metadata only; no notification content or writes.
+Route::get('/staff/notification-sound/poll', \App\Http\Controllers\StaffNotificationSoundController::class)
+    ->middleware(['auth', 'email.verified', 'admin', 'throttle:30,1'])
+    ->name('staff.notification-sound.poll');
+
 // Customer account — requires login, no admin flag needed
 Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.')->group(function () {
     Route::get('/', [AccountDashboardController::class, 'index'])->name('dashboard');
