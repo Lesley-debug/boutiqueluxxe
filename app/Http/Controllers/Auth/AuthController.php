@@ -42,6 +42,11 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->forget([
+            \App\Services\StaffMfa::PROOF,
+            \App\Services\StaffMfa::PENDING,
+            \App\Services\StaffMfa::CODES,
+        ]);
 
         try {
             $cartService->mergeGuestCartIntoUser($guestSessionId, (int) Auth::id());
@@ -101,6 +106,11 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->forget([
+            \App\Services\StaffMfa::PROOF,
+            \App\Services\StaffMfa::PENDING,
+            \App\Services\StaffMfa::CODES,
+        ]);
 
         try {
             $cartService->mergeGuestCartIntoUser($guestSessionId, (int) $user->id);

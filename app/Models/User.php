@@ -15,11 +15,13 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 
 #[Fillable(['name', 'email', 'password', 'role', 'is_admin'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser
+#[Hidden(['password', 'remember_token', 'app_authentication_secret', 'app_authentication_recovery_codes', 'staff_mfa_last_step', 'staff_mfa_version', 'staff_mfa_failures', 'staff_mfa_locked_until'])]
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser, \Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication, \Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+    use \Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+    use \Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
 
     /**
      * Get the attributes that should be cast.
@@ -31,6 +33,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'staff_mfa_last_step' => 'integer',
+            'staff_mfa_version' => 'integer',
+            'staff_mfa_failures' => 'integer',
+            'staff_mfa_locked_until' => 'datetime',
         ];
     }
 

@@ -125,6 +125,18 @@ Route::middleware('auth')->group(function () {
         ->name('verification.send');
 });
 
+// Shared-login staff step-up. Every endpoint retains auth/verification/admin checks.
+Route::middleware(['auth', 'email.verified', 'admin', 'throttle:20,1'])
+    ->prefix('staff/security')->name('staff.security.')->group(function () {
+        $controller = \App\Http\Controllers\StaffSecurityController::class;
+        Route::get('/', [$controller, 'show'])->name('show');
+        Route::post('/begin', [$controller, 'begin'])->name('begin');
+        Route::post('/complete', [$controller, 'complete'])->name('complete');
+        Route::post('/challenge', [$controller, 'challenge'])->name('challenge');
+        Route::post('/recovery-codes', [$controller, 'regenerate'])->name('regenerate');
+        Route::post('/cancel', [$controller, 'cancel'])->name('cancel');
+    });
+
 // Staff sound feed: private metadata only; no notification content or writes.
 Route::get('/staff/notification-sound/poll', \App\Http\Controllers\StaffNotificationSoundController::class)
     ->middleware(['auth', 'email.verified', 'admin', 'throttle:30,1'])
@@ -132,7 +144,7 @@ Route::get('/staff/notification-sound/poll', \App\Http\Controllers\StaffNotifica
 
 // Customer account — requires login, no admin flag needed
 Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.')->group(function () {
-    Route::get('/', [AccountDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [AccountDashboardController::class, 'index'])->middleware(\App\Http\Middleware\EnsureStaffAccountSecurity::class)->name('dashboard');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -147,12 +159,12 @@ Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.
     Route::get('orders/{order}', [AccountOrderController::class, 'show'])->name('orders.show');
 
     // User notifications
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    Route::get('notifications', [NotificationController::class, 'index'])->middleware(\App\Http\Middleware\EnsureStaffAccountSecurity::class)->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->middleware(\App\Http\Middleware\EnsureStaffAccountSecurity::class)->name('notifications.read');
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->middleware(\App\Http\Middleware\EnsureStaffAccountSecurity::class)->name('notifications.markAllRead');
 
     // User activity
-    Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
+    Route::get('activity', [ActivityController::class, 'index'])->middleware(\App\Http\Middleware\EnsureStaffAccountSecurity::class)->name('activity.index');
 
 });
 

@@ -14,6 +14,6 @@ class EnsureUserIsAdmin
             abort(403, 'You do not have admin access.');
         }
 
-        return $next($request);
+        return app(EnsureStaffMfa::class)->handle($request, $next);
     }
 }

@@ -45,6 +45,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Never flash OTPs/recovery codes back into HTML or session old-input.
+        $exceptions->dontFlash(['code', 'recovery_code']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
@@ -117,4 +119,3 @@ return Application::configure(basePath: dirname(__DIR__))
             return $errorResponse;
         });
     })->create();
-

@@ -64,6 +64,14 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $isAdminRoute = $request->is('admin/*');
+        $mayShareNotifications = true;
+        $actor = $request->user('web');
+        if (config('auth_features.staff_mfa_required', true) && $actor instanceof \App\Models\User
+            && ($actor->is_admin || in_array($actor->role, ['super_admin', 'manager', 'support_staff'], true))) {
+            $current = $actor->fresh();
+            $mayShareNotifications = $current && $current->canAccessStaffPanel() && $current->hasVerifiedEmail()
+                && app(\App\Services\StaffMfa::class)->passed($request, $current);
+        }
 
         $shared = [
             ...parent::share($request),
@@ -184,7 +192,7 @@ class HandleInertiaRequests extends Middleware
             $shared['shopByStyle'] = fn() => [];
         }
 
-        if ($request->user()) {
+        if ($request->user() && $mayShareNotifications) {
             $shared['notifications'] = fn() => $request->user()->notifications()
                 ->latest()
                 ->limit(10)
@@ -201,7 +209,13 @@ class HandleInertiaRequests extends Middleware
             $shared['wishlist_count'] = fn() => $request->user()->wishlistItems()->count();
         }
 
-        if ($request->user()?->is_admin) {
+        if ($request->user() && ! $mayShareNotifications) {
+            $shared['notifications'] = [];
+            $shared['unreadNotificationsCount'] = 0;
+            $shared['wishlist_count'] = fn () => $request->user()->wishlistItems()->count();
+        }
+
+        if ($request->user()?->is_admin && $mayShareNotifications) {
             $shared['adminNotifications'] = fn() => [
                 'unread_count' => $request->user()->unreadNotifications()->count(),
                 'recent' => $request->user()->notifications()->latest()->limit(5)->get()->map(fn($n) => [

@@ -65,6 +65,7 @@ class StaffPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureStaffPanelAccess::class,
+                \App\Http\Middleware\EnsureStaffMfa::class,
             ], isPersistent: true);
     }
 }
