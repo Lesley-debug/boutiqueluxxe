@@ -42,6 +42,11 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->forget([
+            \App\Services\StaffMfa::PROOF,
+            \App\Services\StaffMfa::PENDING,
+            \App\Services\StaffMfa::CODES,
+        ]);
 
         try {
             $cartService->mergeGuestCartIntoUser($guestSessionId, (int) Auth::id());
@@ -56,7 +61,27 @@ class AuthController extends Controller
             return redirect()->route('verification.notice');
         }
 
-        return redirect()->intended('/')->with('welcomeBack', true);
+        $redirect = redirect()->intended('/')->with('welcomeBack', true);
+        $target = $redirect->getTargetUrl();
+        $parts = parse_url($target);
+        $path = $parts['path'] ?? '';
+        $isSameOrigin = is_array($parts) && (! isset($parts['host']) || (
+            strcasecmp($parts['host'], $request->getHost()) === 0
+            && ($parts['scheme'] ?? $request->getScheme()) === $request->getScheme()
+            && ($parts['port'] ?? (($parts['scheme'] ?? $request->getScheme()) === 'https' ? 443 : 80)) === $request->getPort()
+        ));
+
+        if (
+            $request->headers->has('X-Inertia')
+            && $isSameOrigin
+            && ($path === '/staff' || str_starts_with($path, '/staff/'))
+        ) {
+            // Filament returns ordinary HTML, not an Inertia page object.
+            // Request a browser navigation instead of following this redirect via XHR.
+            return Inertia::location($target);
+        }
+
+        return $redirect;
     }
 
     public function showRegister()
@@ -81,6 +106,11 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->forget([
+            \App\Services\StaffMfa::PROOF,
+            \App\Services\StaffMfa::PENDING,
+            \App\Services\StaffMfa::CODES,
+        ]);
 
         try {
             $cartService->mergeGuestCartIntoUser($guestSessionId, (int) $user->id);

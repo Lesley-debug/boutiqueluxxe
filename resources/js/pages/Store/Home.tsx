@@ -1,3 +1,6 @@
+import LifestyleEditorial from "@/components/Store/LifestyleEditorial";
+import EditorialCampaign from "@/components/Store/EditorialCampaign";
+import SecondaryCampaign from "@/components/Store/SecondaryCampaign";
 import { Head, usePage } from "@inertiajs/react";
 import { useState, useEffect, useRef } from "react";
 import StoreLayout from "@/components/Store/StoreLayout";
@@ -375,56 +378,7 @@ export default function Home({
           </section>
         )}
 
-        {(content.editorial_video_url || content.editorial_image_url) && (
-          <section className="relative h-[560px] overflow-hidden">
-            {content.editorial_video_url ? (
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={content.editorial_image_url ?? undefined}
-                className="h-full w-full object-cover"
-              >
-                <source src={content.editorial_video_url} />
-              </video>
-            ) : (
-              <img
-                src={content.editorial_image_url!}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#181512]/80 via-[#181512]/35 to-transparent" />
-            <div className="absolute inset-0 flex items-center">
-              <Container className="w-full">
-                <Reveal>
-                  <div className="max-w-xl text-left">
-                    <Eyebrow light>Editorial</Eyebrow>
-                    {content.editorial_title && (
-                      <h2 className="mt-4 font-serif text-6xl font-medium leading-[1.02] text-white">
-                        {content.editorial_title}
-                      </h2>
-                    )}
-                    {content.editorial_subtitle && (
-                      <p className="mt-5 max-w-md text-base leading-7 text-white/78">
-                        {content.editorial_subtitle}
-                      </p>
-                    )}
-                    {content.editorial_cta_text && (
-                      <a
-                        href={content.editorial_cta_url || "/shop"}
-                        className="mt-8 inline-flex rounded-full bg-white px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#181512] transition hover:bg-[#D9BB82]"
-                      >
-                        {content.editorial_cta_text}
-                      </a>
-                    )}
-                  </div>
-                </Reveal>
-              </Container>
-            </div>
-          </section>
-        )}
+        <EditorialCampaign content={content} />
 
         {desktopArrivals.length > 0 && (
           <section className="bg-[#F8F5EF] py-20">
@@ -452,41 +406,9 @@ export default function Home({
           </section>
         )}
 
-        {content.story_image_url && (
-          <section className="bg-white py-20">
-            <Container>
-              <div className="grid grid-cols-[1.05fr_.95fr] items-center gap-16">
-                <Reveal>
-                  <div className="aspect-[16/11] overflow-hidden rounded-[24px]">
-                    <img
-                      src={content.story_image_url}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </Reveal>
-                <Reveal delay={100}>
-                  <Eyebrow>Our point of view</Eyebrow>
-                  {content.story_title && (
-                    <h2 className="mt-4 font-serif text-5xl font-medium leading-tight text-[#181512]">
-                      {content.story_title}
-                    </h2>
-                  )}
-                  {content.story_text && (
-                    <p className="mt-6 max-w-lg text-base leading-8 text-[#6F6961]">
-                      {content.story_text}
-                    </p>
-                  )}
-                  <div className="mt-8">
-                    <TextLink href="/about">
-                      {content.story_cta_text || "Discover our story"}
-                    </TextLink>
-                  </div>
-                </Reveal>
-              </div>
-            </Container>
-          </section>
-        )}
+        <SecondaryCampaign content={content} />
+
+        <LifestyleEditorial content={content} />
 
         <section className="bg-[#181512] py-16 text-white">
           <Container>

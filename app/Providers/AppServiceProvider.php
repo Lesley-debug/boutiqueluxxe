@@ -6,6 +6,13 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Policies\OrderPolicy;
+use App\Models\Product;
+use App\Models\Style;
+use App\Policies\ProductPolicy;
+use App\Policies\StylePolicy;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +29,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Order::class, OrderPolicy::class);
+        Gate::policy(\App\Models\HomepageContent::class,\App\Policies\HomepageContentPolicy::class);
+        Gate::policy(\App\Models\HeroSlide::class,\App\Policies\HeroSlidePolicy::class);
+        Gate::policy(\App\Models\AboutPage::class,\App\Policies\AboutPagePolicy::class);
+        Gate::policy(\App\Models\JournalPost::class,\App\Policies\JournalPostPolicy::class);
+        Gate::policy(\App\Models\Testimonial::class,\App\Policies\TestimonialPolicy::class);
+        Gate::policy(\App\Models\Category::class, \App\Policies\CategoryPolicy::class);
+        Gate::policy(\App\Models\Collection::class, \App\Policies\CollectionPolicy::class);
+        Gate::policy(\App\Models\Discount::class, \App\Policies\DiscountPolicy::class);
+        Gate::policy(\App\Models\ContactMessage::class, \App\Policies\ContactMessagePolicy::class);
+        Gate::policy(Product::class, ProductPolicy::class);
+        Gate::policy(Style::class, StylePolicy::class);
+
         // Rate limiters
         $emailKey = static function (Request $request): string {
             $email = strtolower(trim((string) $request->input('email')));
@@ -50,7 +70,10 @@ class AppServiceProvider extends ServiceProvider
         );
         RateLimiter::for('checkout', fn(Request $request) => Limit::perMinute(6)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
         RateLimiter::for('newsletter', fn(Request $request) => Limit::perMinute(6)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
-        RateLimiter::for('contact', fn(Request $request) => Limit::perHour(5)->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
+        RateLimiter::for('contact', fn(Request $request) => [
+            Limit::perHour(20)->by('contact:ip:'.$request->ip()),
+            Limit::perHour(5)->by('contact:email:'.$emailKey($request)),
+        ]);
         RateLimiter::for('confirmation', fn(Request $request) => Limit::perMinute(12)->by($request->ip()));
         RateLimiter::for('cart', fn(Request $request) => Limit::perMinute(30)->by($request->ip()));
         RateLimiter::for('email-verification', function (Request $request) {

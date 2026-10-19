@@ -10,6 +10,7 @@ class Permissions
             'dashboard.view',
             'products.manage',
             'orders.manage',
+            'contacts.manage',
             'customers.view',
             'discounts.manage',
             'notifications.view',
@@ -17,6 +18,7 @@ class Permissions
         'support_staff' => [
             'dashboard.view',
             'orders.manage',
+            'contacts.manage',
             'customers.view',
             'notifications.view',
         ],

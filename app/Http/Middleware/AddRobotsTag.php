@@ -14,6 +14,9 @@ class AddRobotsTag
 
         if ($request->is(
             'admin*',
+            'staff',
+            'staff/*',
+            'livewire*',
             'account*',
             'login',
             'register',

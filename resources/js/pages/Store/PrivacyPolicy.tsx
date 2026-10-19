@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <LegalPage
       title="Privacy Policy"
-      updated="5 October 2026"
+      updated="8 October 2026"
       intro="This policy explains the information Boutique Luxxe uses to operate the store, manage reservations, protect customers, and provide support."
       sections={[
         {
@@ -17,6 +17,7 @@ export default function PrivacyPolicy() {
         {
           title: "How we use information",
           paragraphs: [
+            "Contact form submissions and staff replies are stored in our restricted support workspace and may also be sent by email so our team can respond and keep conversation history. Internal staff notes are not included in customer replies.",
             "We use information to manage carts, create and discuss order reservations, provide account features, communicate with you, prevent abuse, and improve the reliability of our services.",
           ],
         },

@@ -7,6 +7,9 @@ use Inertia\Middleware;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Style;
+use App\Support\StaffPanelRequest;
+use Closure;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,6 +21,28 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        // Filament, Livewire and the explicit legacy admin handoffs do not return
+        // Inertia pages. Do not rewrite their location responses on asset mismatch.
+        // Authentication, verification, permission and cache middleware still run.
+        if (StaffPanelRequest::matches($request) || $request->routeIs(
+            'admin.dashboard', 'admin.bulk-pricing.*',
+            'admin.products.*', 'admin.styles.*',
+            'admin.users.*', 'admin.notifications.*', 'admin.newsletter.*',
+            'admin.homepage.*', 'admin.about-page.*', 'admin.hero-slides.*', 'admin.journal.*', 'admin.testimonials.*',
+            'admin.categories.*', 'admin.collections.*', 'admin.discounts.*', 'admin.customers.*',
+            'admin.orders.index',
+            'admin.orders.show',
+            'admin.orders.status',
+            'admin.orders.payment',
+        )) {
+            return $next($request);
+        }
+
+        return parent::handle($request, $next);
+    }
 
     /**
      * Determines the current asset version.
@@ -39,6 +64,14 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $isAdminRoute = $request->is('admin/*');
+        $mayShareNotifications = true;
+        $actor = $request->user('web');
+        if (config('auth_features.staff_mfa_required', true) && $actor instanceof \App\Models\User
+            && ($actor->is_admin || in_array($actor->role, ['super_admin', 'manager', 'support_staff'], true))) {
+            $current = $actor->fresh();
+            $mayShareNotifications = $current && $current->canAccessStaffPanel() && $current->hasVerifiedEmail()
+                && app(\App\Services\StaffMfa::class)->passed($request, $current);
+        }
 
         $shared = [
             ...parent::share($request),
@@ -159,7 +192,7 @@ class HandleInertiaRequests extends Middleware
             $shared['shopByStyle'] = fn() => [];
         }
 
-        if ($request->user()) {
+        if ($request->user() && $mayShareNotifications) {
             $shared['notifications'] = fn() => $request->user()->notifications()
                 ->latest()
                 ->limit(10)
@@ -176,7 +209,13 @@ class HandleInertiaRequests extends Middleware
             $shared['wishlist_count'] = fn() => $request->user()->wishlistItems()->count();
         }
 
-        if ($request->user()?->is_admin) {
+        if ($request->user() && ! $mayShareNotifications) {
+            $shared['notifications'] = [];
+            $shared['unreadNotificationsCount'] = 0;
+            $shared['wishlist_count'] = fn () => $request->user()->wishlistItems()->count();
+        }
+
+        if ($request->user()?->is_admin && $mayShareNotifications) {
             $shared['adminNotifications'] = fn() => [
                 'unread_count' => $request->user()->unreadNotifications()->count(),
                 'recent' => $request->user()->notifications()->latest()->limit(5)->get()->map(fn($n) => [

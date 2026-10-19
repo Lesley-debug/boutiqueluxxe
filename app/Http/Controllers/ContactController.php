@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactMessageMail;
+use App\Services\ContactInbox;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,7 +27,7 @@ class ContactController extends Controller
             'website' => ['nullable', 'max:0'],
         ]);
 
-        Mail::to(config('mail.contact.address'))->send(new ContactMessageMail($data));
+        app(ContactInbox::class)->submit($data);
 
         return back()->with('contact_submitted', true);
     }

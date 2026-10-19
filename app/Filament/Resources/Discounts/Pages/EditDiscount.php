@@ -1,0 +1,15 @@
+<?php
+namespace App\Filament\Resources\Discounts\Pages;
+use App\Filament\Resources\Discounts\DiscountResource;
+use App\Services\StaffCatalogOrganizer;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+class EditDiscount extends EditRecord
+{
+    protected static string $resource = DiscountResource::class;
+    protected ?bool $hasDatabaseTransactions = false;
+    protected function mutateFormDataBeforeFill(array $data): array { $data['expected_snapshot'] = app(StaffCatalogOrganizer::class)->fingerprint($this->record);  return $data; }
+    protected function handleRecordUpdate(Model $record, array $data): Model { return app(StaffCatalogOrganizer::class)->discount(auth('web')->user(),$data,$record,'data.'); }
+    protected function afterSave(): void { $this->record=$this->record->fresh(); $this->form->fill($this->mutateFormDataBeforeFill($this->record->attributesToArray())); }
+    protected function getHeaderActions(): array { return []; }
+}

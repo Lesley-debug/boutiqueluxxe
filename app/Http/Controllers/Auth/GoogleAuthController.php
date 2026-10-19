@@ -82,6 +82,11 @@ class GoogleAuthController extends Controller
 
         Auth::login($user, true);
         $request->session()->regenerate();
+        $request->session()->forget([
+            \App\Services\StaffMfa::PROOF,
+            \App\Services\StaffMfa::PENDING,
+            \App\Services\StaffMfa::CODES,
+        ]);
 
         try {
             $cartService->mergeGuestCartIntoUser($guestSessionId, $user->id);

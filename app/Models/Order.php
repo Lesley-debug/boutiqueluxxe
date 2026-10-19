@@ -40,6 +40,7 @@ class Order extends Model
         'shipping_cost' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total' => 'decimal:2',
+        'stock_released_at' => 'datetime',
     ];
 
     protected static function booted(): void

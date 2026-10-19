@@ -1,18 +1,10 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
-use App\Models\NewsletterSubscriber;
+use App\Filament\Pages\StaffNewsletter;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 class NewsletterController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Admin/Newsletter/Index', [
-            'subscribers' => NewsletterSubscriber::whereNull('unsubscribed_at')->latest()->paginate(50),
-            'total' => NewsletterSubscriber::whereNull('unsubscribed_at')->count(),
-        ]);
-    }
+    public function index(Request $request) { abort_unless(StaffNewsletter::canAccess(),403); $url=StaffNewsletter::getUrl(panel:'staff'); return $request->header('X-Inertia') ? Inertia::location($url) : redirect()->to($url); }
 }

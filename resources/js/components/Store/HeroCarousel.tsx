@@ -1,7 +1,12 @@
 import { Link } from "@inertiajs/react";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-
 interface Slide {
   id: number;
   eyebrow: string | null;
@@ -9,107 +14,144 @@ interface Slide {
   subtitle: string | null;
   primary_cta_text: string | null;
   primary_cta_url: string | null;
-  secondary_cta_text: string | null;
-  secondary_cta_url: string | null;
+  secondary_cta_text?: string | null;
+  secondary_cta_url?: string | null;
   image_url: string | null;
 }
-
-export default function HeroCarousel({ slides }: { slides: Slide[] }) {
+export default function HeroCarousel({
+  slides,
+  variant = "desktop",
+}: {
+  slides: Slide[];
+  variant?: "desktop" | "mobile";
+}) {
   const [index, setIndex] = useState(0);
-
+  const [paused, setPaused] = useState(false);
   useEffect(() => {
-    if (slides.length <= 1) return;
-    const timer = window.setInterval(
-      () => setIndex((value) => (value + 1) % slides.length),
-      7000,
-    );
-    return () => window.clearInterval(timer);
-  }, [slides.length]);
-
-  if (slides.length === 0) return null;
-  const slide = slides[index];
-
+    if (slides.length <= 1 || paused) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const viewport = window.matchMedia("(min-width: 64rem)");
+    let timer: ReturnType<typeof window.setInterval> | undefined;
+    const sync = () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+      if (
+        !preference.matches &&
+        !document.hidden &&
+        viewport.matches === (variant === "desktop")
+      )
+        timer = window.setInterval(
+          () => setIndex((value) => (value + 1) % slides.length),
+          7000,
+        );
+    };
+    sync();
+    preference.addEventListener("change", sync);
+    viewport.addEventListener("change", sync);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      preference.removeEventListener("change", sync);
+      viewport.removeEventListener("change", sync);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, [slides.length, paused, variant]);
+  if (!slides.length) return null;
+  const selected = index % slides.length;
+  const slide = slides[selected];
+  const choose = (next: number) => {
+    setIndex((next + slides.length) % slides.length);
+    setPaused(true);
+  };
   return (
-    <section className="relative grid min-h-[610px] overflow-hidden bg-[#181512] lg:h-[calc(100vh-118px)] lg:max-h-[760px] lg:grid-cols-[42%_58%]">
-      <div className="relative z-10 flex flex-col justify-center bg-[#F4EFE7] px-12 py-16 xl:px-20 2xl:px-24">
-        <div className="max-w-xl">
+    <section className="border-b border-[#181512]/10 bg-[#F4EFE7]">
+      <div className="mx-auto grid max-w-7xl items-center gap-6 px-6 py-8 lg:grid-cols-[.95fr_1.05fr] lg:gap-12 lg:px-10 lg:py-10">
+        <div className="min-w-0 py-4 lg:py-6">
           {slide.eyebrow && (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#9B7435]">
+            <p className="text-[10px] font-semibold uppercase tracking-[.28em] text-[#805E2D]">
               {slide.eyebrow}
             </p>
           )}
-          <h1 className="mt-5 font-serif text-[clamp(3.25rem,5vw,5.8rem)] font-medium leading-[0.97] tracking-[-0.045em] text-[#181512]">
+          <h1 className="mt-4 max-w-xl break-words font-serif text-[clamp(1.9rem,4.3vw,4.3rem)] font-medium leading-[1.04] tracking-[-.035em] text-[#181512]">
             {slide.title}
           </h1>
           {slide.subtitle && (
-            <p className="mt-7 max-w-md text-base leading-7 text-[#514C46]">
+            <p className="mt-5 max-w-md text-base leading-7 text-[#514C46]">
               {slide.subtitle}
             </p>
           )}
-          <div className="mt-9 flex flex-wrap items-center gap-4">
+          <div className="mt-7 flex flex-wrap gap-3">
             {slide.primary_cta_text && (
               <Link
                 href={slide.primary_cta_url || "/shop"}
-                className="inline-flex items-center gap-3 rounded-full bg-[#181512] px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-[#9B7435]"
+                className="inline-flex min-h-11 items-center gap-3 rounded-full bg-[#181512] px-6 py-3 text-[11px] font-semibold uppercase tracking-[.15em] text-white hover:bg-[#805E2D]"
               >
-                {slide.primary_cta_text} <ArrowRight className="h-4 w-4" />
+                {slide.primary_cta_text}
+                <ArrowRight size={16} />
               </Link>
             )}
             {slide.secondary_cta_text && (
               <Link
                 href={slide.secondary_cta_url || "/shop"}
-                className="inline-flex items-center rounded-full border border-[#181512]/20 px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#181512] transition hover:border-[#9B7435] hover:text-[#9B7435]"
+                className="inline-flex min-h-11 items-center rounded-full border border-[#181512]/25 px-6 py-3 text-[11px] font-semibold uppercase tracking-[.15em] text-[#181512]"
               >
                 {slide.secondary_cta_text}
               </Link>
             )}
           </div>
-        </div>
-        {slides.length > 1 && (
-          <div className="mt-14 flex items-center gap-4">
-            <button
-              onClick={() =>
-                setIndex((value) => (value - 1 + slides.length) % slides.length)
-              }
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#181512]/15 transition hover:border-[#9B7435] hover:text-[#9B7435]"
-              aria-label="Previous campaign"
+          {slides.length > 1 && (
+            <div
+              className="mt-7 flex flex-wrap items-center gap-2"
+              aria-label="Campaign controls"
             >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="flex gap-2">
-              {slides.map((item, itemIndex) => (
-                <button
-                  key={item.id}
-                  onClick={() => setIndex(itemIndex)}
-                  className={`h-1.5 rounded-full transition-all ${itemIndex === index ? "w-8 bg-[#9B7435]" : "w-2 bg-[#181512]/15"}`}
-                  aria-label={`Show campaign ${itemIndex + 1}`}
-                />
-              ))}
+              <button
+                type="button"
+                onClick={() => choose(selected - 1)}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[#181512]/20"
+                aria-label="Previous campaign"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <span className="px-2 text-xs tabular-nums text-[#514C46]">
+                {selected + 1} / {slides.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => choose(selected + 1)}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[#181512]/20"
+                aria-label="Next campaign"
+              >
+                <ChevronRight size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaused((value) => !value)}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[#181512]/20"
+                aria-label={
+                  paused
+                    ? "Resume automatic campaigns"
+                    : "Pause automatic campaigns"
+                }
+              >
+                {paused ? <Play size={16} /> : <Pause size={16} />}
+              </button>
             </div>
-            <button
-              onClick={() => setIndex((value) => (value + 1) % slides.length)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#181512]/15 transition hover:border-[#9B7435] hover:text-[#9B7435]"
-              aria-label="Next campaign"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="relative min-h-[610px] overflow-hidden bg-[#D8CFC1]">
-        {slide.image_url ? (
-          <img
-            key={slide.id}
-            src={slide.image_url}
-            alt=""
-            className="h-full w-full object-cover transition duration-700"
-          />
-        ) : (
-          <div className="h-full w-full bg-[radial-gradient(circle_at_60%_40%,#6f5b48,#181512_72%)]" />
-        )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#181512]/10 via-transparent to-transparent" />
-        <div className="absolute bottom-7 right-8 rounded-full border border-white/30 bg-[#181512]/35 px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-md">
-          Boutique Luxxe · Curated Luxury
+          )}
+        </div>
+        <div className="order-first flex min-h-48 min-w-0 items-center justify-center rounded-2xl bg-[#E8E1D7] p-6 lg:order-last lg:min-h-[420px]">
+          {slide.image_url ? (
+            <img
+              key={slide.id}
+              src={slide.image_url}
+              alt=""
+              decoding="async"
+              className="h-auto max-h-[220px] lg:max-h-[380px] w-auto max-w-full object-contain"
+            />
+          ) : (
+            <div className="p-12 text-center font-serif text-2xl text-[#514C46]">
+              Boutique Luxxe
+            </div>
+          )}
         </div>
       </div>
     </section>

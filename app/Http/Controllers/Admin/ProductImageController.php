@@ -5,93 +5,39 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Support\LegacyCatalogHandoff;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProductImageController extends Controller
 {
     public function store(Request $request, Product $product)
     {
-        $request->validate([
-            'images' => ['required', 'array', 'min:1'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'], // 4MB each
-        ]);
-
-        $nextSort = (int) $product->images()->max('sort_order') + 1;
-        $hasPrimary = $product->images()->where('is_primary', true)->exists();
-
-        foreach ($request->file('images') as $i => $file) {
-            $path = $file->store('products', 'public');
-
-            $product->images()->create([
-                'path' => $path,
-                'alt_text' => $product->name,
-                'sort_order' => $nextSort + $i,
-                'is_primary' => ! $hasPrimary && $i === 0, // first uploaded image becomes primary if none exists
-            ]);
-        }
-
-        return back()->with('success', 'Images uploaded.');
+        // Uploaded files/payloads are deliberately ignored, never stored.
+        return LegacyCatalogHandoff::products($request, 'edit', $product);
     }
 
-    public function setPrimary(Product $product, ProductImage $image)
+    public function setPrimary(Request $request, Product $product, ProductImage $image)
     {
-        abort_unless($image->product_id === $product->id, 404);
-
-        $product->images()->update(['is_primary' => false]);
-        $image->update(['is_primary' => true]);
-
-        return back()->with('success', 'Primary image updated.');
+        LegacyCatalogHandoff::authorize($request);
+        abort_unless((int) $image->product_id === (int) $product->id, 404);
+        return LegacyCatalogHandoff::products($request, 'edit', $product);
     }
 
     public function reorder(Request $request, Product $product)
     {
-        $data = $request->validate([
-            'order' => ['required', 'array'],
-            'order.*' => [
-                'integer',
-                Rule::exists('product_images', 'id')
-                    ->where(fn ($query) => $query->where('product_id', $product->id)),
-            ],
+        LegacyCatalogHandoff::authorize($request);
+        // Retain the cross-product ownership regression check only. Valid input
+        // still performs NO reorder; it opens the canonical editor instead.
+        $request->validate([
+            'order' => ['required', 'array', 'max:1000'],
+            'order.*' => ['integer', 'distinct', Rule::exists('product_images', 'id')->where(fn ($query) => $query->where('product_id', $product->id))],
         ]);
-
-        foreach ($data['order'] as $index => $imageId) {
-            ProductImage::where('id', $imageId)
-                ->where('product_id', $product->id)
-                ->update(['sort_order' => $index]);
-        }
-
-        return back()->with('success', 'Order updated.');
+        return LegacyCatalogHandoff::products($request, 'edit', $product);
     }
 
-    public function destroy(Product $product, ProductImage $image)
+    public function destroy(Request $request, Product $product, ProductImage $image)
     {
-        abort_unless($image->product_id === $product->id, 404);
-
-        $path = $image->path;
-
-        DB::transaction(function () use ($product, $image) {
-            $wasPrimary = $image->is_primary;
-            $image->delete();
-
-            if ($wasPrimary) {
-                $product->images()
-                    ->orderBy('sort_order')
-                    ->first()
-                    ?->update(['is_primary' => true]);
-            }
-        });
-
-        if (! str_starts_with($path, 'http')) {
-            try {
-                Storage::disk('public')->delete($path);
-            } catch (\Throwable $exception) {
-                report($exception);
-            }
-        }
-
-        return back()->with('success', 'Image removed.');
+        return $this->setPrimary($request, $product, $image);
     }
 }

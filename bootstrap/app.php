@@ -45,6 +45,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Never flash OTPs/recovery codes back into HTML or session old-input.
+        $exceptions->dontFlash(['code', 'recovery_code']);
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
@@ -79,6 +81,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 ],
             ];
 
+            // Do not turn Filament/Livewire failures into Inertia responses.
+            if (\App\Support\StaffPanelRequest::matches($request)) {
+                $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+                $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0');
+
+                return $response;
+            }
+
             if (
                 config('app.debug')
                 || $request->is('api/*')
@@ -109,4 +119,3 @@ return Application::configure(basePath: dirname(__DIR__))
             return $errorResponse;
         });
     })->create();
-
