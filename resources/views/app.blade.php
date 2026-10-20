@@ -36,11 +36,6 @@
             'url' => url('/'),
             'publisher' => ['@id' => url('/').'#organization'],
         ];
-        $structuredData = [
-            $organizationSchema,
-            $websiteSchema,
-            ...data_get($seo, 'schema', []),
-        ];
     @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -62,8 +57,13 @@
     @if ($seoImage)
         <meta name="twitter:image" content="{{ $seoImage }}">
     @endif
-    @foreach ($structuredData as $schema)
+    {{-- Site-wide identities persist across client navigation. --}}
+    @foreach ([$organizationSchema, $websiteSchema] as $schema)
         <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    @endforeach
+    {{-- Inertia 3 adopts/replaces these using SeoHead.tsx's matching head-key. --}}
+    @foreach (data_get($seo, 'schema', []) as $index => $schema)
+        <script data-inertia="structured-data-{{ $index }}" type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
     @endforeach
     <title inertia>{{ $fullTitle }}</title>
     @viteReactRefresh
