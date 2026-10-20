@@ -91,7 +91,7 @@ class HandleInertiaRequests extends Middleware
         ];
 
         $routeName = $request->route()?->getName();
-        $pageSeo = config("seo.pages.{$routeName}", []);
+        $pageSeo = config('seo.pages', [])[$routeName] ?? [];
         $private = $request->is(
             'admin*',
             'account*',
