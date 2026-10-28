@@ -1,0 +1,1 @@
+var e=new Intl.NumberFormat(`en-US`,{style:`currency`,currency:`USD`,minimumFractionDigits:2,maximumFractionDigits:2});function t(t){let n=typeof t==`string`?Number.parseFloat(t):t;return e.format(Number.isFinite(n)?n:0)}export{t};
