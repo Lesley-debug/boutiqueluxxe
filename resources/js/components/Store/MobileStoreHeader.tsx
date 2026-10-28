@@ -24,7 +24,7 @@ function HamburgerDrawer({
   onClose: () => void;
 }) {
   const { auth } = usePage().props as {
-    auth: { user?: { name: string } | null };
+    auth: { user?: { name: string; is_admin?: boolean } | null };
   };
 
   useEffect(() => {
@@ -61,6 +61,8 @@ function HamburgerDrawer({
       ? [{ label: "Notifications", href: "/account/notifications", icon: Bell }]
       : []),
   ];
+
+  const isAdmin = auth.user?.is_admin === true;
 
   return (
     <>
@@ -137,14 +139,26 @@ function HamburgerDrawer({
 
           <div className="border-t border-white/10 px-5 py-5">
             {auth.user ? (
-              <Link
-                href="/account"
-                onClick={onClose}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#171310] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
-              >
-                <User size={14} />
-                My Account
-              </Link>
+              <div className="space-y-2">
+                {isAdmin && (
+                  <Link
+                    href="/staff"
+                    onClick={onClose}
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-[#9C7A3C] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
+                  >
+                    <LayoutGrid size={14} />
+                    Staff Dashboard
+                  </Link>
+                )}
+                <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[#171310] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
+                >
+                  <User size={14} />
+                  My Account
+                </Link>
+              </div>
             ) : (
               <div className="space-y-2">
                 <Link

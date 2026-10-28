@@ -57,6 +57,14 @@ interface TestimonialItem {
   quote: string;
   rating: number;
 }
+interface JournalPost {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  cover_image_url: string | null;
+  published_at: string;
+}
 interface Slide {
   id: number;
   eyebrow: string | null;
@@ -77,6 +85,7 @@ interface HomeProps {
   content: HomepageContent;
   styles: StyleCard[];
   testimonials: TestimonialItem[];
+  latestPosts: JournalPost[];
 }
 
 // ─── Testimonials Carousel ────────────────────────────────────────────────────
@@ -239,6 +248,7 @@ export default function Home({
   newArrivals,
   content,
   testimonials,
+  latestPosts,
 }: HomeProps) {
   const { welcomeBack, auth } = usePage().props;
   const [showWelcome, setShowWelcome] = useState(!!welcomeBack);
@@ -264,6 +274,7 @@ export default function Home({
           categories={categories}
           testimonials={testimonials}
           content={content}
+          latestPosts={latestPosts}
         />
       </div>
 
@@ -452,6 +463,64 @@ export default function Home({
                 </h2>
               </div>
               <TestimonialsCarousel testimonials={testimonials} />
+            </Container>
+          </section>
+        )}
+
+        {latestPosts.length > 0 && (
+          <section className="bg-white py-20">
+            <Container>
+              <Reveal>
+                <div className="mb-10 flex items-end justify-between gap-8">
+                  <div>
+                    <Eyebrow>Journal</Eyebrow>
+                    <h2 className="mt-3 font-serif text-5xl font-medium tracking-tight text-[#181512]">
+                      From the journal
+                    </h2>
+                  </div>
+                  <TextLink href="/journal">Read all posts</TextLink>
+                </div>
+              </Reveal>
+              <div className="grid grid-cols-3 gap-6">
+                {latestPosts.map((post, index) => (
+                  <Reveal key={post.id} delay={index * 80}>
+                    <a
+                      href={`/journal/${post.slug}`}
+                      className="group block overflow-hidden rounded-[20px] border border-[#181512]/8 bg-[#F8F5EF] transition hover:shadow-lg"
+                    >
+                      <div className="aspect-[16/9] overflow-hidden bg-[#E8E1D7]">
+                        {post.cover_image_url ? (
+                          <img
+                            src={post.cover_image_url}
+                            alt={post.title}
+                            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center font-serif text-2xl text-[#9B7435]/40">
+                            ✦
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#9B7435]">
+                          {new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </p>
+                        <h3 className="mt-2 font-serif text-xl font-medium leading-snug text-[#181512] group-hover:text-[#9B7435] transition">
+                          {post.title}
+                        </h3>
+                        {post.excerpt && (
+                          <p className="mt-2 text-sm leading-6 text-[#6F6961] line-clamp-2">
+                            {post.excerpt}
+                          </p>
+                        )}
+                        <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#181512] underline decoration-[#9B7435] underline-offset-4">
+                          Read more
+                        </p>
+                      </div>
+                    </a>
+                  </Reveal>
+                ))}
+              </div>
             </Container>
           </section>
         )}

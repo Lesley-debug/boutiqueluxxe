@@ -168,6 +168,9 @@ Route::middleware(['auth', 'email.verified'])->prefix('account')->name('account.
 
 });
 
+// Redirect /admin to Filament staff panel
+Route::get('/admin', fn () => redirect('/staff'))->middleware(['auth', 'email.verified', 'admin']);
+
 //Admin routes
 Route::middleware(['auth', 'email.verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::middleware('permission:dashboard.view')->group(function () {

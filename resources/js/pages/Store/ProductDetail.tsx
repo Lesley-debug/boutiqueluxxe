@@ -10,6 +10,7 @@ import {
   Check,
   Share2,
   ShieldCheck,
+  Star,
   Truck,
   RotateCcw,
 } from "lucide-react";
@@ -20,9 +21,18 @@ import ProductRating from "@/components/Store/ProductRating";
 import { formatPrice } from "@/lib/format";
 import type { Product, ProductVariant } from "@/types/catalog";
 
+interface ProductReview {
+  id: number;
+  customer_name: string;
+  rating: number;
+  quote: string;
+  created_at: string;
+}
+
 interface ProductDetailProps {
   product: Product;
   related: Product[];
+  reviews: ProductReview[];
 }
 
 function compactVariantLabel(value: string | null | undefined) {
@@ -54,6 +64,7 @@ function swatchColor(value: string) {
 export default function ProductDetail({
   product,
   related,
+  reviews,
 }: ProductDetailProps) {
   const { auth } = usePage().props;
   const [activeImage, setActiveImage] = useState(0);
@@ -405,6 +416,30 @@ export default function ProductDetail({
             </p>
           )}
 
+          {/* Reviews — mobile */}
+          {reviews.length > 0 && (
+            <div className="mt-6 border-t border-[#171310]/8 pt-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9C7A3C]">
+                Reviews
+              </p>
+              <div className="mt-3 space-y-4">
+                {reviews.map((r) => (
+                  <div key={r.id} className="rounded-2xl bg-[#F8F5EF] p-4">
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map((s) => (
+                        <Star key={s} size={11} fill={s <= r.rating ? "#9C7A3C" : "none"} color={s <= r.rating ? "#9C7A3C" : "#CFC5B5"} strokeWidth={1.5} />
+                      ))}
+                    </div>
+                    <p className="mt-2 text-[12px] italic leading-relaxed text-[#171310]">"{r.quote}"</p>
+                    <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#252525]/45">
+                      {r.customer_name}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quantity + Add to cart */}
           <div className="mt-5 flex items-center gap-3">
             <div className="flex items-center rounded-xl border border-[#171310]/12 bg-[#F8F5EF]">
@@ -731,6 +766,36 @@ export default function ProductDetail({
               <p className="text-base leading-8 text-[#6F6961]">
                 {product.description}
               </p>
+            </section>
+          )}
+
+          {/* Reviews — desktop */}
+          {reviews.length > 0 && (
+            <section className="mt-10 rounded-[28px] bg-white p-10">
+              <div className="mb-7 flex items-end justify-between">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9B7435]">Customer Reviews</p>
+                  <h2 className="mt-2 font-serif text-4xl">What people are saying</h2>
+                </div>
+                <ProductRating rating={product.rating} reviewsCount={product.reviews_count} />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {reviews.map((r) => (
+                  <div key={r.id} className="rounded-2xl border border-[#181512]/8 bg-[#F8F5EF] p-6">
+                    <div className="flex gap-0.5">
+                      {[1,2,3,4,5].map((s) => (
+                        <Star key={s} size={13} fill={s <= r.rating ? "#9C7A3C" : "none"} color={s <= r.rating ? "#9C7A3C" : "#CFC5B5"} strokeWidth={1.5} />
+                      ))}
+                    </div>
+                    <p className="mt-3 font-serif text-sm italic leading-relaxed text-[#181512]">"{r.quote}"</p>
+                    <div className="mt-4 flex items-center gap-2">
+                      <div className="h-px flex-1 bg-[#181512]/8" />
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#252525]/45">{r.customer_name}</p>
+                      <div className="h-px flex-1 bg-[#181512]/8" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
           )}
 

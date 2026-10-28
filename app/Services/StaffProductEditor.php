@@ -221,7 +221,7 @@ final class StaffProductEditor
                     $image->update(['alt_text' => $row['alt_text'] ?? $record->name, 'sort_order' => $position++]);
                 }
                 foreach ($images as $id => $image) {
-                    if (! isset($seenImages[$id])) { $image->update(['sort_order' => $position++]); }
+                    if (! isset($seenImages[$id])) { $image->delete(); }
                 }
                 foreach ($photos as $file) {
                     $path = app(CatalogUpload::class)->store($file, 'products');

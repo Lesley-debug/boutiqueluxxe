@@ -90,7 +90,7 @@ class ProductResource extends Resource
                 ]),
                 Step::make('Photos')->schema([
                     FileUpload::make('new_photos')->label('Add photos')->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->multiple()->reorderable()->maxFiles(8)->maxSize(4096)->disk('public')->preventFilePathTampering()->storeFiles(false)->helperText('JPG, PNG or WebP, up to 4 MB each. Drag to arrange new photos. The first photo becomes the cover if no cover exists.')->columnSpanFull(),
-                    Repeater::make('image_rows')->label('Saved photos')->addable(false)->deletable(false)->reorderableWithButtons()->defaultItems(0)->schema([
+                    Repeater::make('image_rows')->label('Saved photos')->addable(false)->deletable(true)->reorderableWithButtons()->defaultItems(0)->schema([
                         Hidden::make('id'),
                         Placeholder::make('preview')->content(function (Get $get, ?Model $record): HtmlString | string {
                             $image = $record instanceof Product ? $record->images->firstWhere('id', $get('id')) : null;

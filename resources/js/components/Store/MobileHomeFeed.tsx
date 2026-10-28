@@ -74,6 +74,14 @@ interface MobileHomeFeedProps {
   categories: CategoryCard[];
   testimonials: TestimonialItem[];
   content: HomepageContent;
+  latestPosts: {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image_url: string | null;
+    published_at: string;
+  }[];
 }
 
 // ─── Hero Card ────────────────────────────────────────────────────────────────
@@ -861,6 +869,7 @@ export default function MobileHomeFeed({
   categories,
   testimonials,
   content,
+  latestPosts,
 }: MobileHomeFeedProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -962,6 +971,44 @@ export default function MobileHomeFeed({
       <div className="mt-6">
         <NewsletterBlock />
       </div>
+
+      {/* ── Journal ── */}
+      {latestPosts.length > 0 && (
+        <div className="mt-6 px-4">
+          <div className="flex items-center justify-between pb-3">
+            <h2 className="font-serif text-lg font-medium text-[#171310]">From the Journal</h2>
+            <Link href="/journal" className="flex items-center gap-1 text-[11px] font-medium text-[#9C7A3C]">
+              View All <ChevronRight size={11} strokeWidth={2.5} />
+            </Link>
+          </div>
+          <div className="scrollbar-none flex gap-3 overflow-x-auto pb-2">
+            {latestPosts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/journal/${post.slug}`}
+                className="block w-[72vw] max-w-[280px] flex-shrink-0 overflow-hidden rounded-2xl border border-[#171310]/8 bg-white"
+              >
+                <div className="aspect-[16/9] overflow-hidden bg-[#E8E1D7]">
+                  {post.cover_image_url ? (
+                    <img src={post.cover_image_url} alt={post.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center font-serif text-xl text-[#9C7A3C]/40">✦</div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9C7A3C]">
+                    {new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                  <h3 className="mt-1 font-serif text-sm font-medium leading-snug text-[#171310] line-clamp-2">{post.title}</h3>
+                  {post.excerpt && (
+                    <p className="mt-1 text-[11px] leading-relaxed text-[#252525]/55 line-clamp-2">{post.excerpt}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
