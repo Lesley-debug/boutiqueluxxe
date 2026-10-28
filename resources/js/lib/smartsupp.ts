@@ -1,5 +1,5 @@
 // The website widget key is public, not a private API credential.
-export const SMARTSUPP_KEY = "32c1e66ba9c7812ea7cd94ceafb9f642dc4926f2";
+export const SMARTSUPP_KEY = "6fe568c8c6da1003b92667580877ec12afab4d8a";
 export const CHAT_LOADER_ID = "boutique-luxxe-smartsupp-loader";
 
 type ChatApi = ((...args: unknown[]) => void) & { _?: unknown[][] };
