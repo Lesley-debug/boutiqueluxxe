@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\HeroSlide;
 use App\Models\HomepageContent;
+use App\Models\JournalPost;
 use App\Models\Product;
 use App\Models\Style;
 use App\Models\Testimonial;
@@ -41,6 +42,7 @@ class HomeController extends Controller
                 ->limit(3)
                 ->get(['id', 'name', 'slug', 'image']),
             'testimonials' => Testimonial::active()->orderBy('sort_order')->limit(3)->get(),
+            'latestPosts' => JournalPost::published()->orderByDesc('published_at')->limit(3)->get(['id', 'title', 'slug', 'excerpt', 'cover_image', 'published_at']),
         ]);
     }
 

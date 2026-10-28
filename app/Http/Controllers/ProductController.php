@@ -16,6 +16,8 @@ class ProductController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        $reviews = $product->reviews()->active()->latest()->get(['id', 'customer_name', 'rating', 'quote', 'created_at']);
+
         $related = Product::active()
             ->with(['images', 'variants'])
             ->where('category_id', $product->category_id)
@@ -92,6 +94,7 @@ class ProductController extends Controller
         return Inertia::render('Store/ProductDetail', [
             'product' => $product,
             'related' => $related,
+            'reviews' => $reviews,
             'seo' => [
                 'title' => $product->name,
                 'description' => $description,

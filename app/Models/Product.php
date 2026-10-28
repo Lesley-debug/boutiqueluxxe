@@ -93,4 +93,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Collection::class)->withTimestamps();
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
 }
